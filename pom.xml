@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
 	<groupId>org.injector</groupId>
 	<artifactId>injector-tools</artifactId>
-	<version>0.3.2-dev</version>
+	<version>0.3.3-dev</version>
 	<name>HTTP Injector Tools(core)</name>
 	<description>Create local proxy with the provided payload,
         connect to remote ssh by created proxy.
@@ -101,10 +101,12 @@
             <version>1.0.6</version>
 	    </dependency>
 	    <dependency>
-	    	<groupId>terminal</groupId>
-			<artifactId>org.terminal.ansi</artifactId>
-			<version>0.1.8</version>
+	    	<groupId>org.terminal</groupId>
+			<artifactId>ansi</artifactId>
+			<version>0.1.95</version>
 	    </dependency>
+	    
+	    
 	
 	</dependencies>
 	

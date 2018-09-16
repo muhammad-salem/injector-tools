@@ -20,10 +20,10 @@ public class LogOut implements Debugger {
     
     public void setColourFormate(boolean useansicolour) {
     	if(useansicolour) {
-    		messageFormate = "["+ansi.Red("{}")+"]\t"+ansi.BlueLight("{}");
-    		titleHeadFormate = "[" + ansi.Red("{}") + "]\t" + ansi.BlueLight("{}") + ansi.Green("  {");
-    		titleBodyFormate =  "["+ansi.Red("{}")+"]\t\t"+ansi.Green("{}"); // "[{}]\t\t{}";
-    		titleFotterFormate = "[" + ansi.Red("{}") + "]\t\t" + ansi.GrayLight("}");
+    		messageFormate = "["+ansi.red("{}")+"]\t"+ansi.blueLight("{}");
+    		titleHeadFormate = "[" + ansi.red("{}") + "]\t" + ansi.blueLight("{}") + ansi.green("  {");
+    		titleBodyFormate =  "["+ansi.red("{}")+"]\t\t"+ansi.green("{}"); // "[{}]\t\t{}";
+    		titleFotterFormate = "[" + ansi.red("{}") + "]\t\t" + ansi.grayLight("}");
     	}else {
     		messageFormate = "[{}]\t{}";
     		titleHeadFormate = "[{}]\t{} {";

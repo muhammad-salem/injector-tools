@@ -134,6 +134,24 @@ public abstract class ProxyHandler implements EventRunnableHandler {
 			Logger.debug(getClass(), "registerChannelToSelector", e.getMessage());
 		}
 	}
+	
+	protected void registerTransferDataFromClientToProxy() {
+		try {
+			client.configureBlocking(false);
+			client.register(getSelector(), SelectionKey.OP_READ, remote);
+		} catch (Exception e) {
+			Logger.debug(getClass(), e.getClass().getSimpleName(), e.getMessage());
+		}
+	}
+	
+	protected void registerTransferDataFromProxyToClient() {
+		try {
+			remote.configureBlocking(false);
+			remote.register(getSelector(), SelectionKey.OP_READ, client);
+		} catch (Exception e) {
+			Logger.debug(getClass(), e.getClass().getSimpleName(), e.getMessage());
+		}
+	}
 
 	protected void connectToProxyServer() {
 		try {
@@ -204,6 +222,9 @@ public abstract class ProxyHandler implements EventRunnableHandler {
 		}
 
 	}
+	
+	
+	
 
 
 

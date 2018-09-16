@@ -1,4 +1,4 @@
-# injector-tools (0.3.2-dev)
+# injector-tools (0.3.3-dev)
 
 
  - test server security
@@ -16,7 +16,7 @@
 
 
 # Start app
-java -jar injector-tools-0.3.2-dev-jar-with-dependencies.jar filename.json
+java -jar injector-tools-0.3.3-dev-jar-with-dependencies.jar filename.json
 
  - -h	show help message
  - -v	show app version
@@ -25,3 +25,7 @@ java -jar injector-tools-0.3.2-dev-jar-with-dependencies.jar filename.json
  - filename:	the name of the file to be load
  - if no config file loaded will use default config (cache dir)
  - -h:help,	-v:version,	-t:temp
+ 
+# Fix ISSUS:
+	- fix ANSI escape code on windows platform. 
+ 

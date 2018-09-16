@@ -60,6 +60,13 @@ public class NetworkMonitor implements SocketMonitor, DatagramSocketMonitor {
 		return sendUDP;
 	}
 
+	public void resetSpeedFlags() {
+		receiveTCP = 0;
+		receiveUDP = 0;
+		sendTCP = 0;
+		sendUDP = 0;
+	}
+	
 	@Override
 	public String toString() {
 		return "NetworkMonitor{" + "sendTCP=" + sendTCP + ", receiveTCP=" + receiveTCP + ", sendUDP=" + sendUDP

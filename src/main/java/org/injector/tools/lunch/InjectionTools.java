@@ -75,9 +75,9 @@ public class InjectionTools {
 		jschSSHClient = new JschSSHClient(config);
 //		jschSSHClient.addSuccessListener(jschSSHClient.getMonitorSpeed()::start);
 //		jschSSHClient.start();
-//		executor.submit(jschSSHClient.getMonitorSpeed()::start);
+		executor.submit(jschSSHClient.getMonitorSpeed()::start);
 		executor.submit(jschSSHClient::connectHost);
-		jschSSHClient.addSuccessListener(()-> executor.submit(jschSSHClient.getMonitorSpeed()::start));
+//		jschSSHClient.addSuccessListener(()-> executor.submit(jschSSHClient.getMonitorSpeed()::start));
 		
 	}
 

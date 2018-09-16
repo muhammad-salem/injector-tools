@@ -32,11 +32,14 @@ public class DirectCloseHandler extends DirectProxyHandler {
 		connectToProxyServer();
 		writePayloadToRemoteHost();
 
-		Future<?> future = getService().submit(this::transferDataFromProxyToClient);
+		registerTransferDataFromClientToProxy();
+		Future<?> future = getService().submit(this::registerTransferDataFromProxyToClient);
 		checkStopThreadPool(future);
 	}
+	
 
-	protected void transferDataFromProxyToClient() {
+	@Override
+	protected void registerTransferDataFromProxyToClient() {
 		Logger.debug(getClass(), "Start transfer Data From Proxy To Client");
 		
 		ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
@@ -62,6 +65,7 @@ public class DirectCloseHandler extends DirectProxyHandler {
 			debugSocketsChannel(e);
 			fireErrorListener();
 		} catch (InterruptedException e) {
+			Logger.debug(getClass(), e.getClass().getSimpleName(), e.getMessage());
 		}
 	}
 
@@ -80,8 +84,7 @@ public class DirectCloseHandler extends DirectProxyHandler {
 
 			closeConnection();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.debug(getClass(), e.getClass().getSimpleName(), e.getMessage());
 		}
 
 	}

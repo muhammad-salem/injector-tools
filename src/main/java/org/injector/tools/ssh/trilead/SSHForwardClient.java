@@ -236,7 +236,7 @@ public class SSHForwardClient implements EventHandler{
                 Logger.debug(getClass(),"Finish authenticate With Password.");
             }
             else {
-                Logger.debug(getClass(),"Connection is "+ Ansi.Red +" not authenticated." + Ansi.ResetAllAttributes);
+                Logger.debug(getClass(),"Connection is " + Ansi.Red +" not authenticated." + Ansi.Reset);
                 fireErrorListener();
                 fireCompleteListener();
                 return;

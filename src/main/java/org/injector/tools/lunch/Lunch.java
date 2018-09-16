@@ -1,5 +1,6 @@
 package org.injector.tools.lunch;
 
+import org.fusesource.jansi.AnsiConsole;
 import org.injector.tools.config.Config;
 import org.injector.tools.config.utils.ManagConfig;
 import org.injector.tools.log.Logger;
@@ -9,6 +10,8 @@ import org.terminal.Ansi;
 public class Lunch {
 
 	public static void main(String[] args) {
+		
+		AnsiConsole.systemInstall();
 
 		checkArgs(args);
 		initApp();
@@ -55,7 +58,7 @@ public class Lunch {
 		R.INIT_CHANGES();
 		if(ManagConfig.getAppConfig().isDebuggable())
 //			System.out.println(ManagConfig.toFormatConfig());
-			System.out.println(Ansi.Green + ManagConfig.formatLimitConfig() + Ansi.ResetAllAttributes);
+			System.out.println(Ansi.Green + ManagConfig.formatLimitConfig() + Ansi.Reset);
 		
 //		Logger.debug(Lunch.class,"", ManagConfig.formatLimitConfig());
 		
