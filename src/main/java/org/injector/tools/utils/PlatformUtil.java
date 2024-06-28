@@ -49,8 +49,16 @@ public class PlatformUtil {
     private static final String embeddedType;
     private static final boolean useEGL;
     private static final boolean doEGLCompositing;
+    private static final boolean WINDOWS = os.startsWith("Windows");
+    private static final boolean WINDOWS_VISTA_OR_LATER = WINDOWS && versionNumberGreaterThanOrEqualTo(6.0f);
+    private static final boolean WINDOWS_7_OR_LATER = WINDOWS && versionNumberGreaterThanOrEqualTo(6.1f);
+    private static final boolean MAC = os.startsWith("Mac");
+    private static final boolean SOLARIS = os.startsWith("SunOS");
+    private static final boolean IOS = os.startsWith("iOS");
     // a property used to denote a non-default impl for this host
     private static String javafxPlatform;
+    private static final boolean ANDROID = "android".equals(javafxPlatform) || "Dalvik".equals(System.getProperty("java.vm.name"));
+    private static final boolean LINUX = os.startsWith("Linux") && !ANDROID;
 
     static {
         javafxPlatform = AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty("javafx.platform"));
@@ -64,15 +72,6 @@ public class PlatformUtil {
             doEGLCompositing = false;
     }
 
-    private static final boolean ANDROID = "android".equals(javafxPlatform) || "Dalvik".equals(System.getProperty("java.vm.name"));
-    private static final boolean WINDOWS = os.startsWith("Windows");
-    private static final boolean WINDOWS_VISTA_OR_LATER = WINDOWS && versionNumberGreaterThanOrEqualTo(6.0f);
-    private static final boolean WINDOWS_7_OR_LATER = WINDOWS && versionNumberGreaterThanOrEqualTo(6.1f);
-    private static final boolean MAC = os.startsWith("Mac");
-    private static final boolean LINUX = os.startsWith("Linux") && !ANDROID;
-    private static final boolean SOLARIS = os.startsWith("SunOS");
-    private static final boolean IOS = os.startsWith("iOS");
-
     /**
      * Utility method used to determine whether the version number as
      * reported by system properties is greater than or equal to a given
@@ -80,7 +79,7 @@ public class PlatformUtil {
      *
      * @param value The value to test against.
      * @return false if the version number cannot be parsed as a float,
-     *         otherwise the comparison against value.
+     * otherwise the comparison against value.
      */
     private static boolean versionNumberGreaterThanOrEqualTo(float value) {
         try {
@@ -93,35 +92,35 @@ public class PlatformUtil {
     /**
      * Returns true if the operating system is a form of Windows.
      */
-    public static boolean isWindows(){
+    public static boolean isWindows() {
         return WINDOWS;
     }
 
     /**
      * Returns true if the operating system is at least Windows Vista(v6.0).
      */
-    public static boolean isWinVistaOrLater(){
+    public static boolean isWinVistaOrLater() {
         return WINDOWS_VISTA_OR_LATER;
     }
 
     /**
      * Returns true if the operating system is at least Windows 7(v6.1).
      */
-    public static boolean isWin7OrLater(){
+    public static boolean isWin7OrLater() {
         return WINDOWS_7_OR_LATER;
     }
 
     /**
      * Returns true if the operating system is a form of Mac OS.
      */
-    public static boolean isMac(){
+    public static boolean isMac() {
         return MAC;
     }
 
     /**
      * Returns true if the operating system is a form of Linux.
      */
-    public static boolean isLinux(){
+    public static boolean isLinux() {
         return LINUX;
     }
 
@@ -137,23 +136,20 @@ public class PlatformUtil {
         String useGles2 = "false";
         useGles2 =
                 AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty("use.gles2"));
-        if ("true".equals(useGles2))
-            return true;
-        else
-            return false;
+        return "true".equals(useGles2);
     }
 
     /**
      * Returns true if the operating system is a form of Unix, including Linux.
      */
-    public static boolean isSolaris(){
+    public static boolean isSolaris() {
         return SOLARIS;
     }
 
     /**
      * Returns true if the operating system is a form of Linux or Solaris
      */
-    public static boolean isUnix(){
+    public static boolean isUnix() {
         return LINUX || SOLARIS;
     }
 
@@ -174,7 +170,7 @@ public class PlatformUtil {
     /**
      * Returns true if the operating system is iOS
      */
-    public static boolean isIOS(){
+    public static boolean isIOS() {
         return IOS;
     }
 
@@ -185,7 +181,7 @@ public class PlatformUtil {
             p.load(in);
             in.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            e.fillInStackTrace();
         }
         if (javafxPlatform == null) {
             javafxPlatform = p.getProperty("javafx.platform");
@@ -207,11 +203,12 @@ public class PlatformUtil {
         if (!foundPlatform) {
             System.err.println(
                     "Warning: No settings found for javafx.platform='"
-                    + javafxPlatform + "'");
+                            + javafxPlatform + "'");
         }
     }
 
-    /** Returns the directory containing the JavaFX runtime, or null
+    /**
+     * Returns the directory containing the JavaFX runtime, or null
      * if the directory cannot be located
      */
     private static File getRTDir() {
@@ -242,7 +239,7 @@ public class PlatformUtil {
         final String vmname = System.getProperty("java.vm.name");
         final String arch = System.getProperty("os.arch");
 
-        if (! (javafxPlatform != null ||
+        if (!(javafxPlatform != null ||
                 (arch != null && arch.equals("arm")) ||
                 (vmname != null && vmname.indexOf("Embedded") > 0))) {
             return;
@@ -259,8 +256,8 @@ public class PlatformUtil {
             }
             String javaHome = System.getProperty("java.home");
             File javaHomeProperties = new File(javaHome,
-                                               "lib" + File.separator
-                                               + propertyFilename);
+                    "lib" + File.separator
+                            + propertyFilename);
             if (javaHomeProperties.exists()) {
                 loadPropertiesFromFile(javaHomeProperties);
                 return null;
@@ -268,26 +265,28 @@ public class PlatformUtil {
 
             String javafxRuntimePath = System.getProperty("javafx.runtime.path");
             File javafxRuntimePathProperties = new File(javafxRuntimePath,
-                                                     File.separator + propertyFilename);
+                    File.separator + propertyFilename);
             if (javafxRuntimePathProperties.exists()) {
-               loadPropertiesFromFile(javafxRuntimePathProperties);
-               return null;
+                loadPropertiesFromFile(javafxRuntimePathProperties);
+                return null;
             }
             return null;
         });
     }
 
     public static boolean isAndroid() {
-       return ANDROID;
+        return ANDROID;
     }
 
-    public static boolean isI386(){
+    public static boolean isI386() {
         return arch.startsWith("i386");
     }
-    public static boolean isAMD64(){
+
+    public static boolean isAMD64() {
         return arch.startsWith("amd64");
     }
-    public static boolean isARM(){
+
+    public static boolean isARM() {
         return arch.equals("arm");
     }
 

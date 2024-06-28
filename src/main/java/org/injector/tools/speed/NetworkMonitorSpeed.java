@@ -1,9 +1,10 @@
 package org.injector.tools.speed;
 
 
-import org.injector.tools.speed.SpeedMonitor;
-
 public class NetworkMonitorSpeed extends SpeedMonitor implements Runnable {
+
+    protected long timer = 0;
+    protected boolean showSpeed = true;
 
     public void start() {
 //        Thread t = new Thread(this);
@@ -15,27 +16,24 @@ public class NetworkMonitorSpeed extends SpeedMonitor implements Runnable {
             @Override
             public void run() {
                 if (showSpeed)
-                System.out.println("\n\n");
+                    System.out.println("\n\n");
             }
         }));
         run();
     }
-    
-    protected long timer = 0;
-    protected boolean showSpeed = true;
+
     public void stop() {
         showSpeed = false;
     }
-    
-    public long getTimer() {
-		return timer;
-	}
 
-	@Override
-	public void run() {
-		
-	}
-    
-    
-    
+    public long getTimer() {
+        return timer;
+    }
+
+    @Override
+    public void run() {
+
+    }
+
+
 }

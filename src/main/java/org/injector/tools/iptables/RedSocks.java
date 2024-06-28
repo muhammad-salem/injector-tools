@@ -1,91 +1,88 @@
 package org.injector.tools.iptables;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.injector.tools.config.RedSocksConfig;
 import org.injector.tools.log.Logger;
 import org.injector.tools.utils.PlatformUtil;
 import org.injector.tools.utils.Utils;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 public class RedSocks {
 
+    private final File watch;
+    @Setter
+    @Getter
     private RedSocksConfig config;
-
-    private File watch ;
 
     public RedSocks(RedSocksConfig config) {
         this.config = config;
-        watch = new File(this.config.getDirectory() + "/watch.lock" );
+        watch = new File(this.config.getDirectory() + "/watch.lock");
         init();
     }
-    private void init(){
 
+    private void init() {
         updateWatch();
         copyFiles();
-        if (config.getState() == RedSocksConfig.RedSocksState.start){
+        if (config.getState() == RedSocksConfig.RedSocksState.START) {
             start();
-        }else {
+        } else {
             stop();
         }
-
-
     }
 
-    private void updateWatch(){
+    private void updateWatch() {
         try {
             watch.createNewFile();
-                FileUtils.touch(watch);
-        }catch (IOException e){
-            Logger.debug(getClass(), "error touch - "+ watch.toString());
+            FileUtils.touch(watch);
+        } catch (IOException e) {
+            Logger.debug(getClass(), "error touch - " + watch.toString());
         }
     }
-    private void copyFiles(){
+
+    private void copyFiles() {
         File destination = null;
         String redsocks = "";
-        if(PlatformUtil.isUnix()) {
-            redsocks += PlatformUtil.isAMD64() ? "amd64":"i386";
+        if (PlatformUtil.isUnix()) {
+            redsocks += PlatformUtil.isAMD64() ? "amd64" : "i386";
             redsocks += "/redsocks";
             URL source = getClass().getResource(redsocks);
             destination = new File(config.getDirectory(), "redsocks");
-            Utils.Copy( source, destination );
+            Utils.Copy(source, destination);
             destination.setExecutable(true);
-            Logger.debug(getClass(), "copy - "+ destination.toString());
+            Logger.debug(getClass(), "copy - " + destination);
 
             source = getClass().getResource("iptables.sh");
             destination = new File(config.getDirectory(), "iptables.sh");
-            Utils.Copy( source, destination );
+            Utils.Copy(source, destination);
             destination.setExecutable(true);
-            Logger.debug(getClass(), "copy - "+ destination.toString());
+            Logger.debug(getClass(), "copy - " + destination);
 
 
-
-        }else if(PlatformUtil.isWindows()) {
-            return;
-        }else if(PlatformUtil.isMac()) {
-            return;
+        } else if (PlatformUtil.isWindows()) {
+        } else if (PlatformUtil.isMac()) {
         }
-
-
     }
 
     // {"sudo",  "-S", "./redsocks.sh" } #sudo /redsocks.sh dir start socks5 127.0.0.1 1080 false
-    public void start(){
+    public void start() {
         List<String> args = new ArrayList<String>();
         args.add("gksu");
         args.add("-S");
-        args.add(config.getDirectory()+"/iptables.sh");
+        args.add(config.getDirectory() + "/iptables.sh");
         args.add(config.getDirectory());
         args.add(config.getState().toString());
         args.add(config.getProxyType().toString());
         args.add(config.getProxyHost());
-        args.add(config.getProxyPort()+"");
-        args.add(Boolean.toString(config.isUseAuth()));
-        if (config.isUseAuth()){
+        args.add(config.getProxyPort() + "");
+        args.add(Boolean.toString(config.getUseAuth()));
+        if (config.getUseAuth()) {
             args.add(config.getProxyUser());
             args.add(config.getProxyPass());
         }
@@ -95,19 +92,9 @@ public class RedSocks {
         runProcess(args);
     }
 
-    public void stop(){
-//        List<String> args = new ArrayList<String>();
-//        args.add("gksu");
-//        args.add("-S");
-//        args.add(config.getDirectory()+"/iptables.sh");
-//        args.add(config.getDirectory());
-//        args.add(RedSocksConfig.RedSocksState.stop.toString());
-//        runProcess(args);
-//        Logger.debug(getClass(), Arrays.toString(args.toArray()));
-
+    public void stop() {
         updateWatch();
-        config.setState(RedSocksConfig.RedSocksState.stop);
-
+        config.setState(RedSocksConfig.RedSocksState.STOP);
     }
 
 
@@ -122,11 +109,4 @@ public class RedSocks {
         }
     }
 
-
-    public RedSocksConfig getConfig() {
-        return config;
-    }
-    public void setConfig(RedSocksConfig config) {
-        this.config = config;
-    }
 }

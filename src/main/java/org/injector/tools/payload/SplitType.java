@@ -9,13 +9,13 @@ package org.injector.tools.payload;
 	# [split-x] = request 1 + request 2 -> delay -> request 2
 	# [x-split] = request 1 + request 2 -> request 2
  */
-public enum SplitType{
-	Split,
-	Delay_Split,
-	Instant_Split,
-	Repeat_Split,
-	Reverse_Split,
-	Split_X,
-	X_Split,
-	NON;
+public enum SplitType {
+    Split,
+    Delay_Split,
+    Instant_Split,
+    Repeat_Split,
+    Reverse_Split,
+    Split_X,
+    X_Split,
+    NON
 }

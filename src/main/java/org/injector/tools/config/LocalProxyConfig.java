@@ -1,27 +1,32 @@
 package org.injector.tools.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.injector.tools.config.type.LocalProxyType;
 
+@Setter
+@Getter
 public class LocalProxyConfig {
 
-    public static String LOCALHOST  = "localhost";
-    public static String LOCALIP    = "127.0.0.1";
-    public static String LOCALIPAll = "0.0.0.0";
+    public static String LOCALHOST = "localhost";
+    public static String LOCAL_IP = "127.0.0.1";
+    public static String LOCAL_IP_All = "0.0.0.0";
 
 
     private LocalProxyType localProxyType = LocalProxyType.TRANSPARENT;
     private int localProxyPort = 8989;
-    
+
     private HostProxyConfig hostProxyConfig = new HostProxyConfig();
 
 
     public LocalProxyConfig() {
-    	this(0, LocalProxyType.STOP ,new HostProxyConfig());
+        this(0, LocalProxyType.STOP, new HostProxyConfig());
     }
-    
+
     public LocalProxyConfig(int localProxyPort) {
-    	this(localProxyPort, LocalProxyType.TRANSPARENT ,new HostProxyConfig());
+        this(localProxyPort, LocalProxyType.TRANSPARENT, new HostProxyConfig());
     }
+
     public LocalProxyConfig(int localProxyPort, HostProxyConfig proxyConfig) {
         this(localProxyPort, LocalProxyType.TRANSPARENT, proxyConfig);
     }
@@ -33,27 +38,11 @@ public class LocalProxyConfig {
     }
 
 
-    public int getLocalProxyPort() {
-        return localProxyPort;
-    }
-    public void setLocalProxyPort(int localProxyPort) {
-        this.localProxyPort = localProxyPort;
-    }
-    public LocalProxyType getLocalProxyType() { return localProxyType; }
-    public void setLocalProxyType(LocalProxyType localProxyType) { this.localProxyType = localProxyType; }
     /**
-     * 
      * @return true if only localProxyType not equal to STOP
      */
-    public boolean isAllowToRun(){ return localProxyType != LocalProxyType.STOP; }
-	public HostProxyConfig getHostProxyConfig() {
-		return hostProxyConfig;
-	}
-	public void setHostProxyConfig(HostProxyConfig hostProxyConfig) {
-		this.hostProxyConfig = hostProxyConfig;
-	}
+    public boolean isAllowToRun() {
+        return localProxyType != LocalProxyType.STOP;
+    }
 
-    
-    
-    
 }

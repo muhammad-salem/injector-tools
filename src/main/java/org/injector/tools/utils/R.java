@@ -1,74 +1,69 @@
 package org.injector.tools.utils;
 
+import org.apache.commons.io.FileUtils;
+import org.injector.tools.config.utils.ManageConfig;
+import org.injector.tools.log.Logger;
+import org.injector.tools.log.impl.LogErr;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.injector.tools.config.utils.ManagConfig;
-import org.injector.tools.log.Logger;
-import org.injector.tools.log.impl.LogErr;
-
-
 
 public class R {
-	
 
-	public static String separator = File.separator;
-	public static String app_name = "injector-tools";
-	public static String UserHome = System.getProperty("user.home");
-	
-	
-	public static String ConfigPath = UserHome + separator 
-						+ ".config" + separator + app_name;
+
+    public static String separator = File.separator;
+    public static String app_name = "injector-tools";
+    public static String UserHome = System.getProperty("user.home");
+
+
+    public static String ConfigPath = UserHome + separator
+            + ".config" + separator + app_name;
 //	public static String PolipoApp = ConfigPath + separator + "polipo";
-	
-	public static String CachePath = UserHome + separator 
-						+ ".cache" + separator + app_name;
+    public static String StaticPoint = ConfigPath + separator + "static.json";
+    public static String ConfigJsonFile = ConfigPath + separator + "config.json";
+    public static String PolipoConfigFile = ConfigPath + separator + "polipo.prop";
+    public static String CachePath = UserHome + separator
+            + ".cache" + separator + app_name;
+    public static String LockFile = CachePath + separator + "lock";
+    public static String PolipoCache = CachePath + separator + "polipo" + separator;
+    public static String TempDir = "/tmp/";
 
-	
-	public static String LockFile = CachePath + separator + "lock";
-	public static String TempDir = "/tmp/";
-	
-	static{
-		String cacheFolder = "";
-		if(PlatformUtil.isWin7OrLater()){
-			cacheFolder = UserHome + separator + "AppData" 
-					+ separator + "Roaming" + separator + app_name + separator;
-			CachePath  = cacheFolder + "cache";
-			ConfigPath = cacheFolder + "config";
-			
-		} else if(PlatformUtil.isWindows()){
+    static {
+        String cacheFolder = "";
+        if (PlatformUtil.isWin7OrLater()) {
+            cacheFolder = UserHome + separator + "AppData"
+                    + separator + "Roaming" + separator + app_name + separator;
+            CachePath = cacheFolder + "cache";
+            ConfigPath = cacheFolder + "config";
 
-			cacheFolder = UserHome +  separator + "Application Data" 
-					+ separator + app_name + separator;
-			CachePath  = cacheFolder + "cache";
-			ConfigPath = cacheFolder + "config";
-			
-		} else if(PlatformUtil.isMac()){ // Library/Application Support/
-			cacheFolder = UserHome +  separator + "Library" + separator + "Application Support" 
-					+ separator + app_name + separator;
-			
-			CachePath  = cacheFolder + "cache";
-			ConfigPath = cacheFolder + "config";
-			TempDir = UserHome + "/Library/Caches/TemporaryItems/";
-		}
-		
-		LockFile = CachePath + separator + "lock";
-	}
-	
-	public static String StaticPoint = ConfigPath + separator + "static.json";
-	public static String ConfigJsonFile = ConfigPath + separator  + "config.json";
-	public static String PolipoConfigFile = ConfigPath + separator + "polipo.prop";
-    public static String PolipoCache = CachePath + separator + "polipo"+ separator ;
+        } else if (PlatformUtil.isWindows()) {
 
-	/* ========================================================================= */
-	/* ========================== Resources Methods Init ======================= */
-	public static void InitDirs() {
-		
-		File creator = new File(ConfigPath);
+            cacheFolder = UserHome + separator + "Application Data"
+                    + separator + app_name + separator;
+            CachePath = cacheFolder + "cache";
+            ConfigPath = cacheFolder + "config";
+
+        } else if (PlatformUtil.isMac()) { // Library/Application Support/
+            cacheFolder = UserHome + separator + "Library" + separator + "Application Support"
+                    + separator + app_name + separator;
+
+            CachePath = cacheFolder + "cache";
+            ConfigPath = cacheFolder + "config";
+            TempDir = UserHome + "/Library/Caches/TemporaryItems/";
+        }
+
+        LockFile = CachePath + separator + "lock";
+    }
+
+    /* ========================================================================= */
+    /* ========================== Resources Methods Init ======================= */
+    public static void InitDirs() {
+
+        File creator = new File(ConfigPath);
         MKdir(creator);
         creator = new File(CachePath);
         MKdir(creator);
@@ -84,134 +79,132 @@ public class R {
 //			Files.setAttribute(creator.toPath(), "dos:hidden", true);
 //			Files.setAttribute(creator.getParentFile().toPath(), "dos:hidden", true);
         } catch (Exception e) {
-            if(e instanceof IOException){
+            if (e instanceof IOException) {
                 System.err.println("Can't make hidden");
-            }else{
+            } else {
                 System.err.println("Can't creat directory");
             }
         }
     }
 
     /* ========================================================================= */
-	/* ======================== Resources Methods onSave ======================= */
+    /* ======================== Resources Methods onSave ======================= */
 
-	public static void ReadConfig() {
-		String temp = Utils.fromJson(StaticPoint, String.class);
-		if(temp != null){
-			R.ConfigJsonFile = temp;
-		}
-		ManagConfig.readConfig(ConfigJsonFile);
-	}
+    public static void ReadConfig() {
+        String temp = Utils.fromJson(StaticPoint, String.class);
+        if (temp != null) {
+            R.ConfigJsonFile = temp;
+        }
+        ManageConfig.readConfig(ConfigJsonFile);
+    }
 
-	public static void writeConfigFiles() {
-		Utils.toJsonFile(StaticPoint, ConfigJsonFile);
-		ManagConfig.writeConfig(ConfigJsonFile);
-	}
-	
+    public static void writeConfigFiles() {
+        Utils.toJsonFile(StaticPoint, ConfigJsonFile);
+        ManageConfig.writeConfig(ConfigJsonFile);
+    }
 
-	
-	public static void DeleteTemp() {
-		File temp = new File(ConfigPath);
-		try {
-			delete(temp);
-		} catch (IOException e) {
-			System.out.println("Can't delete Files");
-			e.printStackTrace();
-		}
-	}
 
-	public static void delete(File file) throws IOException {
+    public static void DeleteTemp() {
+        File temp = new File(ConfigPath);
+        try {
+            delete(temp);
+        } catch (IOException e) {
+            System.out.println("Can't delete Files");
+            e.fillInStackTrace();
+        }
+    }
 
-		if (file.isDirectory()) {
+    public static void delete(File file) throws IOException {
 
-			// directory is empty, then delete it
-			if (file.list().length == 0) {
+        if (file.isDirectory()) {
 
-				file.delete();
+            // directory is empty, then delete it
+            if (file.list().length == 0) {
+
+                file.delete();
 //				System.out.println("Delete Directory : "+ file.getAbsolutePath());
 
-				} 
-			else {
+            } else {
 
-				// list all the directory contents
-				String files[] = file.list();
+                // list all the directory contents
+                String[] files = file.list();
 
-				for (String temp : files) {
-					// construct the file structure
-					File fileDelete = new File(file, temp);
+                for (String temp : files) {
+                    // construct the file structure
+                    File fileDelete = new File(file, temp);
 
-					// recursive delete
-					delete(fileDelete);
-				}
+                    // recursive delete
+                    delete(fileDelete);
+                }
 
-				// check the directory again, if empty then delete it
-				if (file.list().length == 0) {
-					file.delete();
+                // check the directory again, if empty then delete it
+                if (file.list().length == 0) {
+                    file.delete();
 //					System.out.println("Delete Directory : "+ file.getAbsolutePath());
-				}
-			}
+                }
+            }
 
-		} else {
-			// if file, then delete it
-			file.delete();
+        } else {
+            // if file, then delete it
+            file.delete();
 //			System.out.println("Delete File : " + file.getAbsolutePath());
-		}
-	}
-	
-	public static void openInProcess(String str){
-		List<String> list = new ArrayList<String>();
-		
-		if(PlatformUtil.isLinux()){
-			list.add("xdg-open");
-			list.add(str);
-		}else if (PlatformUtil.isWindows()) {
-			list.add("start");
-			list.add(str);
-		}else if (PlatformUtil.isMac()) {
-			list.add("open");
-			list.add(str);
-		}
-		ProcessBuilder builder = new ProcessBuilder(list);
-		try {
-			builder.start();
-		} catch (IOException e) {
-			Logger.debug("R", "error in open Application");
-			Logger.debug("R", e.getMessage());
-		}
-		
-	}
+        }
+    }
 
-	public static void SAVE_CHANGES() {
+    public static void openInProcess(String str) {
+        List<String> list = new ArrayList<String>();
+
+        if (PlatformUtil.isLinux()) {
+            list.add("xdg-open");
+            list.add(str);
+        } else if (PlatformUtil.isWindows()) {
+            list.add("start");
+            list.add(str);
+        } else if (PlatformUtil.isMac()) {
+            list.add("open");
+            list.add(str);
+        }
+        ProcessBuilder builder = new ProcessBuilder(list);
+        try {
+            builder.start();
+        } catch (IOException e) {
+            Logger.debug("R", "error in open Application");
+            Logger.debug("R", e.getMessage());
+        }
+
+    }
+
+    public static void SAVE_CHANGES() {
 //		ConfigurationManager.updateConfig();
-		writeConfigFiles();
-	}
+        writeConfigFiles();
+    }
 
-	public static void releaseLockFile(){
-		FileUtils.deleteQuietly(new File(LockFile));
-	}
-	public static void initFileLock(){
-		try {
-			File file =  new File(LockFile);
-			FileUtils.writeStringToFile(file,  " -- Start App" + System.currentTimeMillis() + "\n" , Charset.defaultCharset() , true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
+    public static void releaseLockFile() {
+        FileUtils.deleteQuietly(new File(LockFile));
+    }
 
-	
-	public static void Save_Changes_Progress() {
-		
+    public static void initFileLock() {
+        try {
+            File file = new File(LockFile);
+            FileUtils.writeStringToFile(file, " -- Start App" + System.currentTimeMillis() + "\n", Charset.defaultCharset(), true);
+        } catch (Exception e) {
+            e.fillInStackTrace();
+        }
+    }
+
+
+    public static void Save_Changes_Progress() {
+
 //		ConfigurationManager.updateConfig();
-		writeConfigFiles();
-	}
+        writeConfigFiles();
+    }
 
-	public static void INIT_CHANGES() {
-		InitDirs();
-		LogErr logErr = new LogErr();
-		logErr.initDebugger(ConfigPath + separator + "logger.log");
-		Logger.setLogger(ManagConfig.getAppConfig().isDebuggable(),logErr);
-		new Thread(logErr).start();
-	}
+    public static void INIT_CHANGES() {
+        InitDirs();
+        LogErr logErr = new LogErr();
+        logErr.initDebugger(ConfigPath + separator + "logger.log");
+        Logger.setLogger(ManageConfig.getAppConfig().getDebuggable(), logErr);
+        new Thread(logErr).start();
+    }
 
 }

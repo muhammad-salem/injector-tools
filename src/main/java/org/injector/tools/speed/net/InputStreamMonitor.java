@@ -6,6 +6,6 @@ package org.injector.tools.speed.net;
  * @date Sep 21, 2015 2:46 PM
  */
 public interface InputStreamMonitor {
-  //void onRead(byte[] b);
-  void onRead(int len);
+    //void onRead(byte[] b);
+    void onRead(int len);
 }

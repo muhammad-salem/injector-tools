@@ -2,58 +2,45 @@ package org.injector.tools.config.type;
 
 import org.injector.tools.config.SSHConfig;
 import org.injector.tools.speed.NetworkMonitorSpeed;
-import org.injector.tools.ssh.proxyhandler.DirectInjectProxy;
-import org.injector.tools.ssh.proxyhandler.DirectProxy;
-import org.injector.tools.ssh.proxyhandler.HTTPProxy;
-import org.injector.tools.ssh.proxyhandler.InjectHttpProxy;
-import org.injector.tools.ssh.proxyhandler.ProxySocket;
-import org.injector.tools.ssh.proxyhandler.Socks5Proxy;
+import org.injector.tools.ssh.proxyhandler.*;
 
 public enum SSHProxyType {
-	Auto,
-	NOProxy,
-	Direct,
-	HTTPProxy,
-	Socks5Proxy,
-	DirectInject,
-	InjectProxyHttp,
-	STOP,
-	Other;
-	
-	public ProxySocket getProxy(SSHConfig config, NetworkMonitorSpeed monitorSpeed) {
-//		monitorSpeed = null;
-		switch (this) {
-			default:
-			case NOProxy:
-				// same as normal connection - use no proxy aka Direct connection.
-			case Direct:
-				return new DirectProxy(config.getProxyHost(), config.getProxyPort(), monitorSpeed);
-			case Auto:
-				// same as use local proxy for {now}
-				// Suppose to {implement an extra code} 
-				// to check configuration then chose the right way to connect , or tray them all till it.
-			case HTTPProxy:
-				// use proxy before connect to ssh host , defined with local proxy
-				return new HTTPProxy(config.getProxyHost(), config.getProxyPort(), monitorSpeed);
+    Auto,
+    NO_PROXY,
+    DIRECT,
+    HTTP_PROXY,
+    SOCKS_PROXY,
+    DIRECT_INJECT,
+    INJECT_PROXY_HTTP,
+    STOP,
+    Other;
 
-			case DirectInject:
-				// used as direct inject to ssh host
-				return new DirectInjectProxy(config.getHost(), config.getPort(), config.getPayload(), monitorSpeed);
-				
-			case InjectProxyHttp:
-				// used to inject to proxy host
-				// chose between the proxy payload or direct payload option.
-				return new InjectHttpProxy(config.getProxyHost(), config.getProxyPort(), config.getPayload(), monitorSpeed);
-				
-			case Socks5Proxy:
-				// not implemented class yet // do nothing
-				return new Socks5Proxy(config.getProxyHost(), config.getProxyPort(), monitorSpeed);
-				
-			case Other:
-				// um handled case.
-				return null;
-		}
-	}
-	
-	
+    public ProxySocket getProxy(SSHConfig config, NetworkMonitorSpeed monitorSpeed) {
+//		monitorSpeed = null;
+        return switch (this) {
+            // same as normal connection - use no proxy aka Direct connection.
+            default -> new DirectProxy(config.getProxyHost(), config.getProxyPort(), monitorSpeed);
+            // same as use local proxy for {now}
+            // Suppose to {implement an extra code}
+            // to check configuration then chose the right way to connect , or tray them all till it.
+            case Auto, HTTP_PROXY ->
+                // use proxy before connect to ssh host , defined with local proxy
+                    new HTTPProxy(config.getProxyHost(), config.getProxyPort(), monitorSpeed);
+            case DIRECT_INJECT ->
+                // used as direct inject to ssh host
+                    new DirectInjectProxy(config.getHost(), config.getPort(), config.getPayload(), monitorSpeed);
+            case INJECT_PROXY_HTTP ->
+                // used to inject to proxy host
+                // chose between the proxy payload or direct payload option.
+                    new InjectHttpProxy(config.getProxyHost(), config.getProxyPort(), config.getPayload(), monitorSpeed);
+            case SOCKS_PROXY ->
+                // not implemented class yet // do nothing
+                    new Socks5Proxy(config.getProxyHost(), config.getProxyPort(), monitorSpeed);
+            case Other ->
+                // um handled case.
+                    null;
+        };
+    }
+
+
 }

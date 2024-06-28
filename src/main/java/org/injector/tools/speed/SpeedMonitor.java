@@ -14,19 +14,39 @@ public class SpeedMonitor extends NetworkMonitor implements SocketMonitor, Datag
     protected long sendUDP_old = 0;
 
     @Override
-    public long getTotalReceive() { return receiveTCP + receiveUDP; }
+    public long getTotalReceive() {
+        return receiveTCP + receiveUDP;
+    }
+
     @Override
-    public long getTotalSend() { return sendTCP + sendUDP; }
+    public long getTotalSend() {
+        return sendTCP + sendUDP;
+    }
+
     @Override
-    public long getTotal() { return getTotalReceive() + getTotalSend(); }
+    public long getTotal() {
+        return getTotalReceive() + getTotalSend();
+    }
+
     @Override
-    public long getReceiveTCP() { return receiveTCP; }
+    public long getReceiveTCP() {
+        return receiveTCP;
+    }
+
     @Override
-    public long getReceiveUDP() { return receiveUDP; }
+    public long getReceiveUDP() {
+        return receiveUDP;
+    }
+
     @Override
-    public long getSendTCP() { return sendTCP; }
+    public long getSendTCP() {
+        return sendTCP;
+    }
+
     @Override
-    public long getSendUDP() { return sendUDP; }
+    public long getSendUDP() {
+        return sendUDP;
+    }
 
     /**
      * Call this method to snapshot old vale of send/received tcp/udp represents.
@@ -38,10 +58,24 @@ public class SpeedMonitor extends NetworkMonitor implements SocketMonitor, Datag
         sendUDP_old = getSendUDP();
         receiveUDP_old = getReceiveUDP();
     }
-    @Override public long speedOfTCPReceive() { return getReceiveTCP() - receiveTCP_old; }
-    @Override public long speedOfUDPReceive() { return getReceiveUDP() - receiveUDP_old; }
-    @Override public long speedOfTCPSend() { return getSendTCP() - sendTCP_old; }
-    @Override public long speedOfUDPSend() {
+
+    @Override
+    public long speedOfTCPReceive() {
+        return getReceiveTCP() - receiveTCP_old;
+    }
+
+    @Override
+    public long speedOfUDPReceive() {
+        return getReceiveUDP() - receiveUDP_old;
+    }
+
+    @Override
+    public long speedOfTCPSend() {
+        return getSendTCP() - sendTCP_old;
+    }
+
+    @Override
+    public long speedOfUDPSend() {
         return getSendUDP() - sendUDP_old;
     }
 

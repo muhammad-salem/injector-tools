@@ -1,41 +1,41 @@
 package org.injector.tools.log.impl;
 
-import java.util.Formatter;
-import java.util.Locale;
-
 import org.injector.tools.log.Debugger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terminal.Ansi;
 
+import java.util.Formatter;
+import java.util.Locale;
+
 public class LogOut implements Debugger {
 
-    Logger logger;
     protected Ansi ansi = new Ansi();
-    
-    String messageFormate = "[{}]\t{}";
-    String titleHeadFormate = "[{}]\t{} {";
-    String titleBodyFormate = "[{}]\t\t{}";
-    String titleFotterFormate = "[{}]\t\t}";
-    
-    public void setColourFormate(boolean useansicolour) {
-    	if(useansicolour) {
-    		messageFormate = "["+ansi.red("{}")+"]\t"+ansi.blueLight("{}");
-    		titleHeadFormate = "[" + ansi.red("{}") + "]\t" + ansi.blueLight("{}") + ansi.green("  {");
-    		titleBodyFormate =  "["+ansi.red("{}")+"]\t\t"+ansi.green("{}"); // "[{}]\t\t{}";
-    		titleFotterFormate = "[" + ansi.red("{}") + "]\t\t" + ansi.grayLight("}");
-    	}else {
-    		messageFormate = "[{}]\t{}";
-    		titleHeadFormate = "[{}]\t{} {";
-    		titleBodyFormate = "[{}]\t\t{}";
-    		titleFotterFormate = "[{}]\t\t}";
-		}
+    Logger logger;
+    String messageFormat = "[{}]\t{}";
+    String titleHeadFormat = "[{}]\t{} {";
+    String titleBodyFormat = "[{}]\t\t{}";
+    String titleFooterFormat = "[{}]\t\t}";
+    Formatter formatter = new Formatter();
+
+    public void setColourFormat(boolean useAnsiColour) {
+        if (useAnsiColour) {
+            messageFormat = "[" + ansi.red("{}") + "]\t" + ansi.blueLight("{}");
+            titleHeadFormat = "[" + ansi.red("{}") + "]\t" + ansi.blueLight("{}") + ansi.green("  {");
+            titleBodyFormat = "[" + ansi.red("{}") + "]\t\t" + ansi.green("{}"); // "[{}]\t\t{}";
+            titleFooterFormat = "[" + ansi.red("{}") + "]\t\t" + ansi.grayLight("}");
+        } else {
+            messageFormat = "[{}]\t{}";
+            titleHeadFormat = "[{}]\t{} {";
+            titleBodyFormat = "[{}]\t\t{}";
+            titleFooterFormat = "[{}]\t\t}";
+        }
     }
-    
+
     @Override
     public void initDebugger() {
         configProperty();
-        setLOGFILEKEY(LogFileKey.out);
+        lockFileKey(LogFileKey.out);
         logger = LoggerFactory.getLogger("");
         clearProperty();
     }
@@ -45,40 +45,36 @@ public class LogOut implements Debugger {
         logger.info(message);
     }
 
-    Formatter formatter = new Formatter();
     @Override
-    public void debug(String classname, String message, Object... args) {
-        formatter.format(Locale.getDefault(Locale.Category.FORMAT),message,  args);
+    public void debug(String className, String message, Object... args) {
+        formatter.format(Locale.getDefault(Locale.Category.FORMAT), message, args);
         message = formatter.toString();
-        classname = getStringMiddle(classname);
-        debug(classname, message);
+        className = getStringMiddle(className);
+        debug(className, message);
     }
 
     @Override
-    public void debug(String classname, String message) {
-//        message = message.replace("\r","");
-        classname = getStringMiddle(classname);
+    public void debug(String className, String message) {
+        className = getStringMiddle(className);
         String[] lines = message.split("\n");
-        for(String line : lines){
-            logger.info(messageFormate, classname, line);
+        for (String line : lines) {
+            logger.info(messageFormat, className, line);
         }
-
     }
 
     @Override
-    public void debug(String classname, String title, String message) {
-//        debug(classname, title);
-//        debug(classname, message);
-        classname = getStringMiddle(classname);
-        logger.info(titleHeadFormate, classname, title);
+    public void debug(String className, String title, String message) {
+        className = getStringMiddle(className);
+        logger.info(titleHeadFormat, className, title);
         String[] lines = message.split("\n");
-        for(String line : lines)
-                 logger.info(titleBodyFormate, classname, line);
-        logger.info(titleFotterFormate, classname);
+        for (String line : lines) {
+            logger.info(titleBodyFormat, className, line);
+        }
+        logger.info(titleFooterFormat, className);
     }
-    
 
-    String getStringMiddle(String classname){
-        return getStringMiddle(classname, 23);
+
+    String getStringMiddle(String className) {
+        return getStringMiddle(className, 23);
     }
 }

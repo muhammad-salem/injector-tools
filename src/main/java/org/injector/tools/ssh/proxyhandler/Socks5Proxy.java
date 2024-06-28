@@ -1,61 +1,60 @@
 package org.injector.tools.ssh.proxyhandler;
 
+import com.jcraft.jsch.JSchException;
+import org.injector.tools.speed.NetworkMonitorSpeed;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import org.injector.tools.speed.NetworkMonitorSpeed;
-
-import com.jcraft.jsch.JSchException;
-
 public class Socks5Proxy extends HTTPProxy {
-	
-	public Socks5Proxy(String proxyHost, int proxyPort) {
-		super(proxyHost, proxyPort);
-	}
-	
-	public Socks5Proxy(String proxyHost, int proxyPort, NetworkMonitorSpeed monitorSpeed) {
-		super(proxyHost, proxyPort, monitorSpeed);
-	}
-	
-	public Socks5Proxy(String proxyHost, int proxyPort, String proxyUser, String proxyPass,
-			NetworkMonitorSpeed monitorSpeed) {
-		super(proxyHost, proxyPort, proxyUser, proxyPass, monitorSpeed, null);
-	}
-	
-	public Socks5Proxy(String proxyHost, int proxyPort, String proxyUser, String proxyPass,
-			NetworkMonitorSpeed monitorSpeed, String[] headers) {
-		super(proxyHost, proxyPort, proxyUser, proxyPass, monitorSpeed, headers);
-	}
-	
 
-	@Override
-	public Socket openSoccketConnection(String hostname, int port, int timeout) throws IOException, JSchException {
-		Socket socket5;
-		try{
-		      socket5 = new Socket(proxyHost, proxyPort);
-		      
-		      InputStream in  = socket5.getInputStream();
-		      OutputStream out = socket5.getOutputStream();
-		      
-		      if(timeout>0){
-		        socket5.setSoTimeout(timeout);
-		      }
-		      socket5.setTcpNoDelay(true);
+    public Socks5Proxy(String proxyHost, int proxyPort) {
+        super(proxyHost, proxyPort);
+    }
 
-		      byte[] buf=new byte[1024];
-		      int index=0;
+    public Socks5Proxy(String proxyHost, int proxyPort, NetworkMonitorSpeed monitorSpeed) {
+        super(proxyHost, proxyPort, monitorSpeed);
+    }
+
+    public Socks5Proxy(String proxyHost, int proxyPort, String proxyUser, String proxyPass,
+                       NetworkMonitorSpeed monitorSpeed) {
+        super(proxyHost, proxyPort, proxyUser, proxyPass, monitorSpeed, null);
+    }
+
+    public Socks5Proxy(String proxyHost, int proxyPort, String proxyUser, String proxyPass,
+                       NetworkMonitorSpeed monitorSpeed, String[] headers) {
+        super(proxyHost, proxyPort, proxyUser, proxyPass, monitorSpeed, headers);
+    }
+
+
+    @Override
+    public Socket openSoccketConnection(String hostname, int port, int timeout) throws IOException, JSchException {
+        Socket socket5;
+        try {
+            socket5 = new Socket(proxyHost, proxyPort);
+
+            InputStream in = socket5.getInputStream();
+            OutputStream out = socket5.getOutputStream();
+
+            if (timeout > 0) {
+                socket5.setSoTimeout(timeout);
+            }
+            socket5.setTcpNoDelay(true);
+
+            byte[] buf = new byte[1024];
+            int index = 0;
 
 		/*
 		                   +----+----------+----------+
-		                   |VER | NMETHODS | METHODS  |
+		                   |VER | METHODS | METHODS  |
 		                   +----+----------+----------+
 		                   | 1  |    1     | 1 to 255 |
 		                   +----+----------+----------+
 
 		   The VER field is set to X'05' for this version of the protocol.  The
-		   NMETHODS field contains the number of method identifier octets that
+		   METHODS field contains the number of method identifier octets that
 		   appear in the METHODS field.
 
 		   The values currently defined for METHOD are:
@@ -68,13 +67,13 @@ public class Socks5Proxy extends HTTPProxy {
 		          o  X'FF' NO ACCEPTABLE METHODS
 		*/
 
-		      buf[index++]=5;
+            buf[index++] = 5;
 
-		      buf[index++]=2;
-		      buf[index++]=0;           // NO AUTHENTICATION REQUIRED
-		      buf[index++]=2;           // USERNAME/PASSWORD
+            buf[index++] = 2;
+            buf[index++] = 0;           // NO AUTHENTICATION REQUIRED
+            buf[index++] = 2;           // USERNAME/PASSWORD
 
-		      out.write(buf, 0, index);
+            out.write(buf, 0, index);
 
 		/*
 		    The server selects from one of the methods given in METHODS, and
@@ -86,16 +85,16 @@ public class Socks5Proxy extends HTTPProxy {
 		                         | 1  |   1    |
 		                         +----+--------+
 		*/
-		      //in.read(buf, 0, 2);
-		      fill(in, buf, 2);
-		 
-		      boolean check=false;
-		      switch((buf[1])&0xff){
-		        case 0:                // NO AUTHENTICATION REQUIRED
-		          check=true;
-		          break;
-		        case 2:                // USERNAME/PASSWORD
-		          if(proxyUser == null || proxyPass == null)break;
+            //in.read(buf, 0, 2);
+            fill(in, buf, 2);
+
+            boolean check = false;
+            switch ((buf[1]) & 0xff) {
+                case 0:                // NO AUTHENTICATION REQUIRED
+                    check = true;
+                    break;
+                case 2:                // USERNAME/PASSWORD
+                    if (proxyUser == null || proxyPass == null) break;
 
 		/*
 		   Once the SOCKS V5 server has started, and the client has selected the
@@ -116,16 +115,16 @@ public class Socks5Proxy extends HTTPProxy {
 		   PASSWD field that follows. The PASSWD field contains the password
 		   association with the given UNAME.
 		*/
-		          index=0;
-		          buf[index++]=1;
-		          buf[index++]=(byte)(proxyUser.length());
-			  System.arraycopy(str2byte(proxyUser), 0, buf, index, proxyUser.length());
-			  index+=proxyUser.length();
-		          buf[index++]=(byte)(proxyPass.length());
-			  System.arraycopy(str2byte(proxyPass), 0, buf, index, proxyPass.length());
-			  index+=proxyPass.length();
+                    index = 0;
+                    buf[index++] = 1;
+                    buf[index++] = (byte) (proxyUser.length());
+                    System.arraycopy(str2byte(proxyUser), 0, buf, index, proxyUser.length());
+                    index += proxyUser.length();
+                    buf[index++] = (byte) (proxyPass.length());
+                    System.arraycopy(str2byte(proxyPass), 0, buf, index, proxyPass.length());
+                    index += proxyPass.length();
 
-		          out.write(buf, 0, index);
+                    out.write(buf, 0, index);
 
 		/*
 		   The server verifies the supplied UNAME and PASSWD, and sends the
@@ -141,20 +140,21 @@ public class Socks5Proxy extends HTTPProxy {
 		   `failure' (STATUS value other than X'00') status, it MUST close the
 		   connection.
 		*/
-		          //in.read(buf, 0, 2);
-		          fill(in, buf, 2);
-		          if(buf[1]==0)
-		            check=true;
-		          break;
-		        default:
-		      }
+                    //in.read(buf, 0, 2);
+                    fill(in, buf, 2);
+                    if (buf[1] == 0)
+                        check = true;
+                    break;
+                default:
+            }
 
-		      if(!check){
-		        try{ socket5.close(); }
-			catch(Exception eee){
-			}
-		        throw new JSchException("fail in SOCKS5 proxy");
-		      }
+            if (!check) {
+                try {
+                    socket5.close();
+                } catch (Exception eee) {
+                }
+                throw new JSchException("fail in SOCKS5 proxy");
+            }
 
 		/*
 		      The SOCKS request is formed as follows:
@@ -181,22 +181,22 @@ public class Socks5Proxy extends HTTPProxy {
 		      o  DST.PORT desired destination port in network octet
 		         order
 		*/
-		     
-		      index=0;
-		      buf[index++]=5;
-		      buf[index++]=1;       // CONNECT
-		      buf[index++]=0;
 
-		      byte[] hostb=str2byte(hostname);
-		      int len=hostb.length;
-		      buf[index++]=3;      // DOMAINNAME
-		      buf[index++]=(byte)(len);
-		      System.arraycopy(hostb, 0, buf, index, len);
-		      index+=len;
-		      buf[index++]=(byte)(port>>>8);
-		      buf[index++]=(byte)(port&0xff);
+            index = 0;
+            buf[index++] = 5;
+            buf[index++] = 1;       // CONNECT
+            buf[index++] = 0;
 
-		      out.write(buf, 0, index);
+            byte[] hostb = str2byte(hostname);
+            int len = hostb.length;
+            buf[index++] = 3;      // DOMAINNAME
+            buf[index++] = (byte) (len);
+            System.arraycopy(hostb, 0, buf, index, len);
+            index += len;
+            buf[index++] = (byte) (port >>> 8);
+            buf[index++] = (byte) (port & 0xff);
+
+            out.write(buf, 0, index);
 
 		/*
 		   The SOCKS request information is sent by the client as soon as it has
@@ -233,75 +233,74 @@ public class Socks5Proxy extends HTTPProxy {
 		    o  BND.PORT       server bound port in network octet order
 		*/
 
-		      //in.read(buf, 0, 4);
-		      fill(in, buf, 4);
+            //in.read(buf, 0, 4);
+            fill(in, buf, 4);
 
-		      if(buf[1]!=0){
-		        try{ socket5.close(); }
-			catch(Exception eee){
-			}
-		        throw new JSchException("ProxySOCKS5: server returns "+buf[1]);
-		      }
+            if (buf[1] != 0) {
+                try {
+                    socket5.close();
+                } catch (Exception eee) {
+                }
+                throw new JSchException("ProxySOCKS5: server returns " + buf[1]);
+            }
 
-		      switch(buf[3]&0xff){
-		        case 1:
-		          //in.read(buf, 0, 6);
-		          fill(in, buf, 6);
-			  break;
-		        case 3:
-		          //in.read(buf, 0, 1);
-		          fill(in, buf, 1);
-		          //in.read(buf, 0, buf[0]+2);
-		          fill(in, buf, (buf[0]&0xff)+2);
-			  break;
-		        case 4:
-		          //in.read(buf, 0, 18);
-		          fill(in, buf, 18);
-		          break;
-		        default:
-		      }
-		    }
-		    catch(RuntimeException e){
-		      throw e;
-		    }
-		    catch(Exception e){
-		      try{ if(socket!=null)socket.close(); }
-		      catch(Exception eee){
-		      }
-		      String message="ProxySOCKS5: "+e.toString();
-		      if(e instanceof Throwable)
-		        throw new JSchException(message, (Throwable)e);
-		      throw new JSchException(message);
-		    }
-		return socket5;
-	}
-	
-	
-	protected byte[] str2byte(String str, String encoding){
-	    if(str==null) 
-	      return null;
-	    try{ return str.getBytes(encoding); }
-	    catch(java.io.UnsupportedEncodingException e){
-	      return str.getBytes();
-	    }
-	  }
+            switch (buf[3] & 0xff) {
+                case 1:
+                    //in.read(buf, 0, 6);
+                    fill(in, buf, 6);
+                    break;
+                case 3:
+                    //in.read(buf, 0, 1);
+                    fill(in, buf, 1);
+                    //in.read(buf, 0, buf[0]+2);
+                    fill(in, buf, (buf[0] & 0xff) + 2);
+                    break;
+                case 4:
+                    //in.read(buf, 0, 18);
+                    fill(in, buf, 18);
+                    break;
+                default:
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            try {
+                if (socket != null) socket.close();
+            } catch (Exception eee) {
+            }
+            String message = "ProxySOCKS5: " + e;
+            if (e instanceof Throwable)
+                throw new JSchException(message, e);
+            throw new JSchException(message);
+        }
+        return socket5;
+    }
 
-	protected byte[] str2byte(String str){
-	    return str2byte(str, "UTF-8");
-	  }
-	
-	protected void fill(InputStream in, byte[] buf, int len) throws JSchException, IOException{
-	    int s=0;
-	    while(s<len){
-	      int i=in.read(buf, s, len-s);
-	      if(i<=0){
-	        throw new JSchException("ProxySOCKS5: stream is closed");
-	      }
-	      s+=i;
-	    }
-	  }
-	
 
-	
+    protected byte[] str2byte(String str, String encoding) {
+        if (str == null)
+            return null;
+        try {
+            return str.getBytes(encoding);
+        } catch (java.io.UnsupportedEncodingException e) {
+            return str.getBytes();
+        }
+    }
+
+    protected byte[] str2byte(String str) {
+        return str2byte(str, "UTF-8");
+    }
+
+    protected void fill(InputStream in, byte[] buf, int len) throws JSchException, IOException {
+        int s = 0;
+        while (s < len) {
+            int i = in.read(buf, s, len - s);
+            if (i <= 0) {
+                throw new JSchException("ProxySOCKS5: stream is closed");
+            }
+            s += i;
+        }
+    }
+
 
 }

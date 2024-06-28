@@ -1,11 +1,6 @@
 package org.injector.tools.ssh.trilead;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.security.KeyPair;
-import java.security.SecureRandom;
-
+import com.trilead.ssh2.*;
 import org.injector.tools.config.SSHConfig;
 import org.injector.tools.config.type.SSHProxyType;
 import org.injector.tools.event.EventHandler;
@@ -15,34 +10,24 @@ import org.injector.tools.ssh.proxyhandler.DirectProxy;
 import org.injector.tools.ssh.proxyhandler.ProxySocket;
 import org.terminal.ansi.Ansi;
 
-import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.ConnectionInfo;
-import com.trilead.ssh2.ConnectionMonitor;
-import com.trilead.ssh2.DHGexParameters;
-import com.trilead.ssh2.DebugLogger;
-import com.trilead.ssh2.DynamicPortForwarder;
-import com.trilead.ssh2.InteractiveCallback;
-import com.trilead.ssh2.LocalPortForwarder;
-import com.trilead.ssh2.LocalStreamForwarder;
-import com.trilead.ssh2.ProxyData;
-import com.trilead.ssh2.SCPClient;
-import com.trilead.ssh2.ServerHostKeyVerifier;
-import com.trilead.ssh2.Session;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.security.KeyPair;
+import java.security.SecureRandom;
 
-public class SSHForwardClient implements EventHandler{
+public class SSHForwardClient implements EventHandler {
 
 
+    /*******************************************************/
 
+    protected SSHConfig sshConfig;
 
-/*******************************************************/
+    protected ProxySocket proxyData;
+    protected TerminalNetworkMonitor monitorSpeed;
 
-	protected SSHConfig sshConfig;
-
-	protected ProxySocket proxyData;
-	protected TerminalNetworkMonitor monitorSpeed;
-
-	protected Connection connection ;
-	protected DynamicPortForwarder dynamicPortForwarder;
+    protected Connection connection;
+    protected DynamicPortForwarder dynamicPortForwarder;
 
 //	protected StateEvent stateEvent = new StateEvent();
 
@@ -50,89 +35,43 @@ public class SSHForwardClient implements EventHandler{
 //		super();
 //		this.monitorSpeed = monitorSpeed;
 //	}
+    Thread thread;
 
-	
-	public SSHForwardClient(SSHConfig sshConfig) {
-		this(sshConfig, new TerminalNetworkMonitor());
-	}
-	public SSHForwardClient(SSHConfig sshConfig,TerminalNetworkMonitor monitorSpeed) {
-		this.sshConfig = sshConfig;
-		this.monitorSpeed = monitorSpeed;
-		initSSHClient();
-	}
-	
-
-	public SSHForwardClient(
-						String remoteHost,
-						int remotePort,
-						String remoteUser,
-						String remotePassword,
-						String proxyHost,
-						int proxyPort,
-						int localSocksPort,
-						boolean isDebuggable,
-						boolean useCompression,
-						ProxySocket proxyData,
-						SSHProxyType howToConnect,
-						TerminalNetworkMonitor monitorSpeed)
-	{
-		this.proxyData = proxyData;
-		this.monitorSpeed = monitorSpeed;
-		sshConfig = new SSHConfig(
-				remoteHost,remotePort,remoteUser,remotePassword,
-				proxyHost,proxyPort,localSocksPort,howToConnect,isDebuggable,useCompression);
-		initSSHClient();
-	}
-
-	/*****************************************************/
-
-
-	public void reStart(){
-	    initSSHClient();
-	    System.gc();
-        start();
+    public SSHForwardClient(SSHConfig sshConfig) {
+        this(sshConfig, new TerminalNetworkMonitor());
     }
 
 
+    public SSHForwardClient(SSHConfig sshConfig, TerminalNetworkMonitor monitorSpeed) {
+        this.sshConfig = sshConfig;
+        this.monitorSpeed = monitorSpeed;
+        initSSHClient();
+    }
 
-	public void initSSHClient() {
+    public SSHForwardClient(
+            String remoteHost,
+            int remotePort,
+            String remoteUser,
+            String remotePassword,
+            String proxyHost,
+            int proxyPort,
+            int localSocksPort,
+            boolean isDebuggable,
+            boolean useCompression,
+            ProxySocket proxyData,
+            SSHProxyType howToConnect,
+            TerminalNetworkMonitor monitorSpeed) {
+        this.proxyData = proxyData;
+        this.monitorSpeed = monitorSpeed;
+        sshConfig = new SSHConfig(
+                remoteHost, remotePort, remoteUser, remotePassword,
+                proxyHost, proxyPort, localSocksPort, howToConnect, isDebuggable, useCompression);
+        initSSHClient();
+    }
 
-		connection = new Connection(sshConfig.getHost(), sshConfig.getPort());
-		if(monitorSpeed == null) monitorSpeed = new TerminalNetworkMonitor();
-
-//		initProxyData();
-		proxyData = sshConfig.getSSHProxyType().getProxy(sshConfig, monitorSpeed);
-		connection.setProxyData(proxyData);
-		
-
-//		connection.addConnectionMonitor(new ConnectionMonitor() {
-//			@Override
-//			public void connectionLost(Throwable reason) {
-//				connectionMonitorLost(reason);
-//			}
-//		});
-
-
-		connection.addConnectionMonitor(this::connectionMonitorLost);
-
-		connection.enableDebugging(sshConfig.isDebuggable(), new DebugLogger() {
-			@Override
-			public void log(int level, String className, String message) {
-				Logger.debug(className, message);
-			}
-		});
-
-
-		/**** add internal listener ****/
-
-		//
-		
-
-		//  restart thread
-//        addStopListener(this::closeDynamicPortForwarder);
-//		  addErrorListener(connection::close);
-
-	}
+    public static String[] getAvailableCiphers() {
+        return Connection.getAvailableCiphers();
+    }
 
 //	private void initProxyData() {
 //		if(proxyData == null) {
@@ -176,32 +115,86 @@ public class SSHForwardClient implements EventHandler{
 //		
 //	}
 
-	Thread thread;
-    public void start(){
-	    if (thread == null){
-	        thread = new Thread(this::run, "ssh");
-	        thread.start();
-        }else if (thread.isAlive()){
-	        try {
+    public static String[] getAvailableMACs() {
+        return Connection.getAvailableMACs();
+    }
+
+    public static String[] getAvailableServerHostKeyAlgorithms() {
+        return Connection.getAvailableServerHostKeyAlgorithms();
+    }
+
+    /*****************************************************/
+
+
+    public void reStart() {
+        initSSHClient();
+        System.gc();
+        start();
+    }
+
+    public void initSSHClient() {
+
+        connection = new Connection(sshConfig.getHost(), sshConfig.getPort());
+        if (monitorSpeed == null) monitorSpeed = new TerminalNetworkMonitor();
+
+//		initProxyData();
+        proxyData = sshConfig.getSshProxyType().getProxy(sshConfig, monitorSpeed);
+        connection.setProxyData(proxyData);
+
+
+//		connection.addConnectionMonitor(new ConnectionMonitor() {
+//			@Override
+//			public void connectionLost(Throwable reason) {
+//				connectionMonitorLost(reason);
+//			}
+//		});
+
+
+        connection.addConnectionMonitor(this::connectionMonitorLost);
+
+        connection.enableDebugging(sshConfig.isDebuggable(), new DebugLogger() {
+            @Override
+            public void log(int level, String className, String message) {
+                Logger.debug(className, message);
+            }
+        });
+
+
+        /**** add internal listener ****/
+
+        //
+
+
+        //  restart thread
+//        addStopListener(this::closeDynamicPortForwarder);
+//		  addErrorListener(connection::close);
+
+    }
+
+    public void start() {
+        if (thread == null) {
+            thread = new Thread(this::run, "ssh");
+            thread.start();
+        } else if (thread.isAlive()) {
+            try {
                 thread.join(250);
                 thread = new Thread(this::reStart, "ssh");
                 thread.start();
-            }catch (InterruptedException e){
-	            Logger.debug(getClass(), e.getMessage());
-	            e.printStackTrace();
+            } catch (InterruptedException e) {
+                Logger.debug(getClass(), e.getMessage());
+                e.fillInStackTrace();
             }
-        }else thread.start();
+        } else thread.start();
     }
 
-    public void stop(){
-        if (thread == null){
-            return;
-        }else if (thread.isAlive()){
+    public void stop() {
+        if (thread == null) {
+        } else if (thread.isAlive()) {
             try {
                 thread.join(250);
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 Logger.debug(getClass(), e.getMessage());
-                e.printStackTrace();
+                e.fillInStackTrace();
             }
         }
     }
@@ -212,9 +205,9 @@ public class SSHForwardClient implements EventHandler{
 
         try {
             if (sshConfig.isUseCompression())
-                Logger.debug(getClass(),"Enable Compression.");
+                Logger.debug(getClass(), "Enable Compression.");
             connection.setCompression(sshConfig.isUseCompression());
-            Logger.debug(getClass(),"Start connect.");
+            Logger.debug(getClass(), "Start connect.");
 
             /*ServerHostKeyVerifier v = new ServerHostKeyVerifier() {
                 @Override
@@ -223,42 +216,40 @@ public class SSHForwardClient implements EventHandler{
                 }
             } ;*/
 
-            ConnectionInfo info =  connection.connect(); //null, 0, sshConfig.getKexTimeout());
+            ConnectionInfo info = connection.connect(); //null, 0, sshConfig.getKexTimeout());
 
-            Logger.debug(getClass(),"Connected to host "+ connection.getHostname());
+            Logger.debug(getClass(), "Connected to host " + connection.getHostname());
             Logger.debug(getClass(), "Key Exchange Counter:\t" + info.keyExchangeCounter);
-            Logger.debug(getClass(),"Algorithm:\t" + info.serverToClientMACAlgorithm
-                    +"\t " + info.clientToServerCryptoAlgorithm);
-            Logger.debug(getClass(),"keyExchangeAlgorithm:\t" + info.keyExchangeAlgorithm);
+            Logger.debug(getClass(), "Algorithm:\t" + info.serverToClientMACAlgorithm
+                    + "\t " + info.clientToServerCryptoAlgorithm);
+            Logger.debug(getClass(), "keyExchangeAlgorithm:\t" + info.keyExchangeAlgorithm);
 
             boolean passOK = connection.authenticateWithPassword(sshConfig.getUser(), sshConfig.getPassword());
             if (passOK) {
-                Logger.debug(getClass(),"Finish authenticate With Password.");
-            }
-            else {
-                Logger.debug(getClass(),"Connection is " + Ansi.Red +" not authenticated." + Ansi.Reset);
+                Logger.debug(getClass(), "Finish authenticate With Password.");
+            } else {
+                Logger.debug(getClass(), "Connection is " + Ansi.Red + " not authenticated." + Ansi.Reset);
                 fireErrorListener();
                 fireCompleteListener();
                 return;
             }
-            Logger.debug(getClass(),"Start Dynamic forward ...  ..   .");
+            Logger.debug(getClass(), "Start Dynamic forward ...  ..   .");
 
             dynamicPortForwarder = connection.createDynamicPortForwarder(sshConfig.getLocalSocksPort());
-            Logger.debug(getClass(),"Connected ...  ..   .");
-            Logger.debug(getClass(),"Start SOCKS5 Server at port " + sshConfig.getLocalSocksPort());
+            Logger.debug(getClass(), "Connected ...  ..   .");
+            Logger.debug(getClass(), "Start SOCKS5 Server at port " + sshConfig.getLocalSocksPort());
 //			connection.enableDebugging(false, null);
 
 
-            if (passOK){
-            	fireSuccessListener();
-            	fireCompleteListener();
+            if (passOK) {
+                fireSuccessListener();
+                fireCompleteListener();
             }
-
 
 
         } catch (IOException e) {
             Logger.debug(getClass(), e.getMessage());
-            e.printStackTrace();
+            e.fillInStackTrace();
 
             fireErrorListener();
 //            fireStopListener();
@@ -266,14 +257,14 @@ public class SSHForwardClient implements EventHandler{
 
     }
 
-	private void connectionMonitorLost(Throwable reason) {
-		Logger.debug(getClass(),reason.getMessage());
+    private void connectionMonitorLost(Throwable reason) {
+        Logger.debug(getClass(), reason.getMessage());
 
-		if (dynamicPortForwarder != null){
+        if (dynamicPortForwarder != null) {
             try {
                 dynamicPortForwarder.close();
-                Logger.debug(getClass(),"Close Dynamic Port Forwarder");
-            }catch (Exception e ){
+                Logger.debug(getClass(), "Close Dynamic Port Forwarder");
+            } catch (Exception e) {
                 Logger.debug(getClass(), e.getMessage());
             }
         }
@@ -287,75 +278,44 @@ public class SSHForwardClient implements EventHandler{
 //		}
 
 
-	}
-	
-	
-	/**
-	 * @return the portForwarder
-	 */
-	public DynamicPortForwarder getDynamicPortForwarder() {
-		return dynamicPortForwarder;
-	}
+    }
 
+    /**
+     * @return the portForwarder
+     */
+    public DynamicPortForwarder getDynamicPortForwarder() {
+        return dynamicPortForwarder;
+    }
 
-	/**
-	 * @param portForwarder the portForwarder to set
-	 */
-	public void setDynamicPortForwarder(DynamicPortForwarder portForwarder) {
-		this.dynamicPortForwarder = portForwarder;
-	}
+    /**
+     * @param portForwarder the portForwarder to set
+     */
+    public void setDynamicPortForwarder(DynamicPortForwarder portForwarder) {
+        this.dynamicPortForwarder = portForwarder;
+    }
 
+    /**
+     * @return the connection
+     */
+    public Connection getConnection() {
+        return connection;
+    }
 
-	/**
-	 * @return the connection
-	 */
-	public Connection getConnection() {
-		return connection;
-	}
+    /**
+     * @param connection the connection to set
+     */
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
 
-
-	/**
-	 * @param connection the connection to set
-	 */
-	public void setConnection(Connection connection) {
-		this.connection = connection;
-	}
-
-
-	/**
-	 * @return the proxyData if {@code null} will use direct connection to ssh remote host
-	 */
-	public ProxySocket getProxySocket() {
-		if (proxyData != null)
-		return proxyData;
-		return new DirectProxy(sshConfig.getHost(), sshConfig.getPort(), monitorSpeed);
-	}
-
-
-	/**
-	 * @param proxyData the proxyData to set
-	 */
-	public void setProxySocket(ProxySocket ProxySocket) {
-		this.proxyData = ProxySocket;
-	}
-
-
-	/**
-	 * @return the monitorSpeed
-	 */
-	public TerminalNetworkMonitor getNetworkMonitorSpeed() {
-		return monitorSpeed;
-	}
-
-
-	/**
-	 * @param monitorSpeed the monitorSpeed to set
-	 */
-	public void setNetworkMonitorSpeed(TerminalNetworkMonitor monitorSpeed) {
-		this.monitorSpeed = monitorSpeed;
-	}
-
-
+    /**
+     * @return the proxyData if {@code null} will use direct connection to ssh remote host
+     */
+    public ProxySocket getProxySocket() {
+        if (proxyData != null)
+            return proxyData;
+        return new DirectProxy(sshConfig.getHost(), sshConfig.getPort(), monitorSpeed);
+    }
 
 
 //	public void addStateListener(StateListener listener) {
@@ -400,16 +360,25 @@ public class SSHForwardClient implements EventHandler{
 //		stateEvent.fireSuccessListener();
 //	}
 
-    public static String[] getAvailableCiphers() {
-        return Connection.getAvailableCiphers();
+    /**
+     * @param proxyData the proxyData to set
+     */
+    public void setProxySocket(ProxySocket ProxySocket) {
+        this.proxyData = ProxySocket;
     }
 
-    public static String[] getAvailableMACs() {
-        return Connection.getAvailableMACs();
+    /**
+     * @return the monitorSpeed
+     */
+    public TerminalNetworkMonitor getNetworkMonitorSpeed() {
+        return monitorSpeed;
     }
 
-    public static String[] getAvailableServerHostKeyAlgorithms() {
-        return Connection.getAvailableServerHostKeyAlgorithms();
+    /**
+     * @param monitorSpeed the monitorSpeed to set
+     */
+    public void setNetworkMonitorSpeed(TerminalNetworkMonitor monitorSpeed) {
+        this.monitorSpeed = monitorSpeed;
     }
 
     public boolean authenticateWithKeyboardInteractive(String user, InteractiveCallback cb) throws IOException {
@@ -449,19 +418,13 @@ public class SSHForwardClient implements EventHandler{
     }
 
 
-
-
     public void close() {
         connection.close();
     }
 
-    public void closeDynamicPortForwarder(){
-        if (dynamicPortForwarder != null){
-            try {
-                dynamicPortForwarder.close();
-            }catch (IOException e){
-                Logger.debug(getClass(), "Error: Close Dynamic Port Forwarder");
-            }
+    public void closeDynamicPortForwarder() {
+        if (dynamicPortForwarder != null) {
+            dynamicPortForwarder.close();
         }
     }
 

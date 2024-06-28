@@ -1,16 +1,16 @@
 package org.injector.tools.log.impl;
 
-import java.io.FileNotFoundException;
-
 import org.slf4j.LoggerFactory;
 
-public class LogErr extends LogOutRunable{
+import java.io.FileNotFoundException;
 
-    public void initDebugger(String filename){
+public class LogErr extends LogOutRunable {
+
+    public void initDebugger(String filename) {
         try {
             System.setErr(new LogPrintStream(filename));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            e.fillInStackTrace();
         }
         initDebugger();
     }
@@ -18,9 +18,9 @@ public class LogErr extends LogOutRunable{
     @Override
     public void initDebugger() {
         configProperty();
-        setLOGFILEKEY(LogFileKey.err);
+        lockFileKey(LogFileKey.err);
         logger = LoggerFactory.getLogger(""/*ansi.Magenta("HTTP1o1")*/);
-        clearProperty();        
+        clearProperty();
         setColourFormate(true);
     }
 }
