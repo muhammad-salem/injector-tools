@@ -30,7 +30,7 @@ public class Socks5Proxy extends HTTPProxy {
 
 
     @Override
-    public Socket openSoccketConnection(String hostname, int port, int timeout) throws IOException, JSchException {
+    public Socket openSocketConnection(String hostname, int port, int timeout) throws IOException, JSchException {
         Socket socket5;
         try {
             socket5 = new Socket(proxyHost, proxyPort);

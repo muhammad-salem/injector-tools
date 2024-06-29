@@ -40,7 +40,7 @@ public abstract class ProxySocket implements Proxy, ProxyData {
         return socket;
     }
 
-    public abstract Socket openSoccketConnection(String hostname, int port, int timeout) throws IOException, JSchException;
+    public abstract Socket openSocketConnection(String hostname, int port, int timeout) throws IOException, JSchException;
 
     @Override
     public void connect(SocketFactory socket_factory, String host, int port, int timeout) {
@@ -48,7 +48,7 @@ public abstract class ProxySocket implements Proxy, ProxyData {
             Socket directSocket;
 //			if (socket_factory == null) {
             Logger.debug(getClass(), "create proxy socket");
-            directSocket = openSoccketConnection(host, port, timeout);
+            directSocket = openSocketConnection(host, port, timeout);
             socket = new MonitorSocketWrapper(directSocket, monitorSpeed);
             in = socket.getInputStream();
             out = socket.getOutputStream();

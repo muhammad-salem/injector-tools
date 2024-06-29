@@ -23,7 +23,7 @@ public class DirectInjectProxy extends ProxySocket {
     }
 
     @Override
-    public Socket openSoccketConnection(String hostname, int port, int timeout) throws IOException {
+    public Socket openSocketConnection(String hostname, int port, int timeout) throws IOException {
         //setup proxywrapper socket
         Socket proxy = new Socket(hostname, port);
         proxy.setSoTimeout(timeout);

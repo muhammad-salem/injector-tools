@@ -17,7 +17,7 @@ public class DirectProxy extends ProxySocket {
     }
 
     @Override
-    public Socket openSoccketConnection(String hostname, int port, int timeout) throws IOException {
+    public Socket openSocketConnection(String hostname, int port, int timeout) throws IOException {
         return new Socket(hostname, port);
     }
 

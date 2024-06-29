@@ -58,7 +58,7 @@ public class HTTPProxy extends ProxySocket {
     }
 
     @Override
-    public Socket openSoccketConnection(String hostname, int port, int connectTimeout) throws IOException, JSchException {
+    public Socket openSocketConnection(String hostname, int port, int connectTimeout) throws IOException, JSchException {
         Socket sock = new Socket();
 
         InetAddress addr = InetAddress.getByName(proxyHost);
