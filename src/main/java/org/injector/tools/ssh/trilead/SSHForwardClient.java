@@ -67,7 +67,7 @@ public class SSHForwardClient implements EventHandler {
         sshConfig = new SSHConfig(
                 remoteHost, remotePort, remoteUser, remotePassword,
                 proxyHost, proxyPort, localSocksPort, howToConnect,
-                isDebuugable, useCompression, serverNameIndication);
+                isDebuggable, useCompression, serverNameIndication);
         initSSHClient();
     }
 

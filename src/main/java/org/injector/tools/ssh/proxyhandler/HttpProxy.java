@@ -2,7 +2,7 @@ package org.injector.tools.ssh.proxyhandler;
 
 import com.jcraft.jsch.JSchException;
 import com.trilead.ssh2.HTTPProxyException;
-import com.trilead.ssh2.crypto.Base64;
+import lombok.Getter;
 import org.injector.tools.log.Logger;
 import org.injector.tools.speed.NetworkMonitorSpeed;
 
@@ -13,44 +13,35 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Base64;
 
-public class HTTPProxy extends ProxySocket {
+@Getter
+public class HttpProxy extends ProxySocket {
 
     protected String proxyUser;
     protected String proxyPass;
     protected String[] headers;
 
-    public HTTPProxy(String proxyHost, int proxyPort) {
+    public HttpProxy(String proxyHost, int proxyPort) {
         this(proxyHost, proxyPort, null, null, null);
     }
 
-    public HTTPProxy(String proxyHost, int proxyPort, NetworkMonitorSpeed monitorSpeed) {
+    public HttpProxy(String proxyHost, int proxyPort, NetworkMonitorSpeed monitorSpeed) {
         this(proxyHost, proxyPort, null, null, monitorSpeed);
     }
 
-    public HTTPProxy(String proxyHost, int proxyPort, String proxyUser, String proxyPass,
+    public HttpProxy(String proxyHost, int proxyPort, String proxyUser, String proxyPass,
                      NetworkMonitorSpeed monitorSpeed) {
         this(proxyHost, proxyPort, proxyUser, proxyPass, monitorSpeed, null);
     }
 
-    public HTTPProxy(String proxyHost, int proxyPort, String proxyUser, String proxyPass,
+    public HttpProxy(String proxyHost, int proxyPort, String proxyUser, String proxyPass,
                      NetworkMonitorSpeed monitorSpeed, String[] headers) {
         super(proxyHost, proxyPort, monitorSpeed);
         this.proxyUser = proxyUser;
         this.proxyPass = proxyPass;
         this.headers = headers;
-    }
-
-    public String getProxyUser() {
-        return proxyUser;
-    }
-
-    public String getProxyPass() {
-        return proxyPass;
-    }
-
-    public String[] getHeaders() {
-        return headers;
     }
 
     public void setHeaders(String[] headers) {
@@ -78,9 +69,9 @@ public class HTTPProxy extends ProxySocket {
 
         if ((proxyUser != null) && (proxyPass != null)) {
             String credentials = proxyUser + ":" + proxyPass;
-            char[] encoded = Base64.encode(credentials.getBytes(StandardCharsets.ISO_8859_1));
+            byte[] encoded = Base64.getEncoder().encode(credentials.getBytes(StandardCharsets.ISO_8859_1));
             sb.append("Proxy-Authorization: Basic ");
-            sb.append(encoded);
+            sb.append(Arrays.toString(encoded));
             sb.append("\r\n");
         }
 
@@ -124,11 +115,11 @@ public class HTTPProxy extends ProxySocket {
         try {
             errorCode = Integer.parseInt(httpReponse.substring(9, 12));
         } catch (NumberFormatException ignore) {
-            throw new IOException("The proxywrapper did not send back a valid HTTP response.");
+            throw new IOException("The proxy wrapper did not send back a valid HTTP response.");
         }
 
         if ((errorCode < 0) || (errorCode > 999))
-            throw new IOException("The proxywrapper did not send back a valid HTTP response.");
+            throw new IOException("The proxy wrapper did not send back a valid HTTP response.");
 
         if (errorCode != 200) {
             throw new HTTPProxyException(httpReponse.substring(13), errorCode);
@@ -136,11 +127,9 @@ public class HTTPProxy extends ProxySocket {
 
         /* OK, read until empty line */
 
-        while (true) {
+        do {
             len = readLineRN(in, buffer);
-            if (len == 0)
-                break;
-        }
+        } while (len != 0);
         return sock;
     }
 

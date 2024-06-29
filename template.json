@@ -1,0 +1,35 @@
+{
+  "sshConfig": {
+    "host": "",
+    "port": 443,
+    "user": "",
+    "password": "",
+    "localSocksPort": 1080,
+    "localHttpPort": 8123,
+    "useCompression": true,
+    "isDebuggable": true,
+    "timeout": 4500,
+    "sshProxyType": "HTTP_PROXY",
+    "proxyHost": "127.0.0.1",
+    "proxyPort": 8989,
+    "serverNameIndication": "example.com",
+    "payload": "[raw][crlf][crlf]"
+  },
+  "localProxyConfig": {
+    "localProxyType": "TRANSPARENT",
+    "localProxyPort": 8989,
+    "hostProxyConfig": {
+      "proxyType": "HTTP",
+      "proxyHost": "",
+      "proxyPort": -1,
+      "proxyUser": "",
+      "proxyPassword": "",
+      "payload": "[raw][crlf][crlf]"
+    }
+  },
+  "debuggable": true,
+  "_SSHProxyType": "[Auto, NO_PROXY, DIRECT, HTTP_PROXY, SOCKS_PROXY, DIRECT_INJECT, INJECT_PROXY_HTTP, SNI_INJECTION, STOP, Other]",
+  "_LocalProxyType": "[STOP, TRANSPARENT, HTTP_RELAY, HTTP_CONNECT]",
+  "_HostProxyType": "[HTTP, HTTPS, SOCKS, DIRECT, DIRECT_CLOSE, PROXY_CLOSE]",
+  "_version": "0.4.0-dev"
+}

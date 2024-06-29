@@ -46,7 +46,6 @@ public class Lunch {
 
         } else {
             ManageConfig.readConfig(R.ConfigJsonFile);
-            ManageConfig.setPolipoDir(R.PolipoConfigFile, R.PolipoCache);
         }
     }
 
@@ -67,7 +66,7 @@ public class Lunch {
         System.out.println("=============================== HELP ==============================");
         System.out.println(" -h			show help message");
         System.out.println(" -v			show app version");
-        System.out.println(" [-t <filename>]	create json templete configuration file");
+        System.out.println(" [-t <filename>]	create json template configuration file");
         System.out.println(" [<filename>]		load config file");
         System.out.println("   filename:		the name of the file to be load");
         System.out.println("  			if no config file loaded will use default config (cache dir)");

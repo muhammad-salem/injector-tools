@@ -7,16 +7,14 @@ import java.util.Map;
 
 public class FormatConfig {
 
-    public static String ConfigTotext(Config config) {
+    public static String ConfigToText(Config config) {
         FormatConfig formatConfig = new FormatConfig();
         String temp = formatConfig.getStringMiddle(" Config ", 67, '=') + "\n";
         temp += formatConfig.getLine("Debug", config.getDebuggable() + "");
-        temp += formatConfig.getLine("Use IPtables", config.getUseIpTable() + "");
 
         temp += formatConfig.toString(config.getLocalProxyConfig());
         temp += formatConfig.toString(config.getHostProxyConfig());
         temp += formatConfig.toString(config.getSshConfig());
-        temp += formatConfig.toString(config.getPolipoConfig());
 
         temp += "**\n" + config.getVersion() + " 2017-2018 © \n";
         temp += formatConfig.getStringMiddle("========", 67, '=') + "\n";
@@ -30,13 +28,11 @@ public class FormatConfig {
 
         Map<String, String> map = new LinkedHashMap<>();
         map.put("Debug", config.getDebuggable() + "");
-        map.put("Use Ip Table", config.getUseIpTable() + "");
         temp += formatConfig.getLine(map);
         map.clear();
         temp += formatConfig.toStringLimit(config.getLocalProxyConfig());
         temp += formatConfig.toStringLimit(config.getHostProxyConfig());
         temp += formatConfig.toStringLimit(config.getSshConfig());
-        temp += formatConfig.toStringLimit(config.getPolipoConfig());
 
         temp += "**\n**" + formatConfig.getStringMiddle("        ", 39, ' ');
         temp += "   " + config.getVersion() + " 2017-2018 © \n";
@@ -160,36 +156,6 @@ public class FormatConfig {
         return temp;
     }
 
-    /**
-     * private String socksProxyType = "socks5"; private String socksParentProxy =
-     * "127.0.0.1:1080";// localHost+":"+sshLocalSocksPort; private String
-     * dnsNameServer = "8.8.8.8"; private String diskCacheRoot = ""; // null -> no
-     * cache private String allowedPorts; private String tunnelAllowedPorts =
-     * "1-65535";
-     *
-     * @param polipoConfig
-     * @return
-     */
-
-    public String toString(PolipoConfig polipoConfig) {
-        if (polipoConfig == null)
-            return "";
-
-        String temp = "";
-        temp += getStringMidlle67(" Polipo Config ") + "\n";
-        temp += getLine("Allow to use Polipo", polipoConfig.isUsePolipo() + "");
-        temp += getLine("Local Http(s) Port", polipoConfig.getProxyPort() + "");
-        temp += getLine("Proxy Address", polipoConfig.getProxyAddress());
-
-        temp += getLine("Socks Proxy Type", polipoConfig.getSocksProxyType());
-        temp += getLine("Socks Parent Proxy", polipoConfig.getSocksParentProxy());
-        temp += getLine("Dns Name Server", polipoConfig.getDnsNameServer());
-        temp += getLine("Disk Cache Root", polipoConfig.getDiskCacheRoot());
-        temp += getLine("Allowed Ports", polipoConfig.getAllowedPorts());
-        temp += getLine("Tunnel Allowed Ports", polipoConfig.getTunnelAllowedPorts());
-        return temp;
-    }
-
     public String toStringLimit(HostProxyConfig proxyConfig) {
         if (proxyConfig == null)
             return "";
@@ -250,37 +216,6 @@ public class FormatConfig {
         temp += getLine(map);
         map.clear();
         temp += getLineWidth_80("Direct Payload", sshConfig.getPayload());
-        return temp;
-    }
-
-    public String toStringLimit(PolipoConfig polipoConfig) {
-        if (polipoConfig == null)
-            return "";
-        String temp = getStringMidlle67(" Polipo Config ") + "\n";
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("Allow to use Polipo", polipoConfig.isUsePolipo() + "");
-        temp += getLine(map);
-        map.clear();
-
-        map.put("Proxy Address", polipoConfig.getProxyAddress());
-        map.put("Local Http(s) Port", polipoConfig.getProxyPort() + "");
-        temp += getLine(map);
-        map.clear();
-
-        map.put("Socks Proxy Type", polipoConfig.getSocksProxyType());
-        map.put("Socks Parent Proxy", polipoConfig.getSocksParentProxy());
-        temp += getLine(map);
-        map.clear();
-
-        map.put("Dns Name Server", polipoConfig.getDnsNameServer());
-        map.put("Disk Cache Root", polipoConfig.getDiskCacheRoot());
-        temp += getLine(map);
-        map.clear();
-
-        map.put("Allowed Ports", polipoConfig.getAllowedPorts());
-        map.put("Tunnel Allowed Ports", polipoConfig.getTunnelAllowedPorts());
-        temp += getLine(map);
-        map.clear();
         return temp;
     }
 

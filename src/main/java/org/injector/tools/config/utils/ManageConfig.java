@@ -48,10 +48,6 @@ public class ManageConfig {
         return getAppConfig().getSshConfig();
     }
 
-    public static PolipoConfig getPolipoConfig() {
-        return getAppConfig().getPolipoConfig();
-    }
-
     public static void updateLocalProxyConfig(LocalProxyConfig localProxyConfig) {
         getAppConfig().setLocalProxyConfig(localProxyConfig);
     }
@@ -62,10 +58,6 @@ public class ManageConfig {
 
     public static void updateSshConfig(SSHConfig sshConfig) {
         getAppConfig().setSshConfig(sshConfig);
-    }
-
-    public static void updatePolipoConfig(PolipoConfig polipoConfig) {
-        getAppConfig().setPolipoConfig(polipoConfig);
     }
 
     public static void readConfig(String filename) {
@@ -79,17 +71,12 @@ public class ManageConfig {
         ManageConfig.setAppConfig(config);
     }
 
-    public static void setPolipoDir(String polipoConfigFile, String polipoCache) {
-        getPolipoConfig().setPolipoConfigFile(polipoConfigFile);
-        getPolipoConfig().setDiskCacheRoot(polipoCache);
-    }
-
     public static void writeConfig(String filename) {
         Utils.toJsonFile(filename, ManageConfig.getAppConfig());
     }
 
     public static String toFormatConfig() {
-        return FormatConfig.ConfigTotext(getAppConfig());
+        return FormatConfig.ConfigToText(getAppConfig());
     }
 
     public static String formatLimitConfig() {

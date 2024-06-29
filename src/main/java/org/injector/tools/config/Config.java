@@ -14,17 +14,11 @@ import java.util.Arrays;
 public class Config {
     private SSHConfig sshConfig = new SSHConfig();
     private LocalProxyConfig localProxyConfig = new LocalProxyConfig(8989);
-    private PolipoConfig polipoConfig = new PolipoConfig();
 
-    protected Boolean debuggable = false;
-
-    //	protected boolean usePolipo = false;
-    protected Boolean useIpTable = false;
-
-    final String _LocalProxyType = Arrays.toString(LocalProxyType.values());
-    //	 private ProxyConfig proxyConfig = new ProxyConfig();
-    final String _HostProxyType = Arrays.toString(HostProxyType.values());
-    final String _SSHProxyType = Arrays.toString(SSHProxyType.values());
+    protected Boolean debuggable = true;
+    private final String _SSHProxyType = Arrays.toString(SSHProxyType.values());
+    private final String _LocalProxyType = Arrays.toString(LocalProxyType.values());
+    private final String _HostProxyType = Arrays.toString(HostProxyType.values());
     private final String _version = "0.4.0-dev";
 
     public static void CreateJsonTemplate() {
