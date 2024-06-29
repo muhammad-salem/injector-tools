@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.injector</groupId>
     <artifactId>injector-tools</artifactId>
-    <version>0.3.3-dev</version>
+    <version>0.4.0-dev</version>
     <name>HTTP Injector Tools(core)</name>
     <description>
         Create local proxy with the provided payload,
@@ -26,7 +26,6 @@
     </licenses>
 
     <dependencies>
-
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
@@ -52,12 +51,12 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.7</version>
+            <version>2.13.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.9.0</version>
+            <version>2.10.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -69,19 +68,6 @@
             <artifactId>lawnha</artifactId>
             <version>0.2.1</version>
         </dependency>
-
-
-<!--        <dependency>-->
-<!--            <groupId>org.http.openvpn</groupId>-->
-<!--            <artifactId>ovpn3</artifactId>-->
-<!--            <version>1.0.6</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.terminal</groupId>-->
-<!--            <artifactId>ansi</artifactId>-->
-<!--            <version>0.1.95</version>-->
-<!--        </dependency>-->
-
     </dependencies>
 
     <build>
