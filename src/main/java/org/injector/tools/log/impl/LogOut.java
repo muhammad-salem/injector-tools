@@ -18,7 +18,7 @@ public class LogOut implements Debugger {
     String titleFooterFormat = "[{}]\t\t}";
     Formatter formatter = new Formatter();
 
-    public void setColourFormat(boolean useAnsiColour) {
+    public void setColorFormat(boolean useAnsiColour) {
         if (useAnsiColour) {
             messageFormat = "[" + ansi.red("{}") + "]\t" + ansi.blueLight("{}");
             titleHeadFormat = "[" + ansi.red("{}") + "]\t" + ansi.blueLight("{}") + ansi.green("  {");

@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 
-public class LogErr extends LogOutRunable {
+public class LogErr extends LogOutRunnable {
 
     public void initDebugger(String filename) {
         try {
@@ -21,6 +21,6 @@ public class LogErr extends LogOutRunable {
         lockFileKey(LogFileKey.err);
         logger = LoggerFactory.getLogger(""/*ansi.Magenta("HTTP1o1")*/);
         clearProperty();
-        setColourFormate(true);
+        setColorFormat(true);
     }
 }

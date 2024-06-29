@@ -10,31 +10,31 @@ import java.util.Locale;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
-public class LogOutRunable implements Debugger, Runnable {
+public class LogOutRunnable implements Debugger, Runnable {
 
     protected Ansi ansi = new Ansi() {
     };
     protected ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
-    protected String spliter = "::";
+    protected String splitter = "::";
     Logger logger;
-    String messageFormate = "[{}]\t{}";
-    String titleHeadFormate = "[{}]\t{} {";
-    String titleBodyFormate = "[{}]\t\t{}";
-    String titleFotterFormate = "[{}]\t }";
+    String messageFormat = "[{}]\t{}";
+    String titleHeadFormat = "[{}]\t{} {";
+    String titleBodyFormat = "[{}]\t\t{}";
+    String titleFooterFormat = "[{}]\t }";
     Formatter formatter = new Formatter();
     boolean run = true;
 
-    public void setColourFormate(boolean useansicolour) {
-        if (useansicolour) {
-            messageFormate = "[" + ansi.red("{}") + "]\t" + ansi.blueLight("{}");
-            titleHeadFormate = "[" + ansi.red("{}") + "]\t" + ansi.blueLight("{}") + ansi.green("  {");
-            titleBodyFormate = "[" + ansi.red("{}") + "]\t\t" + ansi.green("{}"); // "[{}]\t\t{}";
-            titleFotterFormate = "[" + ansi.red("{}") + "]\t " + ansi.green("}");
+    public void setColorFormat(boolean useAnsiColour) {
+        if (useAnsiColour) {
+            messageFormat = "[" + ansi.red("{}") + "]\t" + ansi.blueLight("{}");
+            titleHeadFormat = "[" + ansi.red("{}") + "]\t" + ansi.blueLight("{}") + ansi.green("  {");
+            titleBodyFormat = "[" + ansi.red("{}") + "]\t\t" + ansi.green("{}"); // "[{}]\t\t{}";
+            titleFooterFormat = "[" + ansi.red("{}") + "]\t " + ansi.green("}");
         } else {
-            messageFormate = "[{}]\t{}";
-            titleHeadFormate = "[{}]\t{} {";
-            titleBodyFormate = "[{}]\t\t{}";
-            titleFotterFormate = "[{}]\t }";
+            messageFormat = "[{}]\t{}";
+            titleHeadFormat = "[{}]\t{} {";
+            titleBodyFormat = "[{}]\t\t{}";
+            titleFooterFormat = "[{}]\t }";
         }
     }
 
@@ -62,12 +62,12 @@ public class LogOutRunable implements Debugger, Runnable {
 
     @Override
     public void debug(String className, String message) {
-        queue.offer(className + spliter + message);
+        queue.offer(className + splitter + message);
     }
 
     @Override
     public void debug(String className, String title, String message) {
-        queue.offer(className + spliter + title + spliter + message);
+        queue.offer(className + splitter + title + splitter + message);
     }
 
     String getStringMiddle(String classname) {
@@ -83,7 +83,7 @@ public class LogOutRunable implements Debugger, Runnable {
         while (run) {
             String logs = queue.poll();
             if (logs != null) {
-                String[] messages = logs.split(spliter);
+                String[] messages = logs.split(splitter);
                 switch (messages.length) {
                     case 1:
                         debugLog(messages[0]);
@@ -117,17 +117,17 @@ public class LogOutRunable implements Debugger, Runnable {
         classname = getStringMiddle(classname);
         String[] lines = message.split("\n");
         for (String line : lines) {
-            logger.info(messageFormate, classname, line);
+            logger.info(messageFormat, classname, line);
         }
     }
 
 
     protected void debugLog(String classname, String title, String message) {
         classname = getStringMiddle(classname);
-        logger.info(titleHeadFormate, classname, title);
+        logger.info(titleHeadFormat, classname, title);
         String[] lines = message.split("\n");
         for (String line : lines)
-            logger.info(titleBodyFormate, classname, line);
-        logger.info(titleFotterFormate, classname);
+            logger.info(titleBodyFormat, classname, line);
+        logger.info(titleFooterFormat, classname);
     }
 }
