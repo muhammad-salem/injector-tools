@@ -51,7 +51,6 @@ public class Lunch {
     }
 
     public static void initApp() {
-
         R.INIT_CHANGES();
         if (ManageConfig.getAppConfig().getDebuggable())
 //			System.out.println(ManageConfig.toFormatConfig());

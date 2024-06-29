@@ -82,7 +82,7 @@ public class R {
             if (e instanceof IOException) {
                 System.err.println("Can't make hidden");
             } else {
-                System.err.println("Can't creat directory");
+                System.err.println("Can't create directory");
             }
         }
     }
@@ -201,7 +201,7 @@ public class R {
 
     public static void INIT_CHANGES() {
         InitDirs();
-        LogErr logErr = new LogErr();
+        var logErr = new LogErr();
         logErr.initDebugger(ConfigPath + separator + "logger.log");
         Logger.setLogger(ManageConfig.getAppConfig().getDebuggable(), logErr);
         new Thread(logErr).start();

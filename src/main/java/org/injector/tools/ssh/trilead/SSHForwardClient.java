@@ -60,12 +60,14 @@ public class SSHForwardClient implements EventHandler {
             boolean useCompression,
             ProxySocket proxyData,
             SSHProxyType howToConnect,
+            String serverNameIndication,
             TerminalNetworkMonitor monitorSpeed) {
         this.proxyData = proxyData;
         this.monitorSpeed = monitorSpeed;
         sshConfig = new SSHConfig(
                 remoteHost, remotePort, remoteUser, remotePassword,
-                proxyHost, proxyPort, localSocksPort, howToConnect, isDebuggable, useCompression);
+                proxyHost, proxyPort, localSocksPort, howToConnect,
+                isDebuugable, useCompression, serverNameIndication);
         initSSHClient();
     }
 
