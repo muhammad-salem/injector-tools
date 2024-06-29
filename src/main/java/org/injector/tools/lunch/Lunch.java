@@ -51,7 +51,7 @@ public class Lunch {
 
     public static void initApp() {
         R.INIT_CHANGES();
-        if (ManageConfig.getAppConfig().getDebuggable())
+        if (ManageConfig.getAppConfig().getEnableLogs())
 //			System.out.println(ManageConfig.toFormatConfig());
             System.out.println(Ansi.Green + ManageConfig.formatLimitConfig() + Ansi.Reset);
 

@@ -15,7 +15,7 @@ public class Config {
     private SSHConfig sshConfig = new SSHConfig();
     private LocalProxyConfig localProxyConfig = new LocalProxyConfig(8989);
 
-    protected Boolean debuggable = true;
+    protected Boolean enableLogs = true;
     private final String _SSHProxyType = Arrays.toString(SSHProxyType.values());
     private final String _LocalProxyType = Arrays.toString(LocalProxyType.values());
     private final String _HostProxyType = Arrays.toString(HostProxyType.values());

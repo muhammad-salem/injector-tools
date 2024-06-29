@@ -154,7 +154,7 @@ public class SSHForwardClient implements EventHandler {
 
         connection.addConnectionMonitor(this::connectionMonitorLost);
 
-        connection.enableDebugging(sshConfig.isDebuggable(), new DebugLogger() {
+        connection.enableDebugging(sshConfig.isEnableLogs(), new DebugLogger() {
             @Override
             public void log(int level, String className, String message) {
                 Logger.debug(className, message);

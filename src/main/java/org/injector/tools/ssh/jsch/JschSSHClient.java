@@ -85,7 +85,7 @@ public class JschSSHClient implements EventHandler {
                 }
 
                 public boolean isEnabled(int level) {
-                    return config.isDebuggable();
+                    return config.isEnableLogs();
                 }
             });
 

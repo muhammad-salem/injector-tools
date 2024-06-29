@@ -10,7 +10,7 @@ public class FormatConfig {
     public static String ConfigToText(Config config) {
         FormatConfig formatConfig = new FormatConfig();
         String temp = formatConfig.getStringMiddle(" Config ", 67, '=') + "\n";
-        temp += formatConfig.getLine("Debug", config.getDebuggable() + "");
+        temp += formatConfig.getLine("Debug", config.getEnableLogs() + "");
 
         temp += formatConfig.toString(config.getLocalProxyConfig());
         temp += formatConfig.toString(config.getHostProxyConfig());
@@ -27,7 +27,7 @@ public class FormatConfig {
         String temp = formatConfig.getStringMiddle(" Config ", 67, '=') + "\n";
 
         Map<String, String> map = new LinkedHashMap<>();
-        map.put("Debug", config.getDebuggable() + "");
+        map.put("Debug", config.getEnableLogs() + "");
         temp += formatConfig.getLine(map);
         map.clear();
         temp += formatConfig.toStringLimit(config.getLocalProxyConfig());
@@ -147,7 +147,7 @@ public class FormatConfig {
         temp += getLine("Local HTTP Port", sshConfig.getLocalHttpPort() + "");
         temp += getLine("Kex Time out", String.valueOf(sshConfig.getTimeout()));
         temp += getLine("Use Compression", String.valueOf(sshConfig.isUseCompression()));
-        temp += getLine("Debug Connection", String.valueOf(sshConfig.isDebuggable()));
+        temp += getLine("Debug Connection", String.valueOf(sshConfig.isEnableLogs()));
         temp += getLine("SSH Proxy Type", sshConfig.getSshProxyType().toString());
         temp += getLine("Proxy Host", sshConfig.getProxyHost());
         temp += getLine("Proxy Port", sshConfig.getProxyPort() + "");
@@ -202,7 +202,7 @@ public class FormatConfig {
         map.clear();
 
         map.put("Use Compression", String.valueOf(sshConfig.isUseCompression()));
-        map.put("Debug Connection", String.valueOf(sshConfig.isDebuggable()));
+        map.put("Debug Connection", String.valueOf(sshConfig.isEnableLogs()));
         temp += getLine(map);
         map.clear();
 

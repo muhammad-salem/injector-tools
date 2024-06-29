@@ -17,7 +17,7 @@ public class SSHConfig {
     private int localHttpPort = 8123;
 
     private boolean useCompression = true;
-    private boolean isDebuggable = true;
+    private boolean enableLogs = true;
     private int timeout = 4500;
 
     private SSHProxyType sshProxyType = SSHProxyType.HTTP_PROXY;
@@ -39,7 +39,7 @@ public class SSHConfig {
                      int proxyPort,
                      int localSocksPort,
                      SSHProxyType sshProxyType,
-                     boolean isDebuggable,
+                     boolean enableLogs,
                      boolean useCompression,
                      String serverNameIndication) {
         this.host = sshHost;
@@ -50,7 +50,7 @@ public class SSHConfig {
         this.proxyPort = proxyPort;
         this.localSocksPort = localSocksPort;
         this.sshProxyType = sshProxyType;
-        this.isDebuggable = isDebuggable;
+        this.enableLogs = enableLogs;
         this.useCompression = useCompression;
         this.serverNameIndication = serverNameIndication;
     }

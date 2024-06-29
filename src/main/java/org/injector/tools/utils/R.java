@@ -203,7 +203,7 @@ public class R {
         InitDirs();
         var logErr = new LogErr();
         logErr.initDebugger(ConfigPath + separator + "logger.log");
-        Logger.setLogger(ManageConfig.getAppConfig().getDebuggable(), logErr);
+        Logger.setLogger(ManageConfig.getAppConfig().getEnableLogs(), logErr);
         new Thread(logErr).start();
     }
 
