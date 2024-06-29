@@ -12,6 +12,7 @@ public enum SSHProxyType {
     SOCKS_PROXY,
     DIRECT_INJECT,
     INJECT_PROXY_HTTP,
+    SNI_INJECTION,
     STOP,
     Other;
 
@@ -33,6 +34,9 @@ public enum SSHProxyType {
                 // used to inject to proxy host
                 // chose between the proxy payload or direct payload option.
                     new InjectHttpProxy(config.getProxyHost(), config.getProxyPort(), config.getPayload(), monitorSpeed);
+            case SNI_INJECTION ->
+                // used to manipulate SNI
+                    new SNIInjectProxy(config.getServerNameIndication(), monitorSpeed);
             case SOCKS_PROXY ->
                 // not implemented class yet // do nothing
                     new Socks5Proxy(config.getProxyHost(), config.getProxyPort(), monitorSpeed);

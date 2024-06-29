@@ -12,19 +12,20 @@ import java.util.Arrays;
 @Setter
 @Getter
 public class Config {
+    private SSHConfig sshConfig = new SSHConfig();
+    private LocalProxyConfig localProxyConfig = new LocalProxyConfig(8989);
+    private PolipoConfig polipoConfig = new PolipoConfig();
 
-    final String _LocalProxyType = Arrays.toString(LocalProxyType.values());
-//	 private ProxyConfig proxyConfig = new ProxyConfig();
-    final String _HostProxyType = Arrays.toString(HostProxyType.values());
-    final String _SSHProxyType = Arrays.toString(SSHProxyType.values());
-    private final String _version = "0.2.488-dev";
     protected Boolean debuggable = false;
 
     //	protected boolean usePolipo = false;
     protected Boolean useIpTable = false;
-    private LocalProxyConfig localProxyConfig = new LocalProxyConfig(8989);
-    private SSHConfig sshConfig = new SSHConfig();
-    private PolipoConfig polipoConfig = new PolipoConfig();
+
+    final String _LocalProxyType = Arrays.toString(LocalProxyType.values());
+    //	 private ProxyConfig proxyConfig = new ProxyConfig();
+    final String _HostProxyType = Arrays.toString(HostProxyType.values());
+    final String _SSHProxyType = Arrays.toString(SSHProxyType.values());
+    private final String _version = "0.4.0-dev";
 
     public static void CreateJsonTemplate() {
         CreateJsonTemplate("template.json");
