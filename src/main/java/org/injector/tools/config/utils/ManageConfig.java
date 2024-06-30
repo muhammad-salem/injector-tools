@@ -76,11 +76,11 @@ public class ManageConfig {
     }
 
     public static String toFormatConfig() {
-        return FormatConfig.ConfigToText(getAppConfig());
+        return FormatConfig.configToText(getAppConfig());
     }
 
     public static String formatLimitConfig() {
-        return FormatConfig.ConfigTotextLimit(getAppConfig());
+        return FormatConfig.configToTextLimited(getAppConfig());
     }
 
     public Config getConfig() {

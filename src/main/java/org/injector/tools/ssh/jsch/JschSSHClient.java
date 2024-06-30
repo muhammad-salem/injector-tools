@@ -77,15 +77,13 @@ public class JschSSHClient implements EventHandler {
         }
 
         try {
-
             JSch.setLogger(new com.jcraft.jsch.Logger() {
-
                 public void log(int level, String message) {
                     Logger.debug(JschSSHClient.class, message);
                 }
 
                 public boolean isEnabled(int level) {
-                    return config.isEnableLogs();
+                    return true;
                 }
             });
 

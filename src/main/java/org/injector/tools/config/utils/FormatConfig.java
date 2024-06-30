@@ -7,10 +7,10 @@ import java.util.Map;
 
 public class FormatConfig {
 
-    public static String ConfigToText(Config config) {
+    public static String configToText(Config config) {
         FormatConfig formatConfig = new FormatConfig();
         String temp = formatConfig.getStringMiddle(" Config ", 67, '=') + "\n";
-        temp += formatConfig.getLine("Debug", config.getEnableLogs() + "");
+        temp += formatConfig.getLine("Enable Logs", config.getEnableLogs() + "");
 
         temp += formatConfig.toString(config.getLocalProxyConfig());
         temp += formatConfig.toString(config.getHostProxyConfig());
@@ -22,12 +22,12 @@ public class FormatConfig {
         return temp;
     }
 
-    public static String ConfigTotextLimit(Config config) {
+    public static String configToTextLimited(Config config) {
         FormatConfig formatConfig = new FormatConfig();
         String temp = formatConfig.getStringMiddle(" Config ", 67, '=') + "\n";
 
         Map<String, String> map = new LinkedHashMap<>();
-        map.put("Debug", config.getEnableLogs() + "");
+        map.put("Enable Logs", config.getEnableLogs() + "");
         temp += formatConfig.getLine(map);
         map.clear();
         temp += formatConfig.toStringLimit(config.getLocalProxyConfig());
@@ -54,17 +54,18 @@ public class FormatConfig {
         return padding + str + padding;
     }
 
-    public String getStringMidlle67(String str) {
+    public String getStringMiddle67(String str) {
         return getStringMiddle(str, 67, '-');
     }
 
     public String getStringRight(String str, int count, char ch) {
         if (str.length() > count)
             return null;
-        for (int i = str.length(); i < count; i++) {
-            str = ch + str;
+        var strBuilder = new StringBuilder(str);
+        for (int i = strBuilder.length(); i < count; i++) {
+            strBuilder.insert(0, ch);
         }
-        return str;
+        return strBuilder.toString();
     }
 
     public String getStringRight(String str, int count) {
@@ -80,18 +81,15 @@ public class FormatConfig {
     }
 
     public String getLine(Map<String, String> map) {
-        String temp = "**";
-
+        var temp = new StringBuilder("**");
         for (String key : map.keySet()) {
-            temp += '\t' + key + " : " + map.get(key) + '\t';
+            temp.append('\t').append(key).append(" : ").append(map.get(key)).append('\t');
         }
-//		System.out.println(temp);
         return temp + "\n";
     }
 
     public String getLineWidth_80(String name, final String value) {
-        String temp = "**\t" + name + " : " + value + '\n';
-        return temp;
+        return "**\t" + name + " : " + value + '\n';
     }
 
     public String toString(LocalProxyConfig localProxyConfig) {
@@ -99,7 +97,7 @@ public class FormatConfig {
             return "";
         }
         String temp = "";
-        temp += getStringMidlle67(" Local Proxy ") + "\n";
+        temp += getStringMiddle67(" Local Proxy ") + "\n";
         temp += getLine("Type", localProxyConfig.getLocalProxyType().toString());
         temp += getLine("Port", localProxyConfig.getLocalProxyPort() + "");
         return temp;
@@ -109,7 +107,7 @@ public class FormatConfig {
         if (localProxyConfig == null) {
             return "";
         }
-        String temp = getStringMidlle67(" Local Proxy ") + "\n";
+        String temp = getStringMiddle67(" Local Proxy ") + "\n";
 
         Map<String, String> map = new LinkedHashMap<>();
         map.put("Type", localProxyConfig.getLocalProxyType().toString());
@@ -121,7 +119,7 @@ public class FormatConfig {
         if (proxyConfig == null)
             return "";
         String temp = "";
-        temp += getStringMidlle67(" Proxy Server ") + "\n";
+        temp += getStringMiddle67(" Proxy Server ") + "\n";
         temp += getLine("Type", proxyConfig.getProxyType().toString());
         temp += getLine("Host", proxyConfig.getProxyHost());
         temp += getLine("Port", proxyConfig.getProxyPort() + "");
@@ -137,7 +135,7 @@ public class FormatConfig {
             return "";
 
         String temp = "";
-        temp += getStringMidlle67(" SSH Config ") + "\n";
+        temp += getStringMiddle67(" SSH Config ") + "\n";
 
         temp += getLine("Host", sshConfig.getHost());
         temp += getLine("Port", sshConfig.getPort() + "");
@@ -147,7 +145,6 @@ public class FormatConfig {
         temp += getLine("Local HTTP Port", sshConfig.getLocalHttpPort() + "");
         temp += getLine("Kex Time out", String.valueOf(sshConfig.getTimeout()));
         temp += getLine("Use Compression", String.valueOf(sshConfig.isUseCompression()));
-        temp += getLine("Debug Connection", String.valueOf(sshConfig.isEnableLogs()));
         temp += getLine("SSH Proxy Type", sshConfig.getSshProxyType().toString());
         temp += getLine("Proxy Host", sshConfig.getProxyHost());
         temp += getLine("Proxy Port", sshConfig.getProxyPort() + "");
@@ -159,7 +156,7 @@ public class FormatConfig {
     public String toStringLimit(HostProxyConfig proxyConfig) {
         if (proxyConfig == null)
             return "";
-        String temp = getStringMidlle67(" Proxy Server ") + "\n";
+        String temp = getStringMiddle67(" Proxy Server ") + "\n";
 
         Map<String, String> map = new LinkedHashMap<>();
         map.put("Type", proxyConfig.getProxyType().toString());
@@ -185,7 +182,7 @@ public class FormatConfig {
         if (sshConfig == null)
             return "";
 
-        String temp = getStringMidlle67(" SSH Config ") + "\n";
+        String temp = getStringMiddle67(" SSH Config ") + "\n";
 
         Map<String, String> map = new LinkedHashMap<>();
         map.put("Host", sshConfig.getHost());
@@ -202,7 +199,6 @@ public class FormatConfig {
         map.clear();
 
         map.put("Use Compression", String.valueOf(sshConfig.isUseCompression()));
-        map.put("Debug Connection", String.valueOf(sshConfig.isEnableLogs()));
         temp += getLine(map);
         map.clear();
 

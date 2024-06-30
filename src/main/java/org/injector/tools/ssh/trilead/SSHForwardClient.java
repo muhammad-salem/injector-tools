@@ -1,6 +1,8 @@
 package org.injector.tools.ssh.trilead;
 
 import com.trilead.ssh2.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.injector.tools.config.SSHConfig;
 import org.injector.tools.config.type.SSHProxyType;
 import org.injector.tools.event.EventHandler;
@@ -26,15 +28,30 @@ public class SSHForwardClient implements EventHandler {
     protected ProxySocket proxyData;
     protected TerminalNetworkMonitor monitorSpeed;
 
+    /**
+     * -- GETTER --
+     *
+     *
+     * -- SETTER --
+     *
+     @return the connection
+      * @param connection the connection to set
+     */
+    @Setter
+    @Getter
     protected Connection connection;
+    /**
+     * -- SETTER --
+     *
+     *
+     * -- GETTER --
+     *
+     @param portForwarder the portForwarder to set
+      * @return the portForwarder
+     */
+    @Getter
+    @Setter
     protected DynamicPortForwarder dynamicPortForwarder;
-
-//	protected StateEvent stateEvent = new StateEvent();
-
-//	public SSHForwardClient(NetworkMonitorSpeed monitorSpeed) {
-//		super();
-//		this.monitorSpeed = monitorSpeed;
-//	}
     Thread thread;
 
     public SSHForwardClient(SSHConfig sshConfig) {
@@ -56,18 +73,19 @@ public class SSHForwardClient implements EventHandler {
             String proxyHost,
             int proxyPort,
             int localSocksPort,
-            boolean isDebuggable,
             boolean useCompression,
             ProxySocket proxyData,
             SSHProxyType howToConnect,
-            String serverNameIndication,
+            String sniHost,
             TerminalNetworkMonitor monitorSpeed) {
         this.proxyData = proxyData;
         this.monitorSpeed = monitorSpeed;
         sshConfig = new SSHConfig(
-                remoteHost, remotePort, remoteUser, remotePassword,
-                proxyHost, proxyPort, localSocksPort, howToConnect,
-                isDebuggable, useCompression, serverNameIndication);
+                remoteHost, remotePort,
+                remoteUser, remotePassword,
+                proxyHost, proxyPort,
+                localSocksPort, howToConnect,
+                useCompression, sniHost);
         initSSHClient();
     }
 
@@ -110,7 +128,7 @@ public class SSHForwardClient implements EventHandler {
 //					// um handled case.
 //					break;
 //				default:
-//					// this case as it should be proxywrapper data had been set before
+//					// this case as it should be proxy wrapper data had been set before
 //					proxyData = getProxyDataWrapper();
 //			}
 //		}
@@ -154,12 +172,7 @@ public class SSHForwardClient implements EventHandler {
 
         connection.addConnectionMonitor(this::connectionMonitorLost);
 
-        connection.enableDebugging(sshConfig.isEnableLogs(), new DebugLogger() {
-            @Override
-            public void log(int level, String className, String message) {
-                Logger.debug(className, message);
-            }
-        });
+        connection.enableDebugging(true, (level, className, message) -> Logger.debug(className, message));
 
 
         /**** add internal listener ****/
@@ -283,34 +296,6 @@ public class SSHForwardClient implements EventHandler {
     }
 
     /**
-     * @return the portForwarder
-     */
-    public DynamicPortForwarder getDynamicPortForwarder() {
-        return dynamicPortForwarder;
-    }
-
-    /**
-     * @param portForwarder the portForwarder to set
-     */
-    public void setDynamicPortForwarder(DynamicPortForwarder portForwarder) {
-        this.dynamicPortForwarder = portForwarder;
-    }
-
-    /**
-     * @return the connection
-     */
-    public Connection getConnection() {
-        return connection;
-    }
-
-    /**
-     * @param connection the connection to set
-     */
-    public void setConnection(Connection connection) {
-        this.connection = connection;
-    }
-
-    /**
      * @return the proxyData if {@code null} will use direct connection to ssh remote host
      */
     public ProxySocket getProxySocket() {
@@ -363,10 +348,10 @@ public class SSHForwardClient implements EventHandler {
 //	}
 
     /**
-     * @param proxyData the proxyData to set
+     * @param proxy the ProxyData/ProxySocket to set
      */
-    public void setProxySocket(ProxySocket ProxySocket) {
-        this.proxyData = ProxySocket;
+    public void setProxySocket(ProxySocket proxy) {
+        this.proxyData = proxy;
     }
 
     /**

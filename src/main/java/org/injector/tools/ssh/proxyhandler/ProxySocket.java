@@ -45,19 +45,18 @@ public abstract class ProxySocket implements Proxy, ProxyData {
     @Override
     public void connect(SocketFactory socket_factory, String host, int port, int timeout) {
         try {
-            Socket directSocket;
 //			if (socket_factory == null) {
             Logger.debug(getClass(), "create proxy socket");
-            directSocket = openSocketConnection(host, port, timeout);
-            socket = new MonitorSocketWrapper(directSocket, monitorSpeed);
-            in = socket.getInputStream();
-            out = socket.getOutputStream();
+            var directSocket = openSocketConnection(host, port, timeout);
+            this.socket = new MonitorSocketWrapper(directSocket, monitorSpeed);
+            this.in = socket.getInputStream();
+            this.out = socket.getOutputStream();
 //			} else {
 //				Logger.debug(getClass(), "create proxy socket using 'socket_factory'");
-//				directSocket = socket_factory.createSocket(host, port);
-//				socket = new MonitorSocketWrapper(directSocket, monitorSpeed);
-//				in=socket_factory.getInputStream(socket);
-//		        out=socket_factory.getOutputStream(socket);
+//				var directSocket = socket_factory.createSocket(host, port);
+//				this.socket = new MonitorSocketWrapper(directSocket, monitorSpeed);
+//				this.in = socket_factory.getInputStream(socket);
+//		        this.out = socket_factory.getOutputStream(socket);
 //			}
 
         } catch (Exception e) {
