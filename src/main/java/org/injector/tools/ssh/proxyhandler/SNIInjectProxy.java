@@ -31,7 +31,7 @@ public class SNIInjectProxy extends ProxySocket {
         var params = socket.getSSLParameters();
         params.setServerNames(List.of(serverName));
         socket.setSSLParameters(params);
-        Logger.debug(getClass(),"Use SNI host: %s", (Object) this.sniHost);
+        Logger.debug(getClass(),"Use SNI Host Name: %s", (Object) this.sniHost);
         return socket;
     }
 
