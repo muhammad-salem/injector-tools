@@ -21,7 +21,6 @@ public class LogOutRunnable implements Debugger, Runnable {
     String titleHeadFormat = "[{}]\t{} {";
     String titleBodyFormat = "[{}]\t\t{}";
     String titleFooterFormat = "[{}]\t }";
-    Formatter formatter = new Formatter();
     boolean run = true;
 
     public void setColorFormat(boolean useAnsiColour) {
@@ -54,8 +53,10 @@ public class LogOutRunnable implements Debugger, Runnable {
 
     @Override
     public void debug(String className, String message, Object... args) {
+        var formatter = new Formatter();
         formatter.format(Locale.getDefault(Locale.Category.FORMAT), message, args);
         message = formatter.toString();
+        formatter.close();
         className = getStringMiddle(className);
         debug(className, message);
     }
