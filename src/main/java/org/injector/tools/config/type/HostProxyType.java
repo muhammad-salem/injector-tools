@@ -7,5 +7,5 @@ public enum HostProxyType {
     DIRECT,
     DIRECT_CLOSE,
     PROXY_CLOSE,
-//    SNI_HOST_NAME
+    SNI_HOST_NAME
 }

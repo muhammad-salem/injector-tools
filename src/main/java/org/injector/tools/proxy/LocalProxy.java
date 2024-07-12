@@ -164,10 +164,10 @@ public class LocalProxy implements EventRunnableHandler {
                     Logger.debug(getClass() , "error while closing client socket");
                 }
 				return;*/
-//            case SNI_HOST_NAME -> {
-//                Logger.debug(getClass(), "use SniHostNameProxyHandler");
-//                yield new SniHostNameProxyHandler(client, hostProxyConfig, channelSelector);
-//            }
+            case SNI_HOST_NAME -> {
+                Logger.debug(getClass(), "use SniHostNameProxyHandler");
+                yield new SniHostNameProxyHandler(client, hostProxyConfig, channelSelector);
+            }
             /*case TRANSPARENT:*/
             case DIRECT_CLOSE -> {
                 Logger.debug(getClass(), "use DirectCloseHandler");
