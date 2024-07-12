@@ -99,6 +99,9 @@ public class JschSSHClient implements EventHandler {
                 session.setConfig("compression.c2s", "zlib@openssh.com,zlib,none");
                 session.setConfig("compression_level", "9");
             }
+            if (config.isSkipCheckHostKey()){
+                session.setConfig("StrictHostKeyChecking", "no");
+            }
 
 
             UserInfo ui = new SSHUserInfo(config.getPassword());

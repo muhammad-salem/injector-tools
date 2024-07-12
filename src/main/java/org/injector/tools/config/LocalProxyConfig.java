@@ -13,8 +13,8 @@ public class LocalProxyConfig {
     public static String LOCAL_IP_All = "0.0.0.0";
 
 
-    private LocalProxyType localProxyType = LocalProxyType.TRANSPARENT;
-    private int localProxyPort = 8989;
+    private final LocalProxyType localProxyType;
+    private int localProxyPort;
 
     private HostProxyConfig hostProxyConfig = new HostProxyConfig();
 
@@ -24,7 +24,7 @@ public class LocalProxyConfig {
     }
 
     public LocalProxyConfig(int localProxyPort) {
-        this(localProxyPort, LocalProxyType.TRANSPARENT, new HostProxyConfig());
+        this(localProxyPort, LocalProxyType.STOP, new HostProxyConfig());
     }
 
     public LocalProxyConfig(int localProxyPort, HostProxyConfig proxyConfig) {

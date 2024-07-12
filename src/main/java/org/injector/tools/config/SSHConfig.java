@@ -17,6 +17,7 @@ public class SSHConfig {
     private int localHttpPort = 8123;
 
     private boolean useCompression = true;
+    private boolean skipCheckHostKey = false;
     private int timeout = 4500;
 
     private SSHProxyType sshProxyType = SSHProxyType.HTTP_PROXY;
