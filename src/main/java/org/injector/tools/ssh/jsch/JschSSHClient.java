@@ -105,7 +105,7 @@ public class JschSSHClient implements EventHandler {
             session.setUserInfo(ui);
 
 //			session.setTimeout(config.getKexTimeout());
-			session.setConfig("StrictHostKeyChecking", "no");
+//			session.setConfig("StrictHostKeyChecking", "no");
 
 
 //			session.setServerAliveInterval(config.getTimeout());
