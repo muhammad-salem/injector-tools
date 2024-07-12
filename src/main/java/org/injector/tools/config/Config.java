@@ -19,7 +19,7 @@ public class Config {
     private final String _SSHProxyType = Arrays.toString(SSHProxyType.values());
     private final String _LocalProxyType = Arrays.toString(LocalProxyType.values());
     private final String _HostProxyType = Arrays.toString(HostProxyType.values());
-    private final String _version = "0.4.0-dev";
+    private final String _version = "0.4.1-dev";
 
     public static void CreateJsonTemplate() {
         CreateJsonTemplate("template.json");

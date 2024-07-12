@@ -105,7 +105,7 @@ public class JschSSHClient implements EventHandler {
             session.setUserInfo(ui);
 
 //			session.setTimeout(config.getKexTimeout());
-//			session.setConfig("StrictHostKeyChecking", "no");
+			session.setConfig("StrictHostKeyChecking", "no");
 
 
 //			session.setServerAliveInterval(config.getTimeout());
@@ -139,11 +139,7 @@ public class JschSSHClient implements EventHandler {
 
             //monitorSpeed.start();
 
-        } catch (JSchException | UnknownHostException e) {
-            Logger.debug(getClass(), e.getClass().getTypeName(), e.getMessage());
-            Logger.debug(getClass(), e.getClass().getSimpleName(), e.getCause().getMessage());
-            e.fillInStackTrace();
-        } catch (NullPointerException | IOException e) {
+        } catch (JSchException | NullPointerException | IOException e) {
             Logger.debug(getClass(), e.getClass().getTypeName(), e.getMessage());
             Logger.debug(getClass(), e.getClass().getSimpleName(), e.getCause().getMessage());
             e.fillInStackTrace();
