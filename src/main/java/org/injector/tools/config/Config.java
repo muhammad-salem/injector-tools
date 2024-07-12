@@ -13,7 +13,7 @@ import java.util.Arrays;
 @Getter
 public class Config {
     private SSHConfig sshConfig = new SSHConfig();
-    private LocalProxyConfig localProxyConfig = new LocalProxyConfig(8989);
+    private LocalProxyConfig localProxyConfig = new LocalProxyConfig(8989, LocalProxyType.STOP, new HostProxyConfig());
 
     protected Boolean enableLogs = true;
     private final String _SSHProxyType = Arrays.toString(SSHProxyType.values());

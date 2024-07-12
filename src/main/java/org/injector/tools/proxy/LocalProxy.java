@@ -1,5 +1,7 @@
 package org.injector.tools.proxy;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.injector.tools.config.HostProxyConfig;
 import org.injector.tools.config.LocalProxyConfig;
 import org.injector.tools.event.EventRunnableHandler;
@@ -20,9 +22,13 @@ import java.nio.channels.SocketChannel;
 
 public class LocalProxy implements EventRunnableHandler {
 
-    ServerSocketChannel localServer = null;
+    private ServerSocketChannel localServer = null;
     private ChannelSelector channelSelector;
+    @Setter
+    @Getter
     private LocalProxyConfig localProxyConfig;
+    @Setter
+    @Getter
     private HostProxyConfig hostProxyConfig;
     /**
      * create Local Proxy with no configuration
@@ -64,7 +70,7 @@ public class LocalProxy implements EventRunnableHandler {
             localServer = ServerSocketChannel.open();
             InetSocketAddress address = new InetSocketAddress(localProxyConfig.getLocalProxyPort());
             localServer.bind(address);
-            Logger.debug(getClass(), "local proxy start lisiten to port (" + address.getPort() + ")");
+            Logger.debug(getClass(), "local proxy start listen on port (" + address.getPort() + ")");
         } catch (IOException e) {
             try {
                 localServer = ServerSocketChannel.open();
@@ -125,38 +131,31 @@ public class LocalProxy implements EventRunnableHandler {
 
 
     public void checkProxyServer() {
-        if (!localProxyConfig.isAllowToRun()) {
+        if (!localProxyConfig.isAllowToRun() || hostProxyConfig.isDirect()){
             return;
         }
-        if (hostProxyConfig.isDirect())
-            return;
-
-        HostChecker checker = new HostChecker();
+        var checker = new HostChecker();
         checker.init(hostProxyConfig.getProxyHost(), hostProxyConfig.getProxyPort(), 4500);
         checker.checkHost();
-
     }
 
 
     public void handle(SocketChannel client) {
-        ProxyHandler handler = null;
-        switch (hostProxyConfig.getProxyType()) {
+        ProxyHandler handler = switch (hostProxyConfig.getProxyType()) {
+            case HTTP, HTTPS -> {
+                Logger.debug(getClass(), "use TunnelProxyHandler");
+                yield new TunnelProxyHandler(client, hostProxyConfig, channelSelector);
 
-            case HTTP:
-            case HTTPS:
-                Logger.debug(getClass(), "use handler : TunnelProxyHandler");
-                handler = new TunnelProxyHandler(client, hostProxyConfig, channelSelector);
-
-//				Logger.debug(getClass() , "use handler : AdvancedSplitHandler", channelSelector);
+//				Logger.debug(getClass() , "use AdvancedSplitHandler");
 //				handler = new AdvancedSplitHandler(client,proxyConfig);
 
-//				Logger.debug(getClass() , "use handler : SplitCleanerHandler", channelSelector);
+//				Logger.debug(getClass() , "use SplitCleanerHandler");
 //				handler = new SplitCleanerHandler(client,proxyConfig);
-                break;
-            case SOCKS:
-                Logger.debug(getClass(), "select Http2Socks5Handler as Handler");
-                handler = new Http2Socks5Handler(client, hostProxyConfig, channelSelector);
-                break;
+            }
+            case SOCKS -> {
+                Logger.debug(getClass(), "use Http2Socks5Handler");
+                yield new Http2Socks5Handler(client, hostProxyConfig, channelSelector);
+            }
 			/*case STOP:
 				Logger.debug(getClass() , "no Handler is defined in configuration file but 'STOP' is, ignore and close handling client request");
 				try {
@@ -164,21 +163,25 @@ public class LocalProxy implements EventRunnableHandler {
                 }catch (IOException e){
                     Logger.debug(getClass() , "error while closing client socket");
                 }
-				return;
-			case TRANSPARENT:*/
-            case DIRECT_CLOSE:
-                Logger.debug(getClass(), "select DirectCloseHandler as Handler");
-                handler = new DirectCloseHandler(client, hostProxyConfig, channelSelector);
-                break;
-            case PROXY_CLOSE:
-                Logger.debug(getClass(), "select ProxyCloseHandler as Handler");
-                handler = new ProxyCloseHandler(client, hostProxyConfig, channelSelector);
-                break;
-            case DIRECT:
-            default:
-                Logger.debug(getClass(), "select DirectProxyHandler as Handler");
-                handler = new DirectProxyHandler(client, hostProxyConfig, channelSelector);
-        }
+				return;*/
+//            case SNI_HOST_NAME -> {
+//                Logger.debug(getClass(), "use SniHostNameProxyHandler");
+//                yield new SniHostNameProxyHandler(client, hostProxyConfig, channelSelector);
+//            }
+            /*case TRANSPARENT:*/
+            case DIRECT_CLOSE -> {
+                Logger.debug(getClass(), "use DirectCloseHandler");
+                yield new DirectCloseHandler(client, hostProxyConfig, channelSelector);
+            }
+            case PROXY_CLOSE -> {
+                Logger.debug(getClass(), "use ProxyCloseHandler");
+                yield new ProxyCloseHandler(client, hostProxyConfig, channelSelector);
+            }
+            default -> {
+                Logger.debug(getClass(), "use DirectProxyHandler");
+                yield new DirectProxyHandler(client, hostProxyConfig, channelSelector);
+            }
+        };
 
 //		handler.addErrorListener(stateEvent::fireErrorListener);
 
@@ -190,22 +193,6 @@ public class LocalProxy implements EventRunnableHandler {
 
     public void setConfig(LocalProxyConfig localProxyConfig, HostProxyConfig hostProxyConfig) {
         this.localProxyConfig = localProxyConfig;
-        this.hostProxyConfig = hostProxyConfig;
-    }
-
-    public LocalProxyConfig getLocalProxyConfig() {
-        return localProxyConfig;
-    }
-
-    public void setLocalProxyConfig(LocalProxyConfig localProxyConfig) {
-        this.localProxyConfig = localProxyConfig;
-    }
-
-    public HostProxyConfig getHostProxyConfig() {
-        return hostProxyConfig;
-    }
-
-    public void setHostProxyConfig(HostProxyConfig hostProxyConfig) {
         this.hostProxyConfig = hostProxyConfig;
     }
 

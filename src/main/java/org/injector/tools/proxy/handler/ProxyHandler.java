@@ -1,5 +1,7 @@
 package org.injector.tools.proxy.handler;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.injector.tools.config.HostProxyConfig;
 import org.injector.tools.event.EventRunnableHandler;
 import org.injector.tools.log.Logger;
@@ -8,14 +10,14 @@ import org.injector.tools.payload.Payload;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-
+@Setter
+@Getter
 public abstract class ProxyHandler implements EventRunnableHandler {
 
     protected SocketChannel client = null;
@@ -26,23 +28,13 @@ public abstract class ProxyHandler implements EventRunnableHandler {
     protected HostProxyConfig proxyConfig;
     private ChannelSelector channelSelector;
 
-    public ProxyHandler() {
-        fireInitListener();
-    }
+    public ProxyHandler() {}
     public ProxyHandler(SocketChannel client, HostProxyConfig proxyConfig, ChannelSelector channelSelector) {
         this();
         this.client = client;
         this.proxyConfig = proxyConfig;
         this.channelSelector = channelSelector;
-        payload = new Payload(proxyConfig.getPayload());
-    }
-
-    public ChannelSelector getChannelSelector() {
-        return channelSelector;
-    }
-
-    public void setChannelSelector(ChannelSelector channelSelector) {
-        this.channelSelector = channelSelector;
+        this.payload = new Payload(proxyConfig.getPayload());
     }
 
     public Selector getSelector() {
@@ -51,18 +43,6 @@ public abstract class ProxyHandler implements EventRunnableHandler {
 
     public ExecutorService getService() {
         return channelSelector.getService();
-    }
-
-    public Payload getPayload() {
-        return payload;
-    }
-
-    public HostProxyConfig getProxyConfig() {
-        return proxyConfig;
-    }
-
-    public void setProxyConfig(HostProxyConfig proxyConfig) {
-        this.proxyConfig = proxyConfig;
     }
 
     public void startHandler() {
@@ -102,7 +82,7 @@ public abstract class ProxyHandler implements EventRunnableHandler {
     }
 
     /**
-     * start to read response from proxywrapper server and <b>analysis</b> that
+     * start to read response from proxy wrapper server and <b>analysis</b> that
      * response. <br>
      * then write the edited response back to client <br>
      * <br>
@@ -117,14 +97,11 @@ public abstract class ProxyHandler implements EventRunnableHandler {
     }
 
     protected void registerChannelToSelector() {
-
         try {
             setChannelsBlockMode(false);
             client.register(getSelector(), SelectionKey.OP_READ, remote);
             remote.register(getSelector(), SelectionKey.OP_READ, client);
-        } catch (ClosedChannelException e) {
-            Logger.debug(getClass(), "registerChannelToSelector", e.getMessage());
-        } catch (IOException e) {
+        } catch (Exception e) {
             Logger.debug(getClass(), "registerChannelToSelector", e.getMessage());
         }
     }
@@ -157,7 +134,7 @@ public abstract class ProxyHandler implements EventRunnableHandler {
     }
 
     protected void connectToProxyServer(String host, int port) throws IOException {
-        InetSocketAddress remoteAddress = new InetSocketAddress(host, port);
+        var remoteAddress = new InetSocketAddress(host, port);
         remoteConnect(remoteAddress);
     }
 
@@ -220,7 +197,7 @@ public abstract class ProxyHandler implements EventRunnableHandler {
     public void sleepTime(int timeout) {
         try {
             TimeUnit.MILLISECONDS.sleep(timeout);
-            Logger.debug("\t sleeped for :" + timeout);
+            Logger.debug("\t slept for :" + timeout);
         } catch (InterruptedException e) {
             Logger.debug(e.getClass(), "Message", e.getMessage());
         }
@@ -275,12 +252,12 @@ public abstract class ProxyHandler implements EventRunnableHandler {
     }
 
 
-    protected void clearMomery() {
+    protected void clearMemory() {
         try {
             client.close();
             remote.close();
         } catch (IOException e) {
-            Logger.debug(e.getClass(), "Error closeing client and remote channel", e.getMessage());
+            Logger.debug(e.getClass(), "Error closing client and remote channel", e.getMessage());
         }
 
         payload = null;
@@ -294,7 +271,7 @@ public abstract class ProxyHandler implements EventRunnableHandler {
 
     @Override
     protected void finalize() throws Throwable {
-        clearMomery();
+        clearMemory();
         clearListeners();
         super.finalize();
     }

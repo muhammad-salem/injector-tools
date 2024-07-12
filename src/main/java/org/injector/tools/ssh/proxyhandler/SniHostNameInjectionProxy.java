@@ -12,11 +12,11 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
 
-public class SNIInjectProxy extends ProxySocket {
+public class SniHostNameInjectionProxy extends ProxySocket {
 
     private final String sniHost;
 
-    public SNIInjectProxy(String sniHost, NetworkMonitorSpeed monitorSpeed) {
+    public SniHostNameInjectionProxy(String sniHost, NetworkMonitorSpeed monitorSpeed) {
         super("", 0, monitorSpeed);
         this.sniHost = sniHost;
     }

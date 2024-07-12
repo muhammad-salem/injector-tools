@@ -14,6 +14,8 @@ public class HostProxyConfig {
     private String proxyHost = "";
     private int proxyPort = -1;
 
+    private String sniHostName = "";
+
     private String proxyUser = "";
     private String proxyPassword = "";
 
@@ -28,12 +30,13 @@ public class HostProxyConfig {
         this.proxyPort = proxyPort;
     }
 
-    public HostProxyConfig(String proxyHost, int proxyPort, String proxyUser, String proxyPassword, HostProxyType proxyType) {
+    public HostProxyConfig(String proxyHost, int proxyPort, String proxyUser, String proxyPassword, HostProxyType proxyType, String sniHostName) {
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
         this.proxyUser = proxyUser;
         this.proxyPassword = proxyPassword;
         this.proxyType = proxyType;
+        this.sniHostName = sniHostName;
     }
 
     @Override
@@ -42,7 +45,10 @@ public class HostProxyConfig {
     }
 
     public boolean isDirect() {
-        return proxyType == HostProxyType.DIRECT || proxyType == HostProxyType.DIRECT_CLOSE;
+        return switch (proxyType) {
+            case DIRECT, DIRECT_CLOSE, SNI_HOST_NAME ->  true;
+            default -> false;
+        };
     }
 
 }

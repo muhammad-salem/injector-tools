@@ -52,8 +52,8 @@ public class HttpProxy extends ProxySocket {
     public Socket openSocketConnection(String hostname, int port, int connectTimeout) throws IOException, JSchException {
         Socket sock = new Socket();
 
-        InetAddress addr = InetAddress.getByName(proxyHost);
-        sock.connect(new InetSocketAddress(addr, proxyPort), connectTimeout);
+        var address = InetAddress.getByName(proxyHost);
+        sock.connect(new InetSocketAddress(address, proxyPort), connectTimeout);
 //		sock.setSoTimeout(connectTimeout);
 
         /* OK, now tell the proxy the host we actually want to connect to */
@@ -100,20 +100,20 @@ public class HttpProxy extends ProxySocket {
 
         int len = readLineRN(in, buffer);
 
-        String httpReponse = new String(buffer, 0, len, StandardCharsets.ISO_8859_1);
+        String httpResponse = new String(buffer, 0, len, StandardCharsets.ISO_8859_1);
 
-        if (!httpReponse.startsWith("HTTP/"))
-            throw new IOException("The proxywrapper did not send back a valid HTTP response.");
+        if (!httpResponse.startsWith("HTTP/"))
+            throw new IOException("The proxy wrapper did not send back a valid HTTP response.");
 
         /* "HTTP/1.X XYZ X" => 14 characters minimum */
 
-        if ((httpReponse.length() < 14) || (httpReponse.charAt(8) != ' ') || (httpReponse.charAt(12) != ' '))
-            throw new IOException("The proxywrapper did not send back a valid HTTP response.");
+        if ((httpResponse.length() < 14) || (httpResponse.charAt(8) != ' ') || (httpResponse.charAt(12) != ' '))
+            throw new IOException("The proxy wrapper did not send back a valid HTTP response.");
 
         int errorCode = 0;
 
         try {
-            errorCode = Integer.parseInt(httpReponse.substring(9, 12));
+            errorCode = Integer.parseInt(httpResponse.substring(9, 12));
         } catch (NumberFormatException ignore) {
             throw new IOException("The proxy wrapper did not send back a valid HTTP response.");
         }
@@ -122,7 +122,7 @@ public class HttpProxy extends ProxySocket {
             throw new IOException("The proxy wrapper did not send back a valid HTTP response.");
 
         if (errorCode != 200) {
-            throw new HTTPProxyException(httpReponse.substring(13), errorCode);
+            throw new HTTPProxyException(httpResponse.substring(13), errorCode);
         }
 
         /* OK, read until empty line */

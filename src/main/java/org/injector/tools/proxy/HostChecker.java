@@ -1,11 +1,15 @@
 package org.injector.tools.proxy;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.injector.tools.log.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+@Getter
+@Setter
 public class HostChecker implements HostCheck {
 
     protected String host;
@@ -52,36 +56,5 @@ public class HostChecker implements HostCheck {
         setPort(port);
         setTimeOut(timeout);
     }
-
-    @Override
-    public String getHost() {
-        return host;
-    }
-
-    @Override
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    @Override
-    public int getPort() {
-        return port;
-    }
-
-    @Override
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    @Override
-    public int getTimeOut() {
-        return timeOut;
-    }
-
-    @Override
-    public void setTimeOut(int millsecond) {
-        this.timeOut = millsecond;
-    }
-
 
 }

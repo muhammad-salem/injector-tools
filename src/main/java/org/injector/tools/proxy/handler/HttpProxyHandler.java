@@ -36,7 +36,7 @@ public class HttpProxyHandler extends ProxyHandler {
 //			}
             bytes_read = remote.read(buffer);
             if (bytes_read == -1) {
-                Logger.debug(getClass(), "---> end of proxywrapper response");
+                Logger.debug(getClass(), "---> end of proxy wrapper response");
                 return;
             }
         } catch (IOException e) {
@@ -48,7 +48,7 @@ public class HttpProxyHandler extends ProxyHandler {
 
 //		ResponsLine l = new ResponsLine();
 //		l.setResponse(str);
-//		Logger.debug("Respose ", l.toString());
+//		Logger.debug("Response ", l.toString());
 
         buffer.flip();
         if (response.contains("200 Connect")) {

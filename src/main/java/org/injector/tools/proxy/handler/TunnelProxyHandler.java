@@ -33,11 +33,10 @@ public class TunnelProxyHandler extends ProxyHandler {
         try {
             bytes_read = remote.read(buffer);
             if (bytes_read == -1) {
-                Logger.debug(getClass(), "---> end of proxywrapper response there is no more data because the end of the stream has been reached");
+                Logger.debug(getClass(), "---> end of proxy wrapper response there is no more data because the end of the stream has been reached");
                 return;
             } else if (bytes_read == 0) {
                 bytes_read = remote.read(buffer);
-
             }
         } catch (IOException e) {
             e.fillInStackTrace();
@@ -48,7 +47,7 @@ public class TunnelProxyHandler extends ProxyHandler {
 
 //		ResponsLine l = new ResponsLine();
 //		l.setResponse(str);
-//		Logger.debug("Respose ", l.toString());
+//		Logger.debug("Response ", l.toString());
 
         if (response.contains("200 Connect")) {
             int start = response.indexOf("200 Connect") - 9;
@@ -59,7 +58,7 @@ public class TunnelProxyHandler extends ProxyHandler {
 //				Logger.debug(getClass().getSimpleName(), "start = %d, length = %d, end = %d, bytes_read = %d;\n", start, length, start+length, bytes_read);
 //				writeBytes(clientOutput, temp, start, length-start);
 
-            //serch for the next response part
+            //search for the next response part
 //				start = str.indexOf("\r\n\r\n", end)+4;
 //				end = str.indexOf("\r\n\r\n", start)+4;
 //				Logger.debug(getClass().getSimpleName(), "start = %d, length = %d, end = %d, bytes_read = %d;\n", start, length, start+length, bytes_read);

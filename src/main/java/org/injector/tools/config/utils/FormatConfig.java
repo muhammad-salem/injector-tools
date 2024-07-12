@@ -148,6 +148,7 @@ public class FormatConfig {
         temp += getLine("SSH Proxy Type", sshConfig.getSshProxyType().toString());
         temp += getLine("Proxy Host", sshConfig.getProxyHost());
         temp += getLine("Proxy Port", sshConfig.getProxyPort() + "");
+        temp += getLine("SNI Host Name", sshConfig.getSniHostName());
         temp += getLine("Direct Payload", sshConfig.getPayload());
 
         return temp;
@@ -212,6 +213,7 @@ public class FormatConfig {
         temp += getLine(map);
         map.clear();
         temp += getLineWidth_80("Direct Payload", sshConfig.getPayload());
+        temp += getLineWidth_80("SNI Host Name", sshConfig.getSniHostName());
         return temp;
     }
 

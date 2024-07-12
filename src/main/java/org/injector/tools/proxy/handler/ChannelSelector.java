@@ -1,5 +1,7 @@
 package org.injector.tools.proxy.handler;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.injector.tools.log.Logger;
 import org.injector.tools.proxy.LocalProxy;
 
@@ -17,6 +19,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+@Setter
+@Getter
 public class ChannelSelector implements Closeable {
 
     private ExecutorService service;
@@ -34,22 +38,6 @@ public class ChannelSelector implements Closeable {
 
     public ChannelSelector(ExecutorService service, Selector selector) {
         this.selector = selector;
-        this.service = service;
-    }
-
-    public Selector getSelector() {
-        return selector;
-    }
-
-    public void setSelector(Selector selector) {
-        this.selector = selector;
-    }
-
-    public ExecutorService getService() {
-        return service;
-    }
-
-    public void setService(ExecutorService service) {
         this.service = service;
     }
 

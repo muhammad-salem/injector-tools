@@ -30,7 +30,7 @@ public class HandlerByResponseLine extends ProxyHandler {
 //			}
             bytes_read = remote.read(buffer);
             if (bytes_read == -1) {
-                Logger.debug(getClass().getSimpleName(), "---> end of proxywrapper response");
+                Logger.debug(getClass().getSimpleName(), "---> end of proxy wrapper response");
                 return;
             }
         } catch (IOException e) {
@@ -42,7 +42,7 @@ public class HandlerByResponseLine extends ProxyHandler {
 
 //		ResponsLine l = new ResponsLine();
 //		l.setResponse(str);
-//		Logger.debug("Respose ", l.toString());
+//		Logger.debug("Response ", l.toString());
 
         if (respons.contains("200 Connect")) {
             int start = respons.indexOf("200 Connect") - 9;

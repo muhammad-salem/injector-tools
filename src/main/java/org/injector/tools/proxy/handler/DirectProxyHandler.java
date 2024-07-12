@@ -19,7 +19,6 @@ public class DirectProxyHandler extends ProxyHandler {
         } catch (IOException e) {
             Logger.debug(getClass(), "error", "Can't connect to " + payload.getHost() + ":" + payload.getPortInt() + "\n".concat(e.getMessage()));
         }
-
     }
 
 

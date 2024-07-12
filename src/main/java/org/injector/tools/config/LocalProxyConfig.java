@@ -24,7 +24,7 @@ public class LocalProxyConfig {
     }
 
     public LocalProxyConfig(int localProxyPort) {
-        this(localProxyPort, LocalProxyType.STOP, new HostProxyConfig());
+        this(localProxyPort, LocalProxyType.TRANSPARENT, new HostProxyConfig());
     }
 
     public LocalProxyConfig(int localProxyPort, HostProxyConfig proxyConfig) {

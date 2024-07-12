@@ -4,17 +4,19 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.SocketFactory;
 import com.trilead.ssh2.ProxyData;
+import lombok.Setter;
 import org.injector.tools.log.Logger;
 import org.injector.tools.speed.NetworkMonitorSpeed;
-import org.injector.tools.speed.TerminalNetworkMonitor;
 import org.injector.tools.speed.net.MonitorSocketWrapper;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Objects;
 
 
+@Setter
 public abstract class ProxySocket implements Proxy, ProxyData {
     protected String proxyHost;
     protected int proxyPort;
@@ -31,7 +33,7 @@ public abstract class ProxySocket implements Proxy, ProxyData {
     public ProxySocket(String proxyHost, int proxyPort, NetworkMonitorSpeed monitorSpeed) {
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
-        this.monitorSpeed = monitorSpeed == null ? new NetworkMonitorSpeed() : monitorSpeed;
+        this.monitorSpeed = Objects.requireNonNullElseGet(monitorSpeed, NetworkMonitorSpeed::new);
     }
 
     @Override
@@ -77,14 +79,6 @@ public abstract class ProxySocket implements Proxy, ProxyData {
     @Override
     public OutputStream getOutputStream() {
         return out;
-    }
-
-    public NetworkMonitorSpeed getMonitorSpeed() {
-        return monitorSpeed;
-    }
-
-    public void setMonitorSpeed(TerminalNetworkMonitor monitorSpeed) {
-        this.monitorSpeed = monitorSpeed;
     }
 
     @Override

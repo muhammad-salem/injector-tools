@@ -12,7 +12,7 @@
     "sshProxyType": "HTTP_PROXY",
     "proxyHost": "127.0.0.1",
     "proxyPort": 8989,
-    "sniHost": "example.com",
+    "sniHostName": "example.com",
     "payload": "[raw][crlf][crlf]"
   },
   "localProxyConfig": {
@@ -22,6 +22,7 @@
       "proxyType": "HTTP",
       "proxyHost": "",
       "proxyPort": -1,
+      "sniHostName": "",
       "proxyUser": "",
       "proxyPassword": "",
       "payload": "[raw][crlf][crlf]"
@@ -30,6 +31,6 @@
   "enableLogs": true,
   "_SSHProxyType": "[Auto, NO_PROXY, DIRECT, HTTP_PROXY, SOCKS_PROXY, DIRECT_INJECT, INJECT_PROXY_HTTP, SNI_INJECTION, STOP, Other]",
   "_LocalProxyType": "[STOP, TRANSPARENT, HTTP_RELAY, HTTP_CONNECT]",
-  "_HostProxyType": "[HTTP, HTTPS, SOCKS, DIRECT, DIRECT_CLOSE, PROXY_CLOSE]",
+  "_HostProxyType": "[HTTP, HTTPS, SOCKS, DIRECT, DIRECT_CLOSE, PROXY_CLOSE, SNI_HOST_NAME]",
   "_version": "0.4.1-dev"
 }

@@ -4,6 +4,8 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
+import lombok.Getter;
+import lombok.Setter;
 import org.injector.tools.config.SSHConfig;
 import org.injector.tools.config.type.SSHProxyType;
 import org.injector.tools.event.EventHandler;
@@ -18,8 +20,12 @@ import java.net.UnknownHostException;
 
 public class JschSSHClient implements EventHandler {
 
+    @Setter
+    @Getter
     protected SSHConfig config;
 
+    @Setter
+    @Getter
     protected NetworkMonitorSpeed monitorSpeed;
 
     Session session;
@@ -34,22 +40,6 @@ public class JschSSHClient implements EventHandler {
         this.config = config;
         this.monitorSpeed = monitorSpeed;
         //addSuccessListener(this::keepConnectionAlive);
-    }
-
-    public SSHConfig getConfig() {
-        return config;
-    }
-
-    public void setConfig(SSHConfig config) {
-        this.config = config;
-    }
-
-    public NetworkMonitorSpeed getMonitorSpeed() {
-        return monitorSpeed;
-    }
-
-    public void setMonitorSpeed(NetworkMonitorSpeed monitorSpeed) {
-        this.monitorSpeed = monitorSpeed;
     }
 
     public void start() {

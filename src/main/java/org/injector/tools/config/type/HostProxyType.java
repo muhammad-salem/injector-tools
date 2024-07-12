@@ -6,5 +6,6 @@ public enum HostProxyType {
     SOCKS,
     DIRECT,
     DIRECT_CLOSE,
-    PROXY_CLOSE
+    PROXY_CLOSE,
+//    SNI_HOST_NAME
 }

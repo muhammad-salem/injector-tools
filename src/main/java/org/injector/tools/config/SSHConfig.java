@@ -24,7 +24,7 @@ public class SSHConfig {
     private String proxyHost = "127.0.0.1";
     private int proxyPort = 8989;
 
-    private String sniHost = "example.com";
+    private String sniHostName = "example.com";
 
     private String payload = "[raw][crlf][crlf]";
 
@@ -40,7 +40,7 @@ public class SSHConfig {
                      int localSocksPort,
                      SSHProxyType sshProxyType,
                      boolean useCompression,
-                     String sniHost) {
+                     String sniHostName) {
         this.host = sshHost;
         this.port = sshPort;
         this.user = sshUser;
@@ -50,7 +50,7 @@ public class SSHConfig {
         this.localSocksPort = localSocksPort;
         this.sshProxyType = sshProxyType;
         this.useCompression = useCompression;
-        this.sniHost = sniHost;
+        this.sniHostName = sniHostName;
     }
 
 }
