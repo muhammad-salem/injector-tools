@@ -5,26 +5,24 @@ import org.injector.tools.speed.NetworkMonitorSpeed;
 import org.injector.tools.ssh.proxyhandler.*;
 
 public enum SSHProxyType {
-    Auto,
-    NO_PROXY,
+    STOP,
     DIRECT,
+    DIRECT_PROXY,
     HTTP_PROXY,
     SOCKS_PROXY,
     DIRECT_INJECT,
     INJECT_PROXY_HTTP,
-    SNI_INJECTION,
-    STOP,
-    Other;
+    SNI_INJECTION;
 
     public ProxySocket getProxy(SSHConfig config, NetworkMonitorSpeed monitorSpeed) {
 //		monitorSpeed = null;
         return switch (this) {
             // same as normal connection - use no proxy aka Direct connection.
-            default -> new DirectProxy(config.getProxyHost(), config.getProxyPort(), monitorSpeed);
+            case DIRECT_PROXY -> new DirectProxy(config.getProxyHost(), config.getProxyPort(), monitorSpeed);
             // same as use local proxy for {now}
             // Suppose to {implement an extra code}
             // to check configuration then chose the right way to connect , or tray them all till it.
-            case Auto, HTTP_PROXY ->
+            case HTTP_PROXY ->
                 // use proxy before connect to ssh host , defined with local proxy
                     new HttpProxy(config.getProxyHost(), config.getProxyPort(), monitorSpeed);
             case DIRECT_INJECT ->
@@ -40,11 +38,10 @@ public enum SSHProxyType {
             case SOCKS_PROXY ->
                 // not implemented class yet // do nothing
                     new Socks5Proxy(config.getProxyHost(), config.getProxyPort(), monitorSpeed);
-            case Other ->
-                // um handled case.
-                    null;
+
+            // no proxy
+            default -> null;
         };
     }
-
 
 }
