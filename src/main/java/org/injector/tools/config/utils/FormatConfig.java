@@ -16,7 +16,7 @@ public class FormatConfig {
         temp += formatConfig.toString(config.getHostProxyConfig());
         temp += formatConfig.toString(config.getSshConfig());
 
-        temp += "**\n" + config.getVersion() + " 2017-2018 © \n";
+        temp += "**\n" + config.getVersion() + " 2017-2024 © \n";
         temp += formatConfig.getStringMiddle("========", 67, '=') + "\n";
 
         return temp;
@@ -35,7 +35,7 @@ public class FormatConfig {
         temp += formatConfig.toStringLimit(config.getSshConfig());
 
         temp += "**\n**" + formatConfig.getStringMiddle("        ", 39, ' ');
-        temp += "   " + config.getVersion() + " 2017-2018 © \n";
+        temp += "   " + config.getVersion() + " 2017-2024 © \n";
 
         temp += formatConfig.getStringMiddle("========", 67, '=') + "\n";
 
