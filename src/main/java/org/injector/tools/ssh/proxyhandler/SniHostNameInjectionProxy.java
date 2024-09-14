@@ -24,7 +24,7 @@ public class SniHostNameInjectionProxy extends ProxySocket {
     @Override
     public Socket openSocketConnection(String hostname, int port, int timeout) throws IOException, JSchException {
         var address = InetAddress.getByName(hostname);
-        Logger.debug(getClass(),"Resolve Host name: [%s] with IP [%s]", hostname, address.getHostAddress());
+        Logger.debug(getClass(),"Resolve Host name: [%s] with IP [%s]", hostname, address.toString());
         var factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         var socket = (SSLSocket) factory.createSocket(address.getHostAddress(), port);
         var serverName = new SNIHostName(this.sniHost);
