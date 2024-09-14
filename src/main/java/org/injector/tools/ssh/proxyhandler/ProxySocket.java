@@ -49,7 +49,7 @@ public abstract class ProxySocket implements Proxy, ProxyData {
         try {
 //			if (socket_factory == null) {
             Logger.debug(getClass(), "create proxy socket");
-            var directSocket = openSocketConnection(host, port, timeout);
+            var directSocket = this.openSocketConnection(host, port, timeout);
             this.socket = new MonitorSocketWrapper(directSocket, monitorSpeed);
             this.in = socket.getInputStream();
             this.out = socket.getOutputStream();
@@ -62,7 +62,7 @@ public abstract class ProxySocket implements Proxy, ProxyData {
 //			}
 
         } catch (Exception e) {
-            e.fillInStackTrace();
+            Logger.debug(getClass(),"%s creating proxy socket: [%s]", "Error", e.getMessage());
         }
     }
 
