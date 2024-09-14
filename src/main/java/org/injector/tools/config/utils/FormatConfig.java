@@ -144,7 +144,7 @@ public class FormatConfig {
         temp += getLine("Local Socks Port", sshConfig.getLocalSocksPort() + "");
         temp += getLine("Local HTTP Port", sshConfig.getLocalHttpPort() + "");
         temp += getLine("Kex Time out", String.valueOf(sshConfig.getTimeout()));
-        temp += getLine("Use Compression", String.valueOf(sshConfig.isUseCompression()));
+        temp += getLine("Use Compression", String.valueOf(sshConfig.getUseCompression()));
         temp += getLine("SSH Proxy Type", sshConfig.getSshProxyType().toString());
         temp += getLine("Proxy Host", sshConfig.getProxyHost());
         temp += getLine("Proxy Port", sshConfig.getProxyPort() + "");
@@ -199,7 +199,7 @@ public class FormatConfig {
         temp += getLine(map);
         map.clear();
 
-        map.put("Use Compression", String.valueOf(sshConfig.isUseCompression()));
+        map.put("Use Compression", String.valueOf(sshConfig.getUseCompression()));
         temp += getLine(map);
         map.clear();
 

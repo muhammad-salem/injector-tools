@@ -9,20 +9,20 @@ import org.injector.tools.config.type.SSHProxyType;
 public class SSHConfig {
 
     private String host = "";
-    private int port = 443;
+    private Integer port = 443;
     private String user = "";
     private String password = "";
 
-    private int localSocksPort = 1080;
-    private int localHttpPort = 8123;
+    private Integer localSocksPort = 1080;
+    private Integer localHttpPort = 8123;
 
-    private boolean useCompression = true;
-    private boolean skipCheckHostKey = false;
+    private Boolean useCompression = true;
+    private Boolean skipCheckHostKey = false;
     private int timeout = 4500;
 
     private SSHProxyType sshProxyType = SSHProxyType.HTTP_PROXY;
     private String proxyHost = "127.0.0.1";
-    private int proxyPort = 8989;
+    private Integer proxyPort = 8989;
 
     private String sniHostName = "example.com";
 
@@ -32,14 +32,14 @@ public class SSHConfig {
     }
 
     public SSHConfig(String sshHost,
-                     int sshPort,
+                     Integer sshPort,
                      String sshUser,
                      String sshPassword,
                      String proxyHost,
-                     int proxyPort,
-                     int localSocksPort,
+                     Integer proxyPort,
+                     Integer localSocksPort,
                      SSHProxyType sshProxyType,
-                     boolean useCompression,
+                     Boolean useCompression,
                      String sniHostName) {
         this.host = sshHost;
         this.port = sshPort;

@@ -219,9 +219,10 @@ public class SSHForwardClient implements EventHandler {
         fireStartListener();
 
         try {
-            if (sshConfig.isUseCompression())
+            if (sshConfig.getUseCompression()) {
                 Logger.debug(getClass(), "Enable Compression.");
-            connection.setCompression(sshConfig.isUseCompression());
+            }
+            connection.setCompression(sshConfig.getUseCompression());
             Logger.debug(getClass(), "Start connect.");
 
             /*ServerHostKeyVerifier v = new ServerHostKeyVerifier() {

@@ -84,12 +84,12 @@ public class JschSSHClient implements EventHandler {
             session.setProxy(config.getSshProxyType().getProxy(config, monitorSpeed));
 //			session.setProxy(HowToConnect.Direct.getProxy(config, monitorSpeed));
 
-            if (config.isUseCompression()) {
+            if (config.getUseCompression()) {
                 session.setConfig("compression.s2c", "zlib@openssh.com,zlib,none");
                 session.setConfig("compression.c2s", "zlib@openssh.com,zlib,none");
                 session.setConfig("compression_level", "9");
             }
-            if (config.isSkipCheckHostKey()){
+            if (config.getSkipCheckHostKey()){
                 session.setConfig("StrictHostKeyChecking", "no");
             }
 
