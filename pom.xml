@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.injector</groupId>
     <artifactId>injector-tools</artifactId>
-    <version>0.4.1-dev</version>
+    <version>0.5.0</version>
     <name>HTTP Injector Tools(core)</name>
     <description>
         Create local proxy with the provided payload,
