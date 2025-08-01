@@ -25,7 +25,7 @@ public class InjectionTools {
         executor = Executors.newFixedThreadPool(6);
     }
 
-    public void StartLocalProxyService() {
+    public void startLocalProxyService() {
         if (config.getLocalProxyConfig().isAllowToRun()) {
             Logger.debug(getClass(), "Local Proxy is allowed to start");
             localProxy = new LocalProxy(config.getLocalProxyConfig());
@@ -42,7 +42,7 @@ public class InjectionTools {
 
     }
 
-    public void StartLocalProxyService(LocalProxyConfig localProxyConfig) {
+    public void startLocalProxyService(LocalProxyConfig localProxyConfig) {
 
 
         if (config.getLocalProxyConfig().isAllowToRun()) {
@@ -56,11 +56,11 @@ public class InjectionTools {
         }
     }
 
-    public void StartJschSSHService() {
-        StartJschSSHService(config.getSshConfig());
+    public void startJschSSHService() {
+        startJschSSHService(config.getSshConfig());
     }
 
-    private void StartJschSSHService(SSHConfig config) {
+    private void startJschSSHService(SSHConfig config) {
         if (SSHProxyType.STOP.equals(config.getSshProxyType())) {
 			return;
 		}

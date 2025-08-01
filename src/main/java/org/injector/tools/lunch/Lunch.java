@@ -14,8 +14,8 @@ public class Lunch {
         initApp();
         var service = new InjectionTools(ManageConfig.getAppConfig());
 
-        service.StartLocalProxyService();
-        service.StartJschSSHService();
+        service.startLocalProxyService();
+        service.startJschSSHService();
 
         // service.jschSSHClient.addSuccessListener(service::StartVPNService);
 
@@ -26,24 +26,26 @@ public class Lunch {
 
     public static void checkArgs(String[] args) {
         if (args.length == 1) {
-            if (args[0].equals("-h") || args[0].equals("--help") || args[0].equals("help")) {
-                printHelp();
-                System.exit(1);
-            } else if (args[0].equals("-t") || args[0].equals("--temp") || args[0].equals("temp")) {
-                Config.CreateJsonTemplate();
-                System.exit(1);
-            } else if (args[0].equals("-v") || args[0].equals("--version") || args[0].equals("version")) {
-                System.out.println(new Config().getVersion());
-                System.exit(1);
-            } else {
-                ManageConfig.readConfig(args[0]);
+            switch (args[0]) {
+                case "-h", "--help", "help" -> {
+                    printHelp();
+                    System.exit(1);
+                }
+                case "-t", "--temp", "temp" -> {
+                    Config.CreateJsonTemplate();
+                    System.exit(1);
+                }
+                case "-v", "--version", "version" -> {
+                    System.out.println(new Config().getVersion());
+                    System.exit(1);
+                }
+                default -> ManageConfig.readConfig(args[0]);
             }
         } else if (args.length == 2) {
             if (args[0].equals("-t") || args[0].equals("--temp") || args[0].equals("temp")) {
                 Config.CreateJsonTemplate(args[1]);
                 System.exit(1);
             }
-
         } else {
             ManageConfig.readConfig(R.ConfigJsonFile);
         }
