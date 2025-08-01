@@ -16,7 +16,6 @@ import org.injector.tools.ssh.jsch.forwarding.HttpPortForwarding;
 import org.injector.tools.ssh.jsch.forwarding.Socks5PortForwarding;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 public class JschSSHClient implements EventHandler {
 
@@ -28,8 +27,6 @@ public class JschSSHClient implements EventHandler {
     @Getter
     protected NetworkMonitorSpeed monitorSpeed;
 
-    Session session;
-    Thread thread;
 
     public JschSSHClient(SSHConfig config) {
         this(config, new TerminalNetworkMonitor());
@@ -40,22 +37,6 @@ public class JschSSHClient implements EventHandler {
         this.config = config;
         this.monitorSpeed = monitorSpeed;
         //addSuccessListener(this::keepConnectionAlive);
-    }
-
-    public void start() {
-        if (thread == null) {
-            thread = new Thread(this::connectHost, "jsch");
-            thread.start();
-        } else if (thread.isAlive()) {
-            try {
-                thread.join(250);
-                thread = new Thread(this::connectHost, "jsch");
-                thread.start();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                Logger.debug(getClass(), e.getMessage());
-            }
-        } else thread.start();
     }
 
     public void connectHost() {
@@ -75,7 +56,7 @@ public class JschSSHClient implements EventHandler {
 
             JSch jsch = new JSch();
             Logger.debug(getClass(), "JSch VERSION " + JSch.VERSION);
-            session = jsch.getSession(config.getUser(), config.getHost(), config.getPort());
+            Session session = jsch.getSession(config.getUser(), config.getHost(), config.getPort());
 
             session.setProxy(config.getSshProxyType().getProxy(config, monitorSpeed));
 //			session.setProxy(HowToConnect.Direct.getProxy(config, monitorSpeed));
