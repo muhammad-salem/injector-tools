@@ -59,19 +59,15 @@ public class JschSSHClient implements EventHandler {
     }
 
     public void connectHost() {
-
-
         if (SSHProxyType.STOP.equals(config.getSshProxyType())) {
             Logger.debug(getClass(), "SSH Client not allow to run");
             return;
         }
-
         try {
             JSch.setLogger(new com.jcraft.jsch.Logger() {
                 public void log(int level, String message) {
                     Logger.debug(JschSSHClient.class, message);
                 }
-
                 public boolean isEnabled(int level) {
                     return true;
                 }
@@ -93,13 +89,11 @@ public class JschSSHClient implements EventHandler {
                 session.setConfig("StrictHostKeyChecking", "no");
             }
 
-
             UserInfo ui = new SSHUserInfo(config.getPassword());
             session.setUserInfo(ui);
 
 //			session.setTimeout(config.getKexTimeout());
 //			session.setConfig("StrictHostKeyChecking", "no");
-
 
 //			session.setServerAliveInterval(config.getTimeout());
             session.connect(/*config.getTimeout()*/);
@@ -118,7 +112,6 @@ public class JschSSHClient implements EventHandler {
                 Logger.debug(getClass(), "start proxy thread : [ http://127.0.0.1:" + open_http_port + "/ ]");
             }
 
-
             while (session.isConnected()) {
                 try {
                     session.sendKeepAliveMsg();
@@ -128,35 +121,16 @@ public class JschSSHClient implements EventHandler {
                 }
             }
 
-            //keepConnectionAlive();
-
-            //monitorSpeed.start();
-
         } catch (JSchException | NullPointerException | IOException e) {
             Logger.debug(getClass(), e.getClass().getTypeName(), e.getMessage());
-            Logger.debug(getClass(), e.getClass().getSimpleName(), e.getCause().getMessage());
-            e.fillInStackTrace();
+            System.exit(0);
         } catch (Exception e) {
-            //e.fillInStackTrace();
-            //Logger.debug(getClass(), "Exception1", e.getMessage());
             Logger.debug(getClass(), e.getClass().getSimpleName(), e.toString());
             Logger.debug(getClass(), "Exception2", e.getCause().getMessage());
-            //e.fillInStackTrace();
+            System.exit(0);
         }
 
         fireSuccessListener();
-
-    }
-
-    void keepConnectionAlive() {
-        while (session.isConnected()) {
-            try {
-                session.sendKeepAliveMsg();
-                Thread.sleep(2000);
-            } catch (Exception e) {
-                e.fillInStackTrace();
-            }
-        }
     }
 
 }

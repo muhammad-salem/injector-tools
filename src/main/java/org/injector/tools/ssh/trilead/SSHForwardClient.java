@@ -196,6 +196,7 @@ public class SSHForwardClient implements EventHandler {
                 thread = new Thread(this::reStart, "ssh");
                 thread.start();
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 Logger.debug(getClass(), e.getMessage());
                 e.fillInStackTrace();
             }
@@ -256,19 +257,17 @@ public class SSHForwardClient implements EventHandler {
             Logger.debug(getClass(), "Start SOCKS5 Server at port " + sshConfig.getLocalSocksPort());
 //			connection.enableDebugging(false, null);
 
-
             if (passOK) {
                 fireSuccessListener();
                 fireCompleteListener();
             }
-
-
         } catch (IOException e) {
             Logger.debug(getClass(), e.getMessage());
             e.fillInStackTrace();
 
             fireErrorListener();
 //            fireStopListener();
+            System.exit(0);
         }
 
     }
@@ -543,6 +542,5 @@ public class SSHForwardClient implements EventHandler {
     public void ping() throws IOException {
         connection.ping();
     }
-
 
 }
