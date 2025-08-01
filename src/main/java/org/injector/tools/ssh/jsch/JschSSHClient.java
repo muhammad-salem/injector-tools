@@ -99,14 +99,14 @@ public class JschSSHClient implements EventHandler {
             }
         } catch (JSchException | NullPointerException | IOException e) {
             Logger.debug(getClass(), e.getClass().getTypeName(), e.getMessage());
-            System.exit(0);
+            throw new RuntimeException(e);
         } catch (Exception e) {
             if (e instanceof InterruptedException){
                 Thread.currentThread().interrupt();
             }
             Logger.debug(getClass(), e.getClass().getSimpleName(), e.toString());
             Logger.debug(getClass(), "Exception2", e.getCause().getMessage());
-            System.exit(0);
+            throw new RuntimeException(e);
         }
 
         fireSuccessListener();

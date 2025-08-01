@@ -264,7 +264,7 @@ public class SSHForwardClient implements EventHandler {
 
             fireErrorListener();
 //            fireStopListener();
-            System.exit(0);
+            throw new RuntimeException(e);
         }
 
     }
