@@ -10,7 +10,7 @@ public class LogErr extends LogOutRunnable {
         try {
             System.setErr(new LogPrintStream(filename));
         } catch (FileNotFoundException e) {
-            e.fillInStackTrace();
+            System.out.println("can't init debugger");
         }
         initDebugger();
     }

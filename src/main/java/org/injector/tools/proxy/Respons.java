@@ -71,14 +71,10 @@ public class Respons {
         return response;
     }
 
-    public void setResponse(String respone) {
-        this.response = respone.split("\r\n")[0];
+    public void setResponse(String response) {
+        this.response = response.split("\r\n")[0];
         protocol = response.substring(0, 8);
-        try {
-            code = Integer.valueOf(response.substring(9, 12));
-        } catch (NumberFormatException e) {
-//			e.fillInStackTrace();
-        }
+        code = Integer.parseInt(response.substring(9, 12));
         state = response.substring(13);
     }
 
@@ -86,11 +82,7 @@ public class Respons {
         int len = readLineRN(is, buffer);
         response = new String(buffer, 0, len, StandardCharsets.ISO_8859_1);
         protocol = response.substring(0, 8);
-        try {
-            code = Integer.valueOf(response.substring(9, 12));
-        } catch (NumberFormatException e) {
-//			e.fillInStackTrace();
-        }
+        code = Integer.parseInt(response.substring(9, 12));
         state = response.substring(13);
         return len;
     }

@@ -41,7 +41,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
                         try {
                             cleanThread.join(200);
                         } catch (InterruptedException e) {
-                            e.fillInStackTrace();
+                            Thread.currentThread().interrupt();
                         }
 
                         if (has200Ok) {
@@ -59,14 +59,10 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
                     if ((i + 2) >= index.size()) {
                         readmore = false;
                     }
-                    Logger.debug(getClass(), "(i+2) >= index.size()", "is :" + Boolean.valueOf((i + 2) >= index.size()));
-
+                    Logger.debug(getClass(), "(i+2) >= index.size()", "is :" + ((i + 2) >= index.size()));
                 }
-
             }
-        } catch (IOException e) {
-            e.fillInStackTrace();
-        }
+        } catch (IOException ignored) {}
 
     }
 
@@ -87,9 +83,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
                 Logger.debug(getClass(), "---> end of proxywrapper response there is no more data because the end of the stream has been reached");
                 return false;
             }
-        } catch (IOException e) {
-            e.fillInStackTrace();
-        }
+        } catch (IOException ignored) {}
 
         String response = new String(temp, 0, bytes_read, StandardCharsets.ISO_8859_1);
         Logger.debug(getClass(), "start analysis for proxy response ", response);
@@ -136,9 +130,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
             try {
                 client.write(buffer);
                 Logger.debug(getClass(), "write response to client", response);
-            } catch (IOException e) {
-                e.fillInStackTrace();
-            }
+            } catch (IOException ignored) {}
             return true;
         } else if (response.contains("\r\n\r\nHTTP")) {
             int start = response.indexOf("\r\n\r\nHTTP") + 4;
@@ -147,9 +139,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
                 buffer.position(start);
                 client.write(buffer);
                 Logger.debug(getClass(), "write response to client", response);
-            } catch (IOException e) {
-                e.fillInStackTrace();
-            }
+            } catch (IOException ignored) {}
             return true;
         }
 //		else if(str.contains("HTTP/1.1 302 Found")){
@@ -157,9 +147,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
 //				sendNormalRequest();
 //				writeResponseToClient();
 //				return;
-//			} catch (Exception e) {
-//				e.fillInStackTrace();
-//			}
+//			} catch (Exception ignored) {}
 //			
 //		}
 
@@ -170,18 +158,14 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
                 Logger.debug(getClass(), "response state code 3xx", "try send normal request");
                 sendNormalRequest();
                 return handelProxyStateResponse();
-            } catch (Exception e) {
-                e.fillInStackTrace();
-            }
+            } catch (Exception ignored) {}
 
         } else if (response.contains("onnection: close\r\n")) {
             try {
                 client.write(buffer);
                 Logger.debug(getClass(), "write response to client -&- close client socket", response);
                 client.close();
-            } catch (Exception e) {
-                e.fillInStackTrace();
-            }
+            } catch (Exception ignored) {}
             return false;
         }
         // SSH-2.0
@@ -189,13 +173,12 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
             try {
                 client.write(ByteBuffer.wrap("HTTP/1.0 200 connected\r\n\r\n".getBytes(StandardCharsets.UTF_8)));
                 client.write(buffer);
-            } catch (Exception e) {
-                e.fillInStackTrace();
-            }
+            } catch (Exception ignored) {}
             return true;
-        } else {
-//			handelProxyResponse();
         }
+//        else {
+//			handelProxyResponse();
+//        }
 
         return false;
     }
@@ -225,9 +208,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
 //					
 //				
 //			}
-//		} catch (IOException e) {
-//			e.fillInStackTrace();
-//		}
+//		} catch (IOException ignored) {}
 //	}
 
     protected void readResponseFromProxy() {

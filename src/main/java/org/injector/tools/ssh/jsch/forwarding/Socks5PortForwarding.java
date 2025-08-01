@@ -153,11 +153,7 @@ public class Socks5PortForwarding extends Thread {
             channelDirectTCPIP.setOutputStream(out);
             try {
                 channelDirectTCPIP.connect();
-            } catch (JSchException e) {
-                e.fillInStackTrace();
-            }
-
-
+            } catch (JSchException ignored) {}
         }
     }
 }

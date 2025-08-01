@@ -42,9 +42,7 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
 //				cleanThread.start();
 //				try {
 //					cleanThread.join(200);
-//				} catch (InterruptedException e) {
-//					e.fillInStackTrace();
-//				}
+//				} catch (InterruptedException ignored) {}
 //
 //				if(has200Ok) {
 //
@@ -66,12 +64,7 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
             }
             super.handelProxyResponse();
             fireSuccessListener();
-        } catch (IOException e) {
-            e.fillInStackTrace();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.fillInStackTrace();
-        }
+        } catch (Exception ignored) {}
 
     }
 
@@ -95,9 +88,7 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
 
 
             }
-        } catch (IOException e) {
-            e.fillInStackTrace();
-        }
+        } catch (IOException ignored) {}
     }
 
     protected void readResponseFromProxy() {

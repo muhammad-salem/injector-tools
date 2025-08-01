@@ -120,8 +120,6 @@ public class LocalProxy implements EventRunnableHandler {
             }
         } catch (IOException e) {
             Logger.debug(getClass(), "local proxy server  error");
-            e.fillInStackTrace();
-
             fireErrorListener();
             fireStopListener();
         }

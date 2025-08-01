@@ -198,7 +198,6 @@ public class SSHForwardClient implements EventHandler {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 Logger.debug(getClass(), e.getMessage());
-                e.fillInStackTrace();
             }
         } else thread.start();
     }
@@ -210,7 +209,6 @@ public class SSHForwardClient implements EventHandler {
                 thread.join(250);
             } catch (InterruptedException e) {
                 Logger.debug(getClass(), e.getMessage());
-                e.fillInStackTrace();
             }
         }
     }
@@ -263,7 +261,6 @@ public class SSHForwardClient implements EventHandler {
             }
         } catch (IOException e) {
             Logger.debug(getClass(), e.getMessage());
-            e.fillInStackTrace();
 
             fireErrorListener();
 //            fireStopListener();

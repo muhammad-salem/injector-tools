@@ -26,7 +26,7 @@ public interface HostCheck {
         try {
             checkThread.join(getTimeOut() + 50);
         } catch (InterruptedException e) {
-            e.fillInStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 }

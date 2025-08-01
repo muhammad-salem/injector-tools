@@ -33,9 +33,7 @@ public class HandlerByResponseLine extends ProxyHandler {
                 Logger.debug(getClass().getSimpleName(), "---> end of proxy wrapper response");
                 return;
             }
-        } catch (IOException e) {
-            e.fillInStackTrace();
-        }
+        } catch (IOException ignored) {}
         buffer.flip();
         String respons = new String(buffer.array(), 0, bytes_read, StandardCharsets.ISO_8859_1);
         Logger.debug(getClass(), "---> read response data", respons);
@@ -51,9 +49,7 @@ public class HandlerByResponseLine extends ProxyHandler {
                 buffer.position(start);
                 client.write(buffer);
                 Logger.debug(getClass(), "---> response send 200 OK to client", respons);
-            } catch (IOException e) {
-                e.fillInStackTrace();
-            }
+            } catch (IOException ignored) {}
         }
 //		HTTP/1.1 200 OK\r\n\r\n
         else if (respons.endsWith(" 200 OK\r\n\r\n")) {
@@ -61,9 +57,7 @@ public class HandlerByResponseLine extends ProxyHandler {
 
                 client.write(buffer);
                 Logger.debug(getClass(), "---> response send", respons);
-            } catch (IOException e) {
-                e.fillInStackTrace();
-            }
+            } catch (IOException ignored) {}
         } else if (respons.contains("\r\n\r\nHTTP")) {
             int start = respons.indexOf("\r\n\r\nHTTP") + 2;
             respons = respons.substring(start);
@@ -71,26 +65,20 @@ public class HandlerByResponseLine extends ProxyHandler {
                 buffer.position(start);
                 client.write(buffer);
                 Logger.debug(getClass(), "---> response send", respons);
-            } catch (IOException e) {
-                e.fillInStackTrace();
-            }
+            } catch (IOException ignored) {}
         } else if (respons.contains("onnection: close\r\n")) {
             try {
                 client.write(buffer);
                 Logger.debug(getClass(), "response send -- close client socket", respons);
                 client.close();
-            } catch (Exception e) {
-                e.fillInStackTrace();
-            }
+            } catch (Exception ignored) {}
         }
 //		else if(str.contains("HTTP/1.1 302 Found")){
 //			try {
 //				sendNormalRequest();
 //				writeResponseToClient();
 //				return;
-//			} catch (Exception e) {
-//				e.fillInStackTrace();
-//			}
+//			} catch (Exception ignored) {}
 //			
 //		}
         else if (respons.contains("301 Found") || respons.contains("302 Found") || respons.contains("307 Temporary Redirect")) {
@@ -98,9 +86,7 @@ public class HandlerByResponseLine extends ProxyHandler {
             try {
                 sendNormalRequest();
                 handelProxyResponse();
-            } catch (Exception e) {
-                e.fillInStackTrace();
-            }
+            } catch (Exception ignored) {}
 
         } else {
 //			++count;

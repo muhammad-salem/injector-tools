@@ -52,8 +52,8 @@ public class JschSSHClient implements EventHandler {
                 thread = new Thread(this::connectHost, "jsch");
                 thread.start();
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 Logger.debug(getClass(), e.getMessage());
-                e.fillInStackTrace();
             }
         } else thread.start();
     }
@@ -113,18 +113,16 @@ public class JschSSHClient implements EventHandler {
             }
 
             while (session.isConnected()) {
-                try {
-                    session.sendKeepAliveMsg();
-                    Thread.sleep(2000);
-                } catch (Exception e) {
-                    e.fillInStackTrace();
-                }
+                session.sendKeepAliveMsg();
+                Thread.sleep(2000);
             }
-
         } catch (JSchException | NullPointerException | IOException e) {
             Logger.debug(getClass(), e.getClass().getTypeName(), e.getMessage());
             System.exit(0);
         } catch (Exception e) {
+            if (e instanceof InterruptedException){
+                Thread.currentThread().interrupt();
+            }
             Logger.debug(getClass(), e.getClass().getSimpleName(), e.toString());
             Logger.debug(getClass(), "Exception2", e.getCause().getMessage());
             System.exit(0);

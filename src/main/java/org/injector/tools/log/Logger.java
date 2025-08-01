@@ -31,9 +31,7 @@ public class Logger {
                 Logger.logger = new Log2Null();
             }
 
-        } catch (Exception e) {
-            e.fillInStackTrace();
-        }
+        } catch (Exception ignored) {}
     }
 
     public static void debug(Class<?> classname, String message, Object... args) {

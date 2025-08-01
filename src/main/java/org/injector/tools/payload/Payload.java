@@ -513,7 +513,6 @@ public class Payload implements Closeable {
         try {
             return Integer.parseInt(getPort());
         } catch (NumberFormatException e) {
-            e.fillInStackTrace();
             return 80;
         }
     }

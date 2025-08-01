@@ -39,8 +39,7 @@ public class HttpProxyHandler extends ProxyHandler {
                 Logger.debug(getClass(), "---> end of proxy wrapper response");
                 return;
             }
-        } catch (IOException e) {
-            e.fillInStackTrace();
+        } catch (IOException ignored) {
         }
 
         String response = new String(buffer.array(), 0, bytes_read, StandardCharsets.ISO_8859_1);
@@ -59,9 +58,7 @@ public class HttpProxyHandler extends ProxyHandler {
                 client.write(buffer);
 //				LogSlf4j(str);
                 Logger.debug(getClass(), "---> response send 200 OK to client", response);
-            } catch (IOException e) {
-                e.fillInStackTrace();
-            }
+            } catch (IOException ignored) {}
         }
 //		HTTP/1.1 200 OK\r\n\r\n
         else if (response.endsWith(" 200 OK\r\n\r\n")) {
@@ -69,9 +66,7 @@ public class HttpProxyHandler extends ProxyHandler {
                 client.write(buffer);
 //				LogSlf4j(str);
                 Logger.debug(getClass(), "---> response send", response);
-            } catch (IOException e) {
-                e.fillInStackTrace();
-            }
+            } catch (IOException ignored) {}
         }
         // the HTTP
         else if (response.contains("\r\n\r\nHTTP")) {
@@ -81,26 +76,20 @@ public class HttpProxyHandler extends ProxyHandler {
                 buffer.position(start);
                 client.write(buffer);
                 Logger.debug(getClass(), "---> response send", response);
-            } catch (IOException e) {
-                e.fillInStackTrace();
-            }
+            } catch (IOException ignored) {}
         } else if (response.contains("onnection: close\r\n")) {
             try {
                 client.write(buffer);
                 Logger.debug(getClass(), "response send -- close client socket", response);
                 client.close();
-            } catch (Exception e) {
-                e.fillInStackTrace();
-            }
+            } catch (Exception ignored) {}
         }
 //		else if(str.contains("HTTP/1.1 302 Found")){
 //			try {
 //				sendNormalRequest();
 //				writeResponseToClient();
 //				return;
-//			} catch (Exception e) {
-//				e.fillInStackTrace();
-//			}
+//			} catch (Exception ignored) {}
 //			
 //		}
 //		else if(str.contains("301 Found") || str.contains("302 Found") || str.contains("307 Temporary Redirect")){
@@ -109,9 +98,7 @@ public class HttpProxyHandler extends ProxyHandler {
 //				sendNormalRequest();
 //				handelProxyResponse();
 //				return;
-//			} catch (Exception e) {
-//				e.fillInStackTrace();
-//			}	
+//			} catch (Exception ignored) {}
 //		}
 //		else {
 ////			++count;

@@ -66,9 +66,7 @@ public class HttpInputStream extends InputStream {
             }
             scanner.close();
 
-        } catch (IOException e) {
-            e.fillInStackTrace();
-        }
+        } catch (IOException ignored) {}
         checkHostPort();
     }
 
@@ -106,7 +104,6 @@ public class HttpInputStream extends InputStream {
         try {
             return Integer.parseInt(getPort());
         } catch (NumberFormatException e) {
-            e.fillInStackTrace();
             // 80 as no https throw this exception  -- still can be any other port
             return 80;
         }

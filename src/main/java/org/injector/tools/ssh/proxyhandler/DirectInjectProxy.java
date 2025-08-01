@@ -75,9 +75,7 @@ public class DirectInjectProxy extends ProxySocket {
                 }
 
             }
-        } catch (IOException e) {
-            e.fillInStackTrace();
-        }
+        } catch (IOException ignored) {}
 
     }
 

@@ -65,10 +65,7 @@ public class InjectHttpProxyDataWrapper extends ProxyDataWrapper {
                 }
 
             }
-        } catch (IOException e) {
-            e.fillInStackTrace();
-        }
-
+        } catch (IOException ignored) {}
     }
 
 

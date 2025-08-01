@@ -45,7 +45,6 @@ public class Http2Socks5Handler extends TunnelProxyHandler {
             Logger.debug(getClass(), "Connected to Socks Proxy", proxyConfig.getProxyHost());
         } catch (Exception e) {
             Logger.debug(getClass(), "error Can't connect to " + proxyConfig, e.getMessage());
-            e.fillInStackTrace();
         }
 
     }

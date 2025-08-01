@@ -103,7 +103,6 @@ public class Utils {
 //			writer.write(json);
 //			writer.close();
         } catch (Exception e) {
-            e.fillInStackTrace();
             return false;
         }
         // System.out.println(json);
@@ -188,7 +187,6 @@ public class Utils {
 
             reader.close();
         } catch (IOException e) {
-            e.fillInStackTrace();
             return null;
         }
         return string;

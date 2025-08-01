@@ -62,12 +62,8 @@ public class DirectInjectDataWrapper extends ProxyDataWrapper {
                     proxyOutput.flush();
                     Logger.debug(getClass().getSimpleName(), requestLinePayload.substring(index.get(i), index.get(i + 1)));
                 }
-
             }
-        } catch (IOException e) {
-            e.fillInStackTrace();
-        }
-
+        } catch (IOException ignored) {}
     }
 
 

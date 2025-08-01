@@ -110,7 +110,6 @@ public class R {
             delete(temp);
         } catch (IOException e) {
             System.out.println("Can't delete Files");
-            e.fillInStackTrace();
         }
     }
 
@@ -187,9 +186,7 @@ public class R {
         try {
             File file = new File(LockFile);
             FileUtils.writeStringToFile(file, " -- Start App" + System.currentTimeMillis() + "\n", Charset.defaultCharset(), true);
-        } catch (Exception e) {
-            e.fillInStackTrace();
-        }
+        } catch (Exception ignored) {}
     }
 
 

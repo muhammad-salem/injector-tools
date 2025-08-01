@@ -56,7 +56,7 @@ public class TerminalNetworkMonitor extends NetworkMonitorSpeed {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.fillInStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
     }
