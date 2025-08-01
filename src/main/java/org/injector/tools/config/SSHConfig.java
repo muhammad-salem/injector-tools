@@ -19,6 +19,7 @@ public class SSHConfig {
     private Boolean useCompression = true;
     private Boolean skipCheckHostKey = false;
     private int timeout = 4500;
+    private int maxRetries = 1;
 
     private SSHProxyType sshProxyType = SSHProxyType.HTTP_PROXY;
     private String proxyHost = "127.0.0.1";
