@@ -6,19 +6,21 @@ import org.injector.tools.log.Logger;
 import org.injector.tools.proxy.LocalProxy;
 import org.injector.tools.ssh.jsch.JschSSHClient;
 import org.injector.tools.ssh.trilead.SSHForwardClient;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public class InjectionTools {
 
-	Config config;
+    private final Config config;
+    private final ExecutorService executor;
 
-    LocalProxy localProxy;
-    SSHForwardClient ssh;
-    JschSSHClient jschSSHClient;
-
-    ExecutorService executor;
+    private SSHForwardClient ssh;
+    private LocalProxy localProxy;
+    private JschSSHClient jschSSHClient;
 
     public InjectionTools(Config config) {
         this.config = config;
@@ -69,7 +71,31 @@ public class InjectionTools {
 //		jschSSHClient.addSuccessListener(jschSSHClient.getMonitorSpeed()::start);
 //		jschSSHClient.start();
         executor.submit(jschSSHClient.getMonitorSpeed()::start);
-        executor.submit(jschSSHClient::connectHost);
+        var maxRetry = new AtomicInteger(config.getMaxRetries());
+        Supplier<Boolean> keepRetry =  (maxRetry.get() <= 0)
+                ? () -> Boolean.TRUE
+                : () -> maxRetry.get() > 0;
+        executor.submit(() -> {
+            Logger.debug(getClass(), "ssh max retry is %s".formatted(maxRetry.get()));
+            while (keepRetry.get()) {
+                try {
+                    jschSSHClient.connectHost();
+                } catch (Exception e) {
+                    Logger.debug(getClass(),"connection failed");
+                }
+                if (maxRetry.addAndGet(-1) == 0) {
+                    Logger.debug(getClass(), "stop application (try count: %s)".formatted(maxRetry.get()));
+                    try {
+                        Thread.sleep(2000);
+                    }
+                    catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    System.exit(1);
+                }
+                Logger.debug(getClass(), "try to connect... (try count: %s)".formatted(maxRetry.get()));
+            }
+        });
 //		jschSSHClient.addSuccessListener(()-> executor.submit(jschSSHClient.getMonitorSpeed()::start));
     }
 
