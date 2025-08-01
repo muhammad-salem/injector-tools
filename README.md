@@ -1,4 +1,4 @@
-# injector-tools (0.5.1-dev)
+# injector-tools (0.6.0-dev)
 
 
  - Test server security
@@ -14,7 +14,7 @@
 
 
 # Start app
-java -jar injector-tools-0.5.1-dev-jar-with-dependencies.jar filename.json
+java -jar injector-tools-0.6.0-dev-jar-with-dependencies.jar filename.json
 
  - -h	show help message
  - -v	show app version
