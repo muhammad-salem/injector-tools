@@ -5,7 +5,6 @@ import org.injector.tools.proxy.handler.nio.SslChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
@@ -33,7 +32,7 @@ public interface ReadWriteOperation {
                 }
             } catch (Exception e) {
                 log.error("Exception", e);
-                try {input.close();output.close();} catch (IOException ignored) {}
+//                try {input.close();output.close();} catch (IOException ignored) {}
 //                throw new RuntimeException(e);
             }
         };
@@ -57,7 +56,7 @@ public interface ReadWriteOperation {
                 }
             } catch (Exception e) {
                 log.error("Exception", e);
-                try {input.close();output.close();} catch (IOException ignored) {}
+//                try {input.close();output.close();} catch (IOException ignored) {}
 //                throw new RuntimeException(e);
             }
         };
@@ -72,7 +71,7 @@ public interface ReadWriteOperation {
                 }
             } catch (Exception e) {
                 log.error("Exception", e);
-                try {input.close();output.close();} catch (IOException ignored) {}
+//                try {input.close();output.close();} catch (IOException ignored) {}
 //                throw new RuntimeException(e);
             }
         };
@@ -96,7 +95,7 @@ public interface ReadWriteOperation {
                 }
             } catch (Exception e) {
                 log.error("Exception", e);
-                try {input.close();output.close();} catch (IOException ignored) {}
+//                try {input.close();output.close();} catch (IOException ignored) {}
 //                throw new RuntimeException(e);
             }
         };
@@ -112,13 +111,13 @@ public interface ReadWriteOperation {
                         }
                     } catch (Exception e) {
                         log.error("Exception", e);
-                        try {input.close();output.close();} catch (IOException ignored) {}
+//                        try {input.close();output.close();} catch (IOException ignored) {}
 //                        throw new RuntimeException(e);
                     }
                 });
             } catch (Exception e) {
                 log.error("Exception", e);
-                try {input.close();output.close();} catch (IOException ignored) {}
+//                try {input.close();output.close();} catch (IOException ignored) {}
 //                throw new RuntimeException(e);
             }
         };
