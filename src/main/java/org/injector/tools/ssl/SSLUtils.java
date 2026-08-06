@@ -19,7 +19,7 @@ public class SSLUtils {
                 }
         };
         try {
-            var sslContext = SSLContext.getInstance("TLS");
+            var sslContext = SSLContext.getInstance("TLSv1.3");
             sslContext.init(null, trustManagers, null);
             return sslContext;
         } catch (Exception e) {
