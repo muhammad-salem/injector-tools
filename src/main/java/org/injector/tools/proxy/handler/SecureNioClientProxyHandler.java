@@ -44,7 +44,11 @@ public class SecureNioClientProxyHandler extends TcpProxyHandler {
 
     @Override
     protected void remoteConnect(InetSocketAddress remoteAddress) throws IOException {
-        this.nioSslClient = new NioSslClient(remoteAddress.getHostName(), remoteAddress.getPort());
+        this.nioSslClient = new NioSslClient(
+                remoteAddress.getHostName(),
+                remoteAddress.getPort(),
+                this.proxyConfig.getSniHostName()
+        );
         log.info("Initiating TLS handshake...");
         try {
             if (this.nioSslClient.connect()) {

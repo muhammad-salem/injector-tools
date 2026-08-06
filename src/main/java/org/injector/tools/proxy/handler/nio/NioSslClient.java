@@ -4,10 +4,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.ssl.SSLUtils;
 
+import javax.net.ssl.SNIHostName;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSession;
 import java.io.Closeable;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -42,6 +45,11 @@ public class NioSslClient extends NioSslPeer implements Closeable {
     private int port;
 
     /**
+     * the fake sni host name
+     */
+    private String sniHostName;
+
+    /**
      * The engine that will be used to encrypt/decrypt data between this client and the server.
      */
     private SSLEngine engine;
@@ -60,13 +68,22 @@ public class NioSslClient extends NioSslPeer implements Closeable {
      * @param remoteAddress The IP address of the peer.
      * @param port          The peer's port that will be used.
      */
-    public NioSslClient(String remoteAddress, int port) {
+    public NioSslClient(String remoteAddress, int port, String sniHostName) {
         this.remoteAddress = remoteAddress;
         this.port = port;
+        this.sniHostName = sniHostName;
 
         SSLContext context = SSLUtils.getSSLContext();
-        engine = context.createSSLEngine(remoteAddress, port);
-        engine.setUseClientMode(true);
+        this.engine = context.createSSLEngine(remoteAddress, port);
+        this.engine.setUseClientMode(true);
+
+        if (sniHostName != null && !sniHostName.isBlank()) {
+            SSLParameters sslParams = this.engine.getSSLParameters();
+            var serverName = new SNIHostName(sniHostName);
+            sslParams.setServerNames(List.of(serverName));
+            log.info("Use SNI Host Name: {}", sniHostName);
+            this.engine.setSSLParameters(sslParams);
+        }
 
         SSLSession session = engine.getSession();
         myAppData = ByteBuffer.allocate(session.getApplicationBufferSize());
