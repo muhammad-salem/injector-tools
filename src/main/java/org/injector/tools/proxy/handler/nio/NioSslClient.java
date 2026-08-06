@@ -174,12 +174,17 @@ public class NioSslClient extends NioSslPeer implements Closeable {
         boolean exitReadLoop = false;
         while (!exitReadLoop) {
             peerNetData.clear();
+            var pos = peerNetData.position();
             int bytesRead = socketChannel.read(peerNetData);
+            log.info("a.start pos: {}, reads: {}, current pos: {}, limit: {}, capacity: {}", pos, bytesRead, peerNetData.position(), peerNetData.limit(), peerNetData.capacity());
             if (bytesRead > 0) {
                 peerNetData.flip();
+                pos = peerNetData.position();
                 while (peerNetData.hasRemaining()) {
                     peerAppData.clear();
+                    log.info("b.start pos: {}, reads: {}, current pos: {}, limit: {}, capacity: {}", pos, bytesRead, peerNetData.position(), peerNetData.limit(), peerNetData.capacity());
                     SSLEngineResult result = engine.unwrap(peerNetData, peerAppData);
+                    log.info("result: {}, consumed: {}, produced: {}", result.getStatus(), result.bytesConsumed(), result.bytesProduced());
                     switch (result.getStatus()) {
                         case OK:
                             peerAppData.flip();
@@ -192,7 +197,17 @@ public class NioSslClient extends NioSslPeer implements Closeable {
                             peerAppData = enlargeApplicationBuffer(engine, peerAppData);
                             break;
                         case BUFFER_UNDERFLOW:
-                            peerNetData = handleBufferUnderflow(engine, peerNetData);
+                            if (peerNetData.capacity() - peerNetData.position() > 0) {
+                                peerNetData.compact();
+                                log.info("c.start pos: {}, reads: {}, current pos: {}, limit: {}, capacity: {}", pos, bytesRead, peerNetData.position(), peerNetData.limit(), peerNetData.capacity());
+                                Thread.sleep(waitToReadMillis);
+                                bytesRead = socketChannel.read(peerNetData);
+                                log.info("d.start pos: {}, reads: {}, current pos: {}, limit: {}, capacity: {}", pos, bytesRead, peerNetData.position(), peerNetData.limit(), peerNetData.capacity());
+                                peerNetData.flip();
+                                log.info("f.start pos: {}, reads: {}, current pos: {}, limit: {}, capacity: {}", pos, bytesRead, peerNetData.position(), peerNetData.limit(), peerNetData.capacity());
+                            } else {
+                                peerNetData = handleBufferUnderflow(engine, peerNetData);
+                            }
                             break;
                         case CLOSED:
                             closeConnection(socketChannel, engine);
@@ -253,7 +268,14 @@ public class NioSslClient extends NioSslPeer implements Closeable {
                             peerAppData = enlargeApplicationBuffer(engine, peerAppData);
                             break;
                         case BUFFER_UNDERFLOW:
-                            peerNetData = handleBufferUnderflow(engine, peerNetData);
+                            if (peerNetData.capacity() - peerNetData.position() > 0) {
+                                peerNetData.compact();
+                                Thread.sleep(waitToReadMillis);
+                                bytesRead = socketChannel.read(peerNetData);
+                                peerNetData.flip();
+                            } else {
+                                peerNetData = handleBufferUnderflow(engine, peerNetData);
+                            }
                             break;
                         case CLOSED:
                             closeConnection(socketChannel, engine);

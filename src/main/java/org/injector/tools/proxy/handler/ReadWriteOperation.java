@@ -2,12 +2,16 @@ package org.injector.tools.proxy.handler;
 
 import org.injector.tools.proxy.handler.nio.NioSslClient;
 import org.injector.tools.proxy.handler.nio.SslChannelHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 public interface ReadWriteOperation {
+
+     Logger log = LoggerFactory.getLogger(ReadWriteOperation.class);
 
     void syncData();
 
@@ -27,9 +31,10 @@ public interface ReadWriteOperation {
                     input.close();
                     output.close();
                 }
-            } catch (IOException e) {
-//                try {input.close();output.close();} catch (IOException ignored) {}
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                log.error("Exception", e);
+                try {input.close();output.close();} catch (IOException ignored) {}
+//                throw new RuntimeException(e);
             }
         };
     }
@@ -50,9 +55,10 @@ public interface ReadWriteOperation {
                     input.close();
                     output.close();
                 }
-            } catch (IOException e) {
-//                try {input.close();output.close();} catch (IOException ignored) {}
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                log.error("Exception", e);
+                try {input.close();output.close();} catch (IOException ignored) {}
+//                throw new RuntimeException(e);
             }
         };
     }
@@ -64,9 +70,10 @@ public interface ReadWriteOperation {
                 while (buffer.hasRemaining()) {
                     output.write(buffer);
                 }
-            } catch (IOException e) {
-//                try {input.close();output.close();} catch (IOException ignored) {}
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                log.error("Exception", e);
+                try {input.close();output.close();} catch (IOException ignored) {}
+//                throw new RuntimeException(e);
             }
         };
     }
@@ -88,8 +95,9 @@ public interface ReadWriteOperation {
                     output.close();
                 }
             } catch (Exception e) {
-//                try {input.close();output.close();} catch (IOException ignored) {}
-                throw new RuntimeException(e);
+                log.error("Exception", e);
+                try {input.close();output.close();} catch (IOException ignored) {}
+//                throw new RuntimeException(e);
             }
         };
     }
@@ -103,13 +111,15 @@ public interface ReadWriteOperation {
                             output.write(buffer);
                         }
                     } catch (Exception e) {
-//                      try {input.close();output.close();} catch (IOException ignored) {}
-                        throw new RuntimeException(e);
+                        log.error("Exception", e);
+                        try {input.close();output.close();} catch (IOException ignored) {}
+//                        throw new RuntimeException(e);
                     }
                 });
             } catch (Exception e) {
-//                try {input.close();output.close();} catch (IOException ignored) {}
-                throw new RuntimeException(e);
+                log.error("Exception", e);
+                try {input.close();output.close();} catch (IOException ignored) {}
+//                throw new RuntimeException(e);
             }
         };
     }

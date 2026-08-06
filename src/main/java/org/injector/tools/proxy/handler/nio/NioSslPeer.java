@@ -174,7 +174,13 @@ public abstract class NioSslPeer {
                     break;
                 case BUFFER_UNDERFLOW:
                     // Will occur either when no data was read from the peer or when the peerNetData buffer was too small to hold all peer's data.
-                    peerNetData = handleBufferUnderflow(engine, peerNetData);
+                    if (peerNetData.capacity() - peerNetData.position() > 0) {
+                        peerNetData.compact();
+                        socketChannel.read(peerNetData);
+                        peerNetData.flip();
+                    } else {
+                        peerNetData = handleBufferUnderflow(engine, peerNetData);
+                    }
                     break;
                 case CLOSED:
                     if (engine.isOutboundDone()) {
@@ -213,7 +219,7 @@ public abstract class NioSslPeer {
                     myNetData = enlargePacketBuffer(engine, myNetData);
                     break;
                 case BUFFER_UNDERFLOW:
-                    throw new SSLException("Buffer underflow occured after a wrap. I don't think we should ever get here.");
+                    throw new SSLException("Buffer underflow occurred after a wrap. I don't think we should ever get here.");
                 case CLOSED:
                     try {
                         myNetData.flip();
@@ -272,7 +278,7 @@ public abstract class NioSslPeer {
         if (sessionProposedCapacity > buffer.capacity()) {
             buffer = ByteBuffer.allocate(sessionProposedCapacity);
         } else {
-            buffer = ByteBuffer.allocate(buffer.capacity() * 2);
+            buffer = ByteBuffer.allocate((int) (buffer.capacity() * 1.1f));
         }
         return buffer;
     }
@@ -289,12 +295,18 @@ public abstract class NioSslPeer {
      * @throws Exception
      */
     protected ByteBuffer handleBufferUnderflow(SSLEngine engine, ByteBuffer buffer) {
+        log.info("PacketBufferSize: {}, limit: {}", engine.getSession().getPacketBufferSize(), buffer.limit());
         if (engine.getSession().getPacketBufferSize() < buffer.limit()) {
             return buffer;
         } else {
+            var limit = buffer.limit();
+            var position = buffer.position();
             ByteBuffer replaceBuffer = enlargePacketBuffer(engine, buffer);
             buffer.flip();
+            buffer.limit(limit);
             replaceBuffer.put(buffer);
+            replaceBuffer.position(position);
+            replaceBuffer.limit(limit);
             return replaceBuffer;
         }
     }
