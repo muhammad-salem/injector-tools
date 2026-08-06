@@ -14,6 +14,7 @@ public class HttpRequest {
     RequestLine requestLine;
     Map<String, List<String>> headers = new HashMap<String, List<String>>();
     private String headerString = null;
+
     public HttpRequest() {
         requestBytes = new byte[8 * 1024];
     }

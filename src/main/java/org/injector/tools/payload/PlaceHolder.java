@@ -36,6 +36,9 @@ public enum PlaceHolder {
     cache_control("[cache_control]"),
     rotate("[rotate=*]"),
 
+    authorization("[Authorization]"),
+    proxyAuthorization("[Proxy-Authorization]"),
+
     split("[split]"),
     delay_split("[delay_split]"),
     instant_split("[instant_split]"),
@@ -100,6 +103,11 @@ public enum PlaceHolder {
                 return "Cache-Control:";
             case instant_split:
                 return "";
+
+            case authorization:
+                return "Authorization:";
+            case proxyAuthorization:
+                return "Proxy-Authorization:";
 
             default:
                 return "";

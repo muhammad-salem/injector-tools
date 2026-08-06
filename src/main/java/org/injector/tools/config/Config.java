@@ -12,14 +12,13 @@ import java.util.Arrays;
 @Setter
 @Getter
 public class Config {
-    private SSHConfig sshConfig = new SSHConfig();
-    private LocalProxyConfig localProxyConfig = new LocalProxyConfig(8989, LocalProxyType.STOP, new HostProxyConfig());
-
-    private Boolean enableLogs = true;
     private final String _SSHProxyType = Arrays.toString(SSHProxyType.values());
     private final String _LocalProxyType = Arrays.toString(LocalProxyType.values());
     private final String _HostProxyType = Arrays.toString(HostProxyType.values());
     private final String _version = "0.6.0";
+    private SSHConfig sshConfig = new SSHConfig();
+    private LocalProxyConfig localProxyConfig = new LocalProxyConfig(8989, LocalProxyType.STOP, new HostProxyConfig());
+    private Boolean enableLogs = true;
 
     public static void CreateJsonTemplate() {
         CreateJsonTemplate("template.json");

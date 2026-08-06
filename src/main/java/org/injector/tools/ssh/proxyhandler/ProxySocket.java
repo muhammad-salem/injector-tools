@@ -5,7 +5,7 @@ import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.SocketFactory;
 import com.trilead.ssh2.ProxyData;
 import lombok.Setter;
-import org.injector.tools.log.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.speed.NetworkMonitorSpeed;
 import org.injector.tools.speed.net.MonitorSocketWrapper;
 
@@ -16,6 +16,7 @@ import java.net.Socket;
 import java.util.Objects;
 
 
+@Slf4j
 @Setter
 public abstract class ProxySocket implements Proxy, ProxyData {
     protected String proxyHost;
@@ -48,13 +49,13 @@ public abstract class ProxySocket implements Proxy, ProxyData {
     public void connect(SocketFactory socket_factory, String host, int port, int timeout) {
         try {
 //			if (socket_factory == null) {
-            Logger.debug(getClass(), "create proxy socket");
+            log.info( "create proxy socket");
             var directSocket = this.openSocketConnection(host, port, timeout);
             this.socket = new MonitorSocketWrapper(directSocket, monitorSpeed);
             this.in = socket.getInputStream();
             this.out = socket.getOutputStream();
 //			} else {
-//				Logger.debug(getClass(), "create proxy socket using 'socket_factory'");
+//				log.info( "create proxy socket using 'socket_factory'");
 //				var directSocket = socket_factory.createSocket(host, port);
 //				this.socket = new MonitorSocketWrapper(directSocket, monitorSpeed);
 //				this.in = socket_factory.getInputStream(socket);
@@ -62,7 +63,7 @@ public abstract class ProxySocket implements Proxy, ProxyData {
 //			}
 
         } catch (Exception e) {
-            Logger.debug(getClass(),"%s creating proxy socket: [%s]", "Error", e.getMessage());
+            log.info("{} creating proxy socket: [{}]", "Error", e.getMessage());
         }
     }
 

@@ -2,6 +2,7 @@ package org.injector.tools.payload;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -21,7 +22,7 @@ public class Payload implements Closeable {
     public Payload(String format, String request) {
         setFormat(format);
         setRequest(request);
-        initRequestMap();
+//        initRequestMap();
     }
 
     public static ArrayList<Integer> getSplitIndexes(String requestPayload) {
@@ -185,6 +186,9 @@ public class Payload implements Closeable {
         replace = replacePlaceholder(replace, PlaceHolder.x_forwarded_for);
         replace = replacePlaceholder(replace, PlaceHolder.cookie);
 
+        replace = replacePlaceholder(replace, PlaceHolder.authorization);
+        replace = replacePlaceholder(replace, PlaceHolder.proxyAuthorization);
+
         //replace = replacePlaceholder(replace, PlaceHolder.instant_split);
 
 
@@ -227,6 +231,10 @@ public class Payload implements Closeable {
         replace = replacePlaceholder(replace, PlaceHolder.x_forwarded_for);
         replace = replacePlaceholder(replace, PlaceHolder.cookie);
 
+        replace = replacePlaceholder(replace, PlaceHolder.authorization);
+        replace = replacePlaceholder(replace, PlaceHolder.proxyAuthorization);
+
+
         //replace = replacePlaceholder(replace, PlaceHolder.instant_split);
 
 
@@ -266,7 +274,7 @@ public class Payload implements Closeable {
 
         String[] lines = request.split("\r\n");
         setNetDate(lines[0]);
-        setRequesNetData(getFromRequestMab(PlaceHolder.netData));
+        setRequestNetData(getFromRequestMab(PlaceHolder.netData));
         setHeaders(getFromRequestMab(PlaceHolder.raw));
 
         setHeaderOf(PlaceHolder.ua);
@@ -274,6 +282,8 @@ public class Payload implements Closeable {
 
         setHeaderOf(PlaceHolder.header_host);
         setHeaderOf(PlaceHolder.referer);
+        setHeaderOf(PlaceHolder.authorization);
+        setHeaderOf(PlaceHolder.proxyAuthorization);
         setHeaderOf(PlaceHolder.x_online_host);
         setHeaderOf(PlaceHolder.x_forward_host);
         setHeaderOf(PlaceHolder.x_forwarded_for);
@@ -293,6 +303,14 @@ public class Payload implements Closeable {
         }
     }
 
+    public void clearUA() {
+        requestMap.remove(PlaceHolder.ua);
+    }
+
+    public void setUA(String ua) {
+        requestMap.put(PlaceHolder.ua, ua);
+    }
+
     void setHeaderOf(PlaceHolder holder) {
         String headers = getFromRequestMab(PlaceHolder.headers);
         String holderRaw = holder.getRawString();
@@ -304,7 +322,7 @@ public class Payload implements Closeable {
         }
     }
 
-    void setRequesNetData(String netData) {
+    void setRequestNetData(String netData) {
         requestMap.put(PlaceHolder.method, netData.split(" ")[0]);
         requestMap.put(PlaceHolder.url, netData.split(" ")[1]);
 //		requestMap.put(PlaceHolder.host_port, netData.split(" ")[1]);
@@ -424,7 +442,7 @@ public class Payload implements Closeable {
     private void initSplitIfFound() {
 
         if (format.contains("split")) {
-            int x = 0, y = 0, i = 0;
+            int x, y, i;
             i = format.indexOf("split");
             x = format.lastIndexOf('[', i);
             y = format.indexOf(']', i) + 1;
@@ -684,6 +702,40 @@ public class Payload implements Closeable {
         return getFromRequestMab(PlaceHolder.x_forwarded_for);
     }
 
+    /**
+     * @return authorization header
+     */
+    public String getAuthorization() {
+        return getFromRequestMab(PlaceHolder.authorization);
+    }
+
+    /**
+     * @return proxy authorization header
+     */
+    public String getProxyAuthorization() {
+        return getFromRequestMab(PlaceHolder.proxyAuthorization);
+    }
+
+    /**
+     * set authorization header
+     */
+    public void setAuthorization(String user, String password) {
+        var authorization = "Authorization: Basic " + this.encodeBase64(user, password);
+        requestMap.put(PlaceHolder.authorization, authorization);
+    }
+
+    /**
+     * set proxy authorization header
+     */
+    public void setProxyAuthorization(String user, String password) {
+        var authorization = "Proxy-Authorization: Basic " + this.encodeBase64(user, password);
+        requestMap.put(PlaceHolder.proxyAuthorization, authorization);
+    }
+
+    private String encodeBase64(String user, String password) {
+        var credentials = user + ":" + password;
+        return java.util.Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+    }
 
 }
 

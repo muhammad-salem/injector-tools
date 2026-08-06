@@ -1,0 +1,117 @@
+package org.injector.tools.proxy.handler;
+
+import org.injector.tools.proxy.handler.nio.NioSslClient;
+import org.injector.tools.proxy.handler.nio.SslChannelHandler;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+
+public interface ReadWriteOperation {
+
+    void syncData();
+
+    static ReadWriteOperation create(SocketChannel input, SocketChannel output) {
+        return () -> {
+            ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
+            try {
+                int len = -2;
+                while ((len = input.read(buffer)) > 0) {
+                    buffer.flip();
+                    while (buffer.hasRemaining()) {
+                        output.write(buffer);
+                    }
+                    buffer.clear();
+                }
+                if (len == -1) {
+                    input.close();
+                    output.close();
+                }
+            } catch (IOException e) {
+//                try {input.close();output.close();} catch (IOException ignored) {}
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    static ReadWriteOperation create(SocketChannel input, SslChannelHandler output) {
+        return () -> {
+            ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
+            try {
+                int len = -2;
+                while ((len = input.read(buffer)) > 0) {
+                    buffer.flip();
+                    while (buffer.hasRemaining()) {
+                        output.write(buffer);
+                    }
+                    buffer.clear();
+                }
+                if (len == -1) {
+                    input.close();
+                    output.close();
+                }
+            } catch (IOException e) {
+//                try {input.close();output.close();} catch (IOException ignored) {}
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    static ReadWriteOperation create(SslChannelHandler input, SocketChannel output) {
+        return () -> {
+            try {
+                ByteBuffer buffer = input.read();
+                while (buffer.hasRemaining()) {
+                    output.write(buffer);
+                }
+            } catch (IOException e) {
+//                try {input.close();output.close();} catch (IOException ignored) {}
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    static ReadWriteOperation create(SocketChannel input, NioSslClient output) {
+        return () -> {
+            ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
+            try {
+                int len;
+                while ((len = input.read(buffer)) > 0) {
+                    buffer.flip();
+                    while (buffer.hasRemaining()) {
+                        output.write(buffer);
+                    }
+                    buffer.clear();
+                }
+                if (len == -1) {
+                    input.close();
+                    output.close();
+                }
+            } catch (Exception e) {
+//                try {input.close();output.close();} catch (IOException ignored) {}
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    static ReadWriteOperation create(NioSslClient input, SocketChannel output) {
+        return () -> {
+            try {
+                input.read(buffer -> {
+                    try {
+                        while (buffer.hasRemaining()) {
+                            output.write(buffer);
+                        }
+                    } catch (Exception e) {
+//                      try {input.close();output.close();} catch (IOException ignored) {}
+                        throw new RuntimeException(e);
+                    }
+                });
+            } catch (Exception e) {
+//                try {input.close();output.close();} catch (IOException ignored) {}
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+}

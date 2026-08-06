@@ -3,7 +3,7 @@ package org.injector.tools.ssh.proxyhandler;
 import com.jcraft.jsch.JSchException;
 import com.trilead.ssh2.HTTPProxyException;
 import lombok.Getter;
-import org.injector.tools.log.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.speed.NetworkMonitorSpeed;
 
 import java.io.IOException;
@@ -13,9 +13,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Base64;
 
+@Slf4j
 @Getter
 public class HttpProxy extends ProxySocket {
 
@@ -71,7 +71,7 @@ public class HttpProxy extends ProxySocket {
             String credentials = proxyUser + ":" + proxyPass;
             byte[] encoded = Base64.getEncoder().encode(credentials.getBytes(StandardCharsets.ISO_8859_1));
             sb.append("Proxy-Authorization: Basic ");
-            sb.append(Arrays.toString(encoded));
+            sb.append(new String(encoded, StandardCharsets.ISO_8859_1));
             sb.append("\r\n");
         }
 
@@ -85,7 +85,7 @@ public class HttpProxy extends ProxySocket {
         }
 
         sb.append("\r\n");
-        Logger.debug(getClass(), sb.toString());
+        log.info( sb.toString());
 
 
         OutputStream out = sock.getOutputStream();

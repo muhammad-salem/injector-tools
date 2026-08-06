@@ -66,7 +66,8 @@ public class HttpInputStream extends InputStream {
             }
             scanner.close();
 
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
         checkHostPort();
     }
 

@@ -1,13 +1,14 @@
 package org.injector.tools.proxy.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.config.HostProxyConfig;
-import org.injector.tools.log.Logger;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 
+@Slf4j
 public class SplitCleanerHandler extends TunnelProxyHandler {
 
 
@@ -31,7 +32,7 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
                     super.handelProxyResponse();
 
                 } else {
-                    Logger.debug(getClass(), "write raw payload part#" + i, reqs.get(i));
+                    log.info( "write raw payload part#{}, {}", i, reqs.get(i));
                     remote.write(ByteBuffer.wrap(reqs.get(i).getBytes()));
                 }
 
@@ -46,10 +47,10 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
 //
 //				if(has200Ok) {
 //
-////					Logger.debug(getClass(), "fire Success Listener");
+////					log.info( "fire Success Listener");
 //
-//					Logger.debug(getClass(), "stop writing the rest of payload ");
-//					Logger.debug(getClass(), "send 200 Connected to Client ");
+//					log.info( "stop writing the rest of payload ");
+//					log.info( "send 200 Connected to Client ");
 //					clientOutput.write("HTTP/1.1 200 Connected\r\n\r\n".getBytes());
 ////					proxyOutput.write(0);
 ////					proxyOutput.write("SSH-2.0-".getBytes());
@@ -64,23 +65,24 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
             }
             super.handelProxyResponse();
             fireSuccessListener();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
     }
 
     public void cleanProxyInputStream() {
-        Logger.debug(getClass(), "clean proxy input stream ");
+        log.info( "clean proxy input stream ");
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         int bytes_read = 0;
         try {
             while ((bytes_read = remote.read(buffer)) != -1) {
                 buffer.clear();
                 if (bytes_read == 0) {
-                    Logger.debug(getClass(), "input stream of proxy had been cleand");
+                    log.info( "input stream of proxy had been cleaned");
                     break;
                 } else {
                     String res = new String(buffer.array(), 0, bytes_read);
-                    Logger.debug(getClass(), "proxy input stream output", res);
+                    log.info("proxy input stream output: {}", res);
                     if (res.contains("200 Connect")) {
                         has200Ok = true;
                     }
@@ -88,15 +90,16 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
 
 
             }
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 
     protected void readResponseFromProxy() {
-        Logger.debug(getClass(), "readResponseFromProxy()", "do nothing");
+        log.info("readResponseFromProxy({})", "do nothing");
     }
 
 //	protected void transferDataFromClientToProxy() {
-//		Logger.debug(getClass(), "Start transferDataFromClientToProxy");
+//		log.info( "Start transferDataFromClientToProxy");
 //		new Thread(new Runnable() {
 //
 //			private void transferData() {
@@ -105,13 +108,13 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
 //				try {
 //					while ((bytes_read = clientInput.read(temp)) != -1) {
 //						String data = new String(temp, 0, bytes_read);
-//						Logger.debug(getClass(), "debug client request", data);
+//						log.info( "debug client request", data);
 ////						if(data.startsWith("SSH-2.0-")) {continue;}
 //						proxyOutput.write(temp, 0, bytes_read);
 //						proxyOutput.flush();
 //					}
 //				} catch (IOException e) {
-//					Logger.debug(getClass(), "read from client", e.getMessage());
+//					log.info( "read from client", e.getMessage());
 //                    debugSockets(e);
 //                    fireErrorListener();
 //				}

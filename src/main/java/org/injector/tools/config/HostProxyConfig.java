@@ -46,7 +46,7 @@ public class HostProxyConfig {
 
     public boolean isDirect() {
         return switch (proxyType) {
-            case DIRECT, DIRECT_CLOSE, SNI_HOST_NAME ->  true;
+            case DIRECT, DIRECT_CLOSE, SNI_HOST_NAME -> true;
             default -> false;
         };
     }

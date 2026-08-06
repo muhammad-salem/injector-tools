@@ -180,7 +180,8 @@ public class PlatformUtil {
             InputStream in = new FileInputStream(file);
             p.load(in);
             in.close();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
         if (javafxPlatform == null) {
             javafxPlatform = p.getProperty("javafx.platform");
         }

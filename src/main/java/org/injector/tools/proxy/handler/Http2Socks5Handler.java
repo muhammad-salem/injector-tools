@@ -1,12 +1,13 @@
 package org.injector.tools.proxy.handler;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.config.HostProxyConfig;
-import org.injector.tools.log.Logger;
 
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 
+@Slf4j
 public class Http2Socks5Handler extends TunnelProxyHandler {
 
     /**
@@ -35,16 +36,16 @@ public class Http2Socks5Handler extends TunnelProxyHandler {
             InetSocketAddress address = new InetSocketAddress(payload.getHost(), payload.getPortInt());
 
 
-            Logger.debug(getClass(), "Connect to Socks Proxy.... ");
+            log.info( "Connect to Socks Proxy.... ");
 
             remoteConnect(address);
 //			
 //			proxySocket = new Socket(proxy);
 //			proxySocket.connect(address);
 
-            Logger.debug(getClass(), "Connected to Socks Proxy", proxyConfig.getProxyHost());
+            log.info( "Connected to Socks Proxy", proxyConfig.getProxyHost());
         } catch (Exception e) {
-            Logger.debug(getClass(), "error Can't connect to " + proxyConfig, e.getMessage());
+            log.info( "error Can't connect to " + proxyConfig, e.getMessage());
         }
 
     }

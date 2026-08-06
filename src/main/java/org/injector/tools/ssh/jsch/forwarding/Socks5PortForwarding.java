@@ -3,8 +3,8 @@ package org.injector.tools.ssh.jsch.forwarding;
 import com.jcraft.jsch.ChannelDirectTCPIP;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import lombok.extern.slf4j.Slf4j;
 import org.connectbot.simplesocks.Socks5Server;
-import org.injector.tools.log.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +13,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+@Slf4j
 public class Socks5PortForwarding extends Thread {
     private final Session session;
     private final ServerSocket ss;
@@ -95,7 +96,7 @@ public class Socks5PortForwarding extends Thread {
             Socks5Server server = new Socks5Server(in, out);
             try {
                 if (!server.acceptAuthentication() || !server.readRequest()) {
-                    Logger.debug(this.getClass(), "Could not start SOCKS session");
+                    log.info("Could not start SOCKS session");
                     return;
                 }
             } catch (IOException ioe) {
@@ -153,7 +154,8 @@ public class Socks5PortForwarding extends Thread {
             channelDirectTCPIP.setOutputStream(out);
             try {
                 channelDirectTCPIP.connect();
-            } catch (JSchException ignored) {}
+            } catch (JSchException ignored) {
+            }
         }
     }
 }

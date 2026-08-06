@@ -7,5 +7,6 @@ public enum HostProxyType {
     DIRECT,
     DIRECT_CLOSE,
     PROXY_CLOSE,
-    SNI_HOST_NAME
+    SNI_HOST_NAME,
+    HTTPS_SNI_HOST_NAME
 }

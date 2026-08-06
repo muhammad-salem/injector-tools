@@ -24,7 +24,7 @@ public enum SSHProxyType {
             // to check configuration then chose the right way to connect , or tray them all till it.
             case HTTP_PROXY ->
                 // use proxy before connect to ssh host , defined with local proxy
-                    new HttpProxy(config.getProxyHost(), config.getProxyPort(), monitorSpeed);
+                    new HttpProxy(config.getProxyHost(), config.getProxyPort(), config.getUser(), config.getPassword(), monitorSpeed);
             case DIRECT_INJECT ->
                 // used as direct inject to ssh host
                     new DirectInjectProxy(config.getHost(), config.getPort(), config.getPayload(), monitorSpeed);

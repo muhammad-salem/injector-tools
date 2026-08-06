@@ -7,7 +7,6 @@ import com.jcraft.jsch.Session;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -50,8 +49,6 @@ public class HttpPortForwarding extends Thread {
             Thread t = new Thread(runnable);
             t.setDaemon(true);
             t.start();
-
-
         }
     }
 
@@ -101,8 +98,8 @@ public class HttpPortForwarding extends Thread {
             }
 
 //			String req = new String(httpins.requestBytes, "utf-8");
-//			Logger.debug(this.getClass(), req);
-//			Logger.debug(this.getClass(), "req -> "+httpins.getHost()+':'+httpins.getPort());
+//			log.info("req);
+//			log.info("req -> "+httpins.getHost()+':'+httpins.getPort());
 
             try {
                 final ChannelDirectTCPIP channel = (ChannelDirectTCPIP) session.openChannel("direct-tcpip");

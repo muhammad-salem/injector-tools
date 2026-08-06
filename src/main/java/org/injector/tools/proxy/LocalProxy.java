@@ -2,11 +2,19 @@ package org.injector.tools.proxy;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.config.HostProxyConfig;
 import org.injector.tools.config.LocalProxyConfig;
 import org.injector.tools.event.EventRunnableHandler;
-import org.injector.tools.log.Logger;
-import org.injector.tools.proxy.handler.*;
+import org.injector.tools.proxy.handler.ChannelSelector;
+import org.injector.tools.proxy.handler.DirectCloseHandler;
+import org.injector.tools.proxy.handler.DirectProxyHandler;
+import org.injector.tools.proxy.handler.Http2Socks5Handler;
+import org.injector.tools.proxy.handler.ProxyCloseHandler;
+import org.injector.tools.proxy.handler.ProxyHandler;
+import org.injector.tools.proxy.handler.SecureNioClientProxyHandler;
+import org.injector.tools.proxy.handler.SniHostNameProxyHandler;
+import org.injector.tools.proxy.handler.TunnelProxyHandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -20,6 +28,7 @@ import java.nio.channels.SocketChannel;
  * it will run, so you need to check it before create any new {@link LocalProxy}
  */
 
+@Slf4j
 public class LocalProxy implements EventRunnableHandler {
 
     private ServerSocketChannel localServer = null;
@@ -30,6 +39,7 @@ public class LocalProxy implements EventRunnableHandler {
     @Setter
     @Getter
     private HostProxyConfig hostProxyConfig;
+
     /**
      * create Local Proxy with no configuration
      * you should call setLocalProxyConfig, setProxyConfig, and initLocalProxy
@@ -54,14 +64,15 @@ public class LocalProxy implements EventRunnableHandler {
 //		channelSelector.getService().execute(this::run);
 //		run();
         registerLocalServerToSelector();
-        channelSelector.startSelector();
+//        channelSelector.startSelector();
+        channelSelector.startSelectorProcess();
     }
 
     public void initSelectorService() {
         try {
             channelSelector = new ChannelSelector();
         } catch (Exception e) {
-            Logger.debug(e.getClass(), "Message ", e.getMessage());
+            log.error("Error Message {}", e.getMessage());
         }
     }
 
@@ -70,7 +81,7 @@ public class LocalProxy implements EventRunnableHandler {
             localServer = ServerSocketChannel.open();
             InetSocketAddress address = new InetSocketAddress(localProxyConfig.getLocalProxyPort());
             localServer.bind(address);
-            Logger.debug(getClass(), "local proxy start listen on port (" + address.getPort() + ")");
+            log.info("local proxy start listen on port ({})", address.getPort());
         } catch (IOException e) {
             try {
                 localServer = ServerSocketChannel.open();
@@ -79,57 +90,33 @@ public class LocalProxy implements EventRunnableHandler {
                 localProxyConfig.setLocalProxyPort(address.getPort());
 
 //				System.err.println("Local Server Port is automatically allocated to " + this.localPort );
-                Logger.debug(getClass(), "Local Server Port is automatically allocated to " + localProxyConfig.getLocalProxyPort());
+                log.info("Local Server Port is automatically allocated to {}", localProxyConfig.getLocalProxyPort());
 
             } catch (IOException e1) {
-                Logger.debug(getClass(), "Can't initApp Local Server");
-                Logger.debug(e.getClass(), "Message ", e.getMessage());
+                log.info( "Can't initApp Local Server");
+                log.error("Error Message", e);
                 return;
             }
-
         }
 
         fireInitListener();
     }
 
-
     public void registerLocalServerToSelector() {
         try {
             localServer.configureBlocking(false);
-            Logger.debug(getClass(), "Configure to Non-Blocking");
+            log.info( "Configure to Non-Blocking");
             localServer.register(channelSelector.getSelector(), localServer.validOps(), this);
-            Logger.debug(getClass(), "Local Server had been registered To Selector Channel");
+            log.info( "Local Server had been registered To Selector Channel");
         } catch (IOException e) {
-            Logger.debug(getClass(), "fail to configure Block local server");
-            Logger.debug(e.getClass(), "Message ", e.getMessage());
+            log.info( "fail to configure Block local server");
+            log.error("Error Message: {}", e.getMessage());
         }
-
-    }
-
-
-    public void run() {
-        if (localServer == null) initLocalProxy();
-
-        fireStartListener();
-        try {
-            while (true) {
-                SocketChannel client = localServer.accept();
-                Logger.debug(getClass(), "", client.getRemoteAddress());
-                handle(client);
-//				new TunnelProxyHandler(localServer.accept());
-            }
-        } catch (IOException e) {
-            Logger.debug(getClass(), "local proxy server  error");
-            fireErrorListener();
-            fireStopListener();
-        }
-        Logger.debug(getClass(), "Proxy had stop!");
-        fireCompleteListener();
     }
 
 
     public void checkProxyServer() {
-        if (!localProxyConfig.isAllowToRun() || hostProxyConfig.isDirect()){
+        if (!localProxyConfig.isAllowToRun() || hostProxyConfig.isDirect()) {
             return;
         }
         var checker = new HostChecker();
@@ -141,7 +128,7 @@ public class LocalProxy implements EventRunnableHandler {
     public void handle(SocketChannel client) {
         ProxyHandler handler = switch (hostProxyConfig.getProxyType()) {
             case HTTP, HTTPS -> {
-                Logger.debug(getClass(), "use TunnelProxyHandler");
+                log.info( "use TunnelProxyHandler");
                 yield new TunnelProxyHandler(client, hostProxyConfig, channelSelector);
 
 //				Logger.debug(getClass() , "use AdvancedSplitHandler");
@@ -151,7 +138,7 @@ public class LocalProxy implements EventRunnableHandler {
 //				handler = new SplitCleanerHandler(client,proxyConfig);
             }
             case SOCKS -> {
-                Logger.debug(getClass(), "use Http2Socks5Handler");
+                log.info( "use Http2Socks5Handler");
                 yield new Http2Socks5Handler(client, hostProxyConfig, channelSelector);
             }
 			/*case STOP:
@@ -163,20 +150,28 @@ public class LocalProxy implements EventRunnableHandler {
                 }
 				return;*/
             case SNI_HOST_NAME -> {
-                Logger.debug(getClass(), "use SniHostNameProxyHandler");
+                log.info( "use SniHostNameProxyHandler");
                 yield new SniHostNameProxyHandler(client, hostProxyConfig, channelSelector);
+            }
+            case HTTPS_SNI_HOST_NAME-> {
+                log.info( "use HTTPS_SNI_HOST_NAME: SSLProxyHandler");
+//                yield new SecureChannelProxyHandler(client, hostProxyConfig, channelSelector);
+//                yield new SecureProxyHandler(client, hostProxyConfig, channelSelector); // working
+//                yield new SSLProxyHandler(client, hostProxyConfig, channelSelector);
+//                yield new SecureChannelProxyHandler(client, hostProxyConfig, channelSelector);
+                yield new SecureNioClientProxyHandler(client, hostProxyConfig, channelSelector);
             }
             /*case TRANSPARENT:*/
             case DIRECT_CLOSE -> {
-                Logger.debug(getClass(), "use DirectCloseHandler");
+                log.info( "use DirectCloseHandler");
                 yield new DirectCloseHandler(client, hostProxyConfig, channelSelector);
             }
             case PROXY_CLOSE -> {
-                Logger.debug(getClass(), "use ProxyCloseHandler");
+                log.info( "use ProxyCloseHandler");
                 yield new ProxyCloseHandler(client, hostProxyConfig, channelSelector);
             }
             default -> {
-                Logger.debug(getClass(), "use DirectProxyHandler");
+                log.info( "use DirectProxyHandler");
                 yield new DirectProxyHandler(client, hostProxyConfig, channelSelector);
             }
         };

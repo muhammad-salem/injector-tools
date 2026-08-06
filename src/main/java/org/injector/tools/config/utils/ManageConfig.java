@@ -1,7 +1,10 @@
 package org.injector.tools.config.utils;
 
 import lombok.Setter;
-import org.injector.tools.config.*;
+import org.injector.tools.config.Config;
+import org.injector.tools.config.HostProxyConfig;
+import org.injector.tools.config.LocalProxyConfig;
+import org.injector.tools.config.SSHConfig;
 import org.injector.tools.utils.Utils;
 
 import java.io.FileNotFoundException;
@@ -9,20 +12,18 @@ import java.io.FileNotFoundException;
 @Setter
 public class ManageConfig {
 
-    public static ManageConfig getManager() {
-        return manager != null ? manager : new ManageConfig();
-    }
-    private static ManageConfig manager = getManager();
-
     private Config config;
 
     public ManageConfig() {
-    }
+    }    private static ManageConfig manager = getManager();
 
     public ManageConfig(Config config) {
         this.config = config;
     }
 
+    public static ManageConfig getManager() {
+        return manager != null ? manager : new ManageConfig();
+    }
 
     public static void setManager(ManageConfig manage) {
         ManageConfig.manager = manage;
@@ -86,6 +87,5 @@ public class ManageConfig {
     public Config getConfig() {
         return config != null ? config : new Config();
     }
-
 
 }

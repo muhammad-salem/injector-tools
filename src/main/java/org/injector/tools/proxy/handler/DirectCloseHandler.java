@@ -1,7 +1,7 @@
 package org.injector.tools.proxy.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.config.HostProxyConfig;
-import org.injector.tools.log.Logger;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author salem
  */
+@Slf4j
 public class DirectCloseHandler extends DirectProxyHandler {
 
     private int readDataCounter = 1;
@@ -39,7 +40,7 @@ public class DirectCloseHandler extends DirectProxyHandler {
 
     @Override
     protected void registerTransferDataFromProxyToClient() {
-        Logger.debug(getClass(), "Start transfer Data From Proxy To Client");
+        log.info( "Start transfer Data From Proxy To Client");
 
         ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
         try {
@@ -59,11 +60,11 @@ public class DirectCloseHandler extends DirectProxyHandler {
             }
 
         } catch (IOException e) {
-            Logger.debug(e.getClass(), "read from proxy", e.getMessage());
+            log.error("read from proxy", e.getMessage());
             debugSocketsChannel(e);
             fireErrorListener();
         } catch (InterruptedException e) {
-            Logger.debug(getClass(), e.getClass().getSimpleName(), e.getMessage());
+            log.info( e.getClass().getSimpleName(), e.getMessage());
         }
     }
 
@@ -82,7 +83,7 @@ public class DirectCloseHandler extends DirectProxyHandler {
 
             closeConnection();
         } catch (InterruptedException e) {
-            Logger.debug(getClass(), e.getClass().getSimpleName(), e.getMessage());
+            log.info( e.getClass().getSimpleName(), e.getMessage());
         }
 
     }

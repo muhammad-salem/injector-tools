@@ -6,10 +6,10 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.config.SSHConfig;
 import org.injector.tools.config.type.SSHProxyType;
 import org.injector.tools.event.EventHandler;
-import org.injector.tools.log.Logger;
 import org.injector.tools.speed.NetworkMonitorSpeed;
 import org.injector.tools.speed.TerminalNetworkMonitor;
 import org.injector.tools.ssh.jsch.forwarding.HttpPortForwarding;
@@ -17,6 +17,7 @@ import org.injector.tools.ssh.jsch.forwarding.Socks5PortForwarding;
 
 import java.io.IOException;
 
+@Slf4j
 public class JschSSHClient implements EventHandler {
 
     @Setter
@@ -41,13 +42,13 @@ public class JschSSHClient implements EventHandler {
 
     public void connectHost() {
         if (SSHProxyType.STOP.equals(config.getSshProxyType())) {
-            Logger.debug(getClass(), "SSH Client not allow to run");
+            log.info( "SSH Client not allow to run");
             return;
         }
         try {
             JSch.setLogger(new com.jcraft.jsch.Logger() {
                 public void log(int level, String message) {
-                    Logger.debug(JschSSHClient.class, message);
+                    log.info(message);
                 }
                 public boolean isEnabled(int level) {
                     return true;
@@ -55,7 +56,7 @@ public class JschSSHClient implements EventHandler {
             });
 
             JSch jsch = new JSch();
-            Logger.debug(getClass(), "JSch VERSION " + JSch.VERSION);
+            log.info("JSch VERSION {}", JSch.VERSION);
             Session session = jsch.getSession(config.getUser(), config.getHost(), config.getPort());
 
             session.setProxy(config.getSshProxyType().getProxy(config, monitorSpeed));
@@ -66,7 +67,7 @@ public class JschSSHClient implements EventHandler {
                 session.setConfig("compression.c2s", "zlib@openssh.com,zlib,none");
                 session.setConfig("compression_level", "9");
             }
-            if (config.getSkipCheckHostKey()){
+            if (config.getSkipCheckHostKey()) {
                 session.setConfig("StrictHostKeyChecking", "no");
             }
 
@@ -84,13 +85,13 @@ public class JschSSHClient implements EventHandler {
             if (open_sock5_port > -1) {
                 Socks5PortForwarding thread = new Socks5PortForwarding(session, open_sock5_port);
                 thread.start();
-                Logger.debug(getClass(), "start proxy thread : [ socks5://127.0.0.1:" + open_sock5_port + "/ ]");
+                log.info( "start proxy thread : [ socks5://127.0.0.1:" + open_sock5_port + "/ ]");
             }
 
             if (open_http_port > -1) {
                 HttpPortForwarding httpPortForwarding = new HttpPortForwarding(session, open_http_port);
                 httpPortForwarding.start();
-                Logger.debug(getClass(), "start proxy thread : [ http://127.0.0.1:" + open_http_port + "/ ]");
+                log.info( "start proxy thread : [ http://127.0.0.1:" + open_http_port + "/ ]");
             }
 
             while (session.isConnected()) {
@@ -98,14 +99,14 @@ public class JschSSHClient implements EventHandler {
                 Thread.sleep(2000);
             }
         } catch (JSchException | NullPointerException | IOException e) {
-            Logger.debug(getClass(), e.getClass().getTypeName(), e.getMessage());
+            log.info( e.getClass().getTypeName(), e.getMessage());
             throw new RuntimeException(e);
         } catch (Exception e) {
-            if (e instanceof InterruptedException){
+            if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
-            Logger.debug(getClass(), e.getClass().getSimpleName(), e.toString());
-            Logger.debug(getClass(), "Exception2", e.getCause().getMessage());
+            log.info( e.getClass().getSimpleName(), e.toString());
+            log.info( "Exception2", e.getCause().getMessage());
             throw new RuntimeException(e);
         }
 

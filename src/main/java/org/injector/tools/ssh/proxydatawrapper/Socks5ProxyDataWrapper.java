@@ -11,6 +11,7 @@ import java.net.Socket;
 /**
  *
  * still in development progress
+ *
  * @author salem
  *
  */
@@ -55,12 +56,12 @@ public class Socks5ProxyDataWrapper extends ProxyDataWrapper {
      * new HTTPProxyData("192.168.1.1", "3128", "proxyuser", "secret", new String[] {"User-Agent: TrileadBasedClient/1.0", "X-My-Proxy-Option: something"});
      * </code>
      *
-     * @param proxyHost Proxy hostname.
-     * @param proxyPort Proxy port.
-     * @param proxyUser Username for basic authentication (<code>null</code> if no authentication is needed).
-     * @param proxyPass Password for basic authentication (<code>null</code> if no authentication is needed).
+     * @param proxyHost          Proxy hostname.
+     * @param proxyPort          Proxy port.
+     * @param proxyUser          Username for basic authentication (<code>null</code> if no authentication is needed).
+     * @param proxyPass          Password for basic authentication (<code>null</code> if no authentication is needed).
      * @param requestHeaderLines An array with additional request header lines (without end-of-line markers)
-     *        that have to be sent to the server. May be <code>null</code>.
+     *                           that have to be sent to the server. May be <code>null</code>.
      */
 
     public Socks5ProxyDataWrapper(String proxyHost, int proxyPort, String proxyUser, String proxyPass,
@@ -94,7 +95,7 @@ public class Socks5ProxyDataWrapper extends ProxyDataWrapper {
     }
 
     @Override
-    public Socket openSoccketConnection(String hostname, int port, int connectTimeout) throws IOException {
+    public Socket openSocketConnection(String hostname, int port, int connectTimeout) throws IOException {
         return null;
     }
 

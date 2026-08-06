@@ -3,10 +3,10 @@ package org.injector.tools.ssh.trilead;
 import com.trilead.ssh2.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.config.SSHConfig;
 import org.injector.tools.config.type.SSHProxyType;
 import org.injector.tools.event.EventHandler;
-import org.injector.tools.log.Logger;
 import org.injector.tools.speed.TerminalNetworkMonitor;
 import org.injector.tools.ssh.proxyhandler.DirectProxy;
 import org.injector.tools.ssh.proxyhandler.ProxySocket;
@@ -18,6 +18,7 @@ import java.net.InetSocketAddress;
 import java.security.KeyPair;
 import java.security.SecureRandom;
 
+@Slf4j
 public class SSHForwardClient implements EventHandler {
 
 
@@ -30,24 +31,24 @@ public class SSHForwardClient implements EventHandler {
 
     /**
      * -- GETTER --
-     *
-     *
+     * <p>
+     * <p>
      * -- SETTER --
      *
-     @return the connection
-      * @param connection the connection to set
+     * @return the connection
+     * @param connection the connection to set
      */
     @Setter
     @Getter
     protected Connection connection;
     /**
      * -- SETTER --
-     *
-     *
+     * <p>
+     * <p>
      * -- GETTER --
      *
-     @param portForwarder the portForwarder to set
-      * @return the portForwarder
+     * @param portForwarder the portForwarder to set
+     * @return the portForwarder
      */
     @Getter
     @Setter
@@ -172,7 +173,7 @@ public class SSHForwardClient implements EventHandler {
 
         connection.addConnectionMonitor(this::connectionMonitorLost);
 
-        connection.enableDebugging(true, (level, className, message) -> Logger.debug(className, message));
+        connection.enableDebugging(true, (level, className, message) -> log.info(className, message));
 
 
         /**** add internal listener ****/
@@ -197,7 +198,7 @@ public class SSHForwardClient implements EventHandler {
                 thread.start();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                Logger.debug(getClass(), e.getMessage());
+                log.info( e.getMessage());
             }
         } else thread.start();
     }
@@ -208,7 +209,7 @@ public class SSHForwardClient implements EventHandler {
             try {
                 thread.join(250);
             } catch (InterruptedException e) {
-                Logger.debug(getClass(), e.getMessage());
+                log.info( e.getMessage());
             }
         }
     }
@@ -219,10 +220,10 @@ public class SSHForwardClient implements EventHandler {
 
         try {
             if (sshConfig.getUseCompression()) {
-                Logger.debug(getClass(), "Enable Compression.");
+                log.info( "Enable Compression.");
             }
             connection.setCompression(sshConfig.getUseCompression());
-            Logger.debug(getClass(), "Start connect.");
+            log.info( "Start connect.");
 
             /*ServerHostKeyVerifier v = new ServerHostKeyVerifier() {
                 @Override
@@ -233,26 +234,26 @@ public class SSHForwardClient implements EventHandler {
 
             ConnectionInfo info = connection.connect(); //null, 0, sshConfig.getKexTimeout());
 
-            Logger.debug(getClass(), "Connected to host " + connection.getHostname());
-            Logger.debug(getClass(), "Key Exchange Counter:\t" + info.keyExchangeCounter);
-            Logger.debug(getClass(), "Algorithm:\t" + info.serverToClientMACAlgorithm
+            log.info( "Connected to host " + connection.getHostname());
+            log.info( "Key Exchange Counter:\t" + info.keyExchangeCounter);
+            log.info( "Algorithm:\t" + info.serverToClientMACAlgorithm
                     + "\t " + info.clientToServerCryptoAlgorithm);
-            Logger.debug(getClass(), "keyExchangeAlgorithm:\t" + info.keyExchangeAlgorithm);
+            log.info( "keyExchangeAlgorithm:\t" + info.keyExchangeAlgorithm);
 
             boolean passOK = connection.authenticateWithPassword(sshConfig.getUser(), sshConfig.getPassword());
             if (passOK) {
-                Logger.debug(getClass(), "Finish authenticate With Password.");
+                log.info( "Finish authenticate With Password.");
             } else {
-                Logger.debug(getClass(), "Connection is " + Ansi.Red + " not authenticated." + Ansi.Reset);
+                log.info( "Connection is " + Ansi.Red + " not authenticated." + Ansi.Reset);
                 fireErrorListener();
                 fireCompleteListener();
                 return;
             }
-            Logger.debug(getClass(), "Start Dynamic forward ...  ..   .");
+            log.info( "Start Dynamic forward ...  ..   .");
 
             dynamicPortForwarder = connection.createDynamicPortForwarder(sshConfig.getLocalSocksPort());
-            Logger.debug(getClass(), "Connected ...  ..   .");
-            Logger.debug(getClass(), "Start SOCKS5 Server at port " + sshConfig.getLocalSocksPort());
+            log.info( "Connected ...  ..   .");
+            log.info( "Start SOCKS5 Server at port " + sshConfig.getLocalSocksPort());
 //			connection.enableDebugging(false, null);
 
             if (passOK) {
@@ -260,7 +261,7 @@ public class SSHForwardClient implements EventHandler {
                 fireCompleteListener();
             }
         } catch (IOException e) {
-            Logger.debug(getClass(), e.getMessage());
+            log.info( e.getMessage());
 
             fireErrorListener();
 //            fireStopListener();
@@ -270,14 +271,14 @@ public class SSHForwardClient implements EventHandler {
     }
 
     private void connectionMonitorLost(Throwable reason) {
-        Logger.debug(getClass(), reason.getMessage());
+        log.info( reason.getMessage());
 
         if (dynamicPortForwarder != null) {
             try {
                 dynamicPortForwarder.close();
-                Logger.debug(getClass(), "Close Dynamic Port Forwarder");
+                log.info( "Close Dynamic Port Forwarder");
             } catch (Exception e) {
-                Logger.debug(getClass(), e.getMessage());
+                log.info( e.getMessage());
             }
         }
         //fireStopListener();
@@ -286,7 +287,7 @@ public class SSHForwardClient implements EventHandler {
 //		    connection.close();
 //			dynamicPortForwarder.close();
 //		} catch (IOException e) {
-//			Logger.debug(getClass(), e.getMessage());
+//			log.info( e.getMessage());
 //		}
 
 

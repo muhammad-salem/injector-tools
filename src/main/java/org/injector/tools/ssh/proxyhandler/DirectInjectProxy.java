@@ -1,6 +1,6 @@
 package org.injector.tools.ssh.proxyhandler;
 
-import org.injector.tools.log.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.payload.Payload;
 import org.injector.tools.speed.NetworkMonitorSpeed;
 
@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+@Slf4j
 public class DirectInjectProxy extends ProxySocket {
 
     protected Payload payload;
@@ -27,36 +28,36 @@ public class DirectInjectProxy extends ProxySocket {
         //setup proxywrapper socket
         Socket proxy = new Socket(hostname, port);
         proxy.setSoTimeout(timeout);
-        Logger.debug(this.getClass(), "proxy socket state : " + (proxy.isClosed() ? "[closed]" : "[connected]"));
+        log.info("proxy socket state : {}", proxy.isClosed() ? "[closed]" : "[connected]");
 
         //setup payload
-        Logger.debug(this.getClass(), "start connect to " + hostname + ":" + port);
+        log.info("start connect to {}:{}", hostname, port);
         payload.setRequest("CONNECT " + hostname + ":" + port + " HTTP/1.0\r\n\r\n");
-        Logger.debug(this.getClass(), "CONNECT " + hostname + ":" + port + " HTTP/1.0\r\n\r\n");
+        log.info("CONNECT {}:{} HTTP/1.0\r\n\r\n", hostname, port);
 
 //				proxywrapper.getOutputStream().write(temp.getBytes());
 //				proxywrapper.getOutputStream().flush();
 
         String requestLinePayload = payload.getRawPayload();
-        Logger.debug(this.getClass(), "Payload format", requestLinePayload);
-        Logger.debug(this.getClass(), "Start Write Payload Host.");
+        log.info("Payload format: {}", requestLinePayload);
+        log.info("Start Write Payload Host.");
         writePayloadToProxy(proxy.getOutputStream(), requestLinePayload);
 
         // stat read response
-//				Logger.debug(getClass(), "wating read response ..... ");
+//				log.info( "wating read response ..... ");
 //				byte[] b = new byte[1*1024];			
 //				int i = proxy.getInputStream().read(b);
 //				if(i <= 0) return null;
-//				Logger.debug(getClass(), new String(b, 0, i));
+//				log.info( new String(b, 0, i));
 //				
-//				Logger.debug(getClass(), "additonal response ..... ");
+//				log.info( "additonal response ..... ");
 //				i = proxy.getInputStream().read(b);
 //				if(i <= 0) {
-//					Logger.debug(getClass(), "Error read data -- Direct Inject Method");
+//					log.info( "Error read data -- Direct Inject Method");
 //					return null;
 //				}
-//				Logger.debug(getClass(), new String(b, 0, i));
-//				Logger.debug(getClass(), "end");
+//				log.info( new String(b, 0, i));
+//				log.info( "end");
 
         return proxy;
     }
@@ -71,11 +72,12 @@ public class DirectInjectProxy extends ProxySocket {
                 for (int i = 0; i < index.size(); i += 2) {
                     proxyOutput.write(requestLinePayload.substring(index.get(i), index.get(i + 1)).getBytes());
                     proxyOutput.flush();
-                    Logger.debug(getClass().getSimpleName(), requestLinePayload.substring(index.get(i), index.get(i + 1)));
+                    log.info(requestLinePayload.substring(index.get(i), index.get(i + 1)));
                 }
 
             }
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
 
     }
 

@@ -2,33 +2,33 @@ package org.injector.tools.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.injector.tools.log.Logger;
 
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.Enumeration;
 
+@Slf4j
 public class Utils {
 
     /**
-     * concate " " to string
+     * concat " " to string
      *
-     * @param str   the string to concate with " " wigth space
+     * @param str   the string to concat with " " with space
      * @param count the new length
      * @return null if given string length greater than count
      */
     public static String getStringWidth(String str, int count) {
         if (str.length() > count) return null;
-        for (int i = str.length(); i < count; i++) {
-            str += " ";
-        }
+        StringBuilder strBuilder = new StringBuilder(str);
+        strBuilder.repeat(" ", Math.max(0, count - strBuilder.length()));
+        str = strBuilder.toString();
         return str;
     }
 
@@ -360,7 +360,7 @@ public class Utils {
                 }
             }
         } catch (SocketException e) {
-            Logger.debug("Utils", "Can't get Nerwork Interfaces");
+            log.error("Can't get Nerwork Interfaces");
         }
         return false;
     }
@@ -369,7 +369,7 @@ public class Utils {
         return class1.getResourceAsStream(res);
     }
 
-    public static <T> URL getResourcem(Class<T> class1, String res) {
+    public static <T> URL getResource(Class<T> class1, String res) {
         return class1.getResource(res);
     }
 
@@ -378,7 +378,7 @@ public class Utils {
             FileUtils.copyURLToFile(source, destination);
 
         } catch (IOException e) {
-            Logger.debug("Utils", "falied to copy file: [" + source + "]");
+            log.error("failed to copy file: [{}]", source);
         }
     }
 }

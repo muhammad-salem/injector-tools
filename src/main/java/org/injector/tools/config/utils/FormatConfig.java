@@ -1,6 +1,9 @@
 package org.injector.tools.config.utils;
 
-import org.injector.tools.config.*;
+import org.injector.tools.config.Config;
+import org.injector.tools.config.HostProxyConfig;
+import org.injector.tools.config.LocalProxyConfig;
+import org.injector.tools.config.SSHConfig;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -16,7 +19,7 @@ public class FormatConfig {
         temp += formatConfig.toString(config.getHostProxyConfig());
         temp += formatConfig.toString(config.getSshConfig());
 
-        temp += "**\n" + config.getVersion() + " 2017-2025 © \n";
+        temp += "**\n" + config.getVersion() + " 2017-2026 © \n";
         temp += formatConfig.getStringMiddle("========", 67, '=') + "\n";
 
         return temp;
@@ -35,7 +38,7 @@ public class FormatConfig {
         temp += formatConfig.toStringLimit(config.getSshConfig());
 
         temp += "**\n**" + formatConfig.getStringMiddle("        ", 39, ' ');
-        temp += "   " + config.getVersion() + " 2017-2025 © \n";
+        temp += "   " + config.getVersion() + " 2017-2026 © \n";
 
         temp += formatConfig.getStringMiddle("========", 67, '=') + "\n";
 

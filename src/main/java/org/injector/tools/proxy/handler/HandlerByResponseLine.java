@@ -1,14 +1,14 @@
 package org.injector.tools.proxy.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.config.HostProxyConfig;
-import org.injector.tools.log.Logger;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 public class HandlerByResponseLine extends ProxyHandler {
 
     public HandlerByResponseLine(SocketChannel clientSocket, HostProxyConfig proxyConfig, ChannelSelector channelSelector) {
@@ -17,7 +17,7 @@ public class HandlerByResponseLine extends ProxyHandler {
 
     @Override
     void handelProxyResponse() {
-        Logger.debug(getClass(), "---> Proxy request sent, awaiting response....... .. .");
+        log.info( "---> Proxy request sent, awaiting response....... .. .");
 //		byte[] temp = new byte[8 * 1024];
         ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
         int bytes_read = 0;
@@ -30,13 +30,14 @@ public class HandlerByResponseLine extends ProxyHandler {
 //			}
             bytes_read = remote.read(buffer);
             if (bytes_read == -1) {
-                Logger.debug(getClass().getSimpleName(), "---> end of proxy wrapper response");
+                log.info("---> end of proxy wrapper response");
                 return;
             }
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
         buffer.flip();
         String respons = new String(buffer.array(), 0, bytes_read, StandardCharsets.ISO_8859_1);
-        Logger.debug(getClass(), "---> read response data", respons);
+        log.info( "---> read response data: {}", respons);
 
 //		ResponsLine l = new ResponsLine();
 //		l.setResponse(str);
@@ -48,30 +49,34 @@ public class HandlerByResponseLine extends ProxyHandler {
             try {
                 buffer.position(start);
                 client.write(buffer);
-                Logger.debug(getClass(), "---> response send 200 OK to client", respons);
-            } catch (IOException ignored) {}
+                log.info( "---> response send 200 OK to client", respons);
+            } catch (IOException ignored) {
+            }
         }
 //		HTTP/1.1 200 OK\r\n\r\n
         else if (respons.endsWith(" 200 OK\r\n\r\n")) {
             try {
 
                 client.write(buffer);
-                Logger.debug(getClass(), "---> response send", respons);
-            } catch (IOException ignored) {}
+                log.info( "---> response send", respons);
+            } catch (IOException ignored) {
+            }
         } else if (respons.contains("\r\n\r\nHTTP")) {
             int start = respons.indexOf("\r\n\r\nHTTP") + 2;
             respons = respons.substring(start);
             try {
                 buffer.position(start);
                 client.write(buffer);
-                Logger.debug(getClass(), "---> response send", respons);
-            } catch (IOException ignored) {}
+                log.info( "---> response send", respons);
+            } catch (IOException ignored) {
+            }
         } else if (respons.contains("onnection: close\r\n")) {
             try {
                 client.write(buffer);
-                Logger.debug(getClass(), "response send -- close client socket", respons);
+                log.info( "response send -- close client socket", respons);
                 client.close();
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 //		else if(str.contains("HTTP/1.1 302 Found")){
 //			try {
@@ -86,7 +91,8 @@ public class HandlerByResponseLine extends ProxyHandler {
             try {
                 sendNormalRequest();
                 handelProxyResponse();
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
 
         } else {
 //			++count;

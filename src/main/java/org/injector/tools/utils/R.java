@@ -1,9 +1,8 @@
 package org.injector.tools.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.injector.tools.config.utils.ManageConfig;
-import org.injector.tools.log.Logger;
-import org.injector.tools.log.impl.LogErr;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +10,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Slf4j
 public class R {
 
 
@@ -22,7 +21,7 @@ public class R {
 
     public static String ConfigPath = UserHome + separator
             + ".config" + separator + app_name;
-//	public static String PolipoApp = ConfigPath + separator + "polipo";
+    //	public static String PolipoApp = ConfigPath + separator + "polipo";
     public static String StaticPoint = ConfigPath + separator + "static.json";
     public static String ConfigJsonFile = ConfigPath + separator + "config.json";
     public static String PolipoConfigFile = ConfigPath + separator + "polipo.prop";
@@ -165,10 +164,10 @@ public class R {
         }
         ProcessBuilder builder = new ProcessBuilder(list);
         try {
-            builder.start();
+            Process process = builder.start();
+            log.info("start new process: {}", process);
         } catch (IOException e) {
-            Logger.debug("R", "error in open Application");
-            Logger.debug("R", e.getMessage());
+            log.error("error in open Application", e);
         }
 
     }
@@ -186,7 +185,8 @@ public class R {
         try {
             File file = new File(LockFile);
             FileUtils.writeStringToFile(file, " -- Start App" + System.currentTimeMillis() + "\n", Charset.defaultCharset(), true);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
 
@@ -198,10 +198,6 @@ public class R {
 
     public static void INIT_CHANGES() {
         InitDirs();
-        var logErr = new LogErr();
-        logErr.initDebugger(ConfigPath + separator + "logger.log");
-        Logger.setLogger(ManageConfig.getAppConfig().getEnableLogs(), logErr);
-        new Thread(logErr).start();
     }
 
 }

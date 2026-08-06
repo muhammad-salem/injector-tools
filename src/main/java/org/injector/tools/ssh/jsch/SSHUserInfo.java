@@ -2,8 +2,9 @@ package org.injector.tools.ssh.jsch;
 
 
 import com.jcraft.jsch.UserInfo;
-import org.injector.tools.log.Logger;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class SSHUserInfo implements UserInfo {
 
     String passwd;
@@ -24,25 +25,25 @@ public class SSHUserInfo implements UserInfo {
 
     @Override
     public boolean promptPassword(String message) {
-        Logger.debug(getClass(), "prompt password", message);
+        log.info("prompt password: {}", message);
         return true;
     }
 
     @Override
     public boolean promptPassphrase(String message) {
-        Logger.debug(getClass(), "prompt passphrase", message);
+        log.info("prompt passphrase: {}", message);
         return true;
     }
 
     @Override
     public boolean promptYesNo(String message) {
-        Logger.debug(getClass(), "prompt {Yes-No}", message);
+        log.info("prompt {Yes-No}: {}", message);
         return true;
     }
 
     @Override
     public void showMessage(String message) {
-        Logger.debug(getClass(), "server message", message);
+        log.info("server message: {}", message);
     }
 
 

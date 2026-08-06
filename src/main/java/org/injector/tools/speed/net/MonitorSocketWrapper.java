@@ -36,7 +36,7 @@ public class MonitorSocketWrapper extends Socket {
 
     public MonitorSocketWrapper(Socket socket, List<SocketMonitor> monitors) {
 //    this.originalSocket = checkNotNull(socket, "Argument [socket] may not be null");
-//    this.monitors = checkNotNull(monitors, "Arugment [monitors] may not be null");
+//    this.monitors = checkNotNull(monitors, "Argument [monitors] may not be null");
         this.originalSocket = socket;
         this.monitors = monitors;
     }

@@ -1,18 +1,20 @@
 package org.injector.tools.lunch;
 
-import org.injector.tools.config.*;
+import lombok.extern.slf4j.Slf4j;
+import org.injector.tools.config.Config;
+import org.injector.tools.config.LocalProxyConfig;
+import org.injector.tools.config.SSHConfig;
 import org.injector.tools.config.type.SSHProxyType;
-import org.injector.tools.log.Logger;
 import org.injector.tools.proxy.LocalProxy;
 import org.injector.tools.ssh.jsch.JschSSHClient;
 import org.injector.tools.ssh.trilead.SSHForwardClient;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
+@Slf4j
 public class InjectionTools {
 
     private final Config config;
@@ -29,7 +31,7 @@ public class InjectionTools {
 
     public void startLocalProxyService() {
         if (config.getLocalProxyConfig().isAllowToRun()) {
-            Logger.debug(getClass(), "Local Proxy is allowed to start");
+            log.info( "Local Proxy is allowed to start");
             localProxy = new LocalProxy(config.getLocalProxyConfig());
 
 //			localProxy.initSelectorService();
@@ -39,7 +41,7 @@ public class InjectionTools {
 //			localProxy.start();
 //			executor.submit(localProxy);
         } else {
-            Logger.debug(getClass(), "Local Proxy is not allowed to start");
+            log.info( "Local Proxy is not allowed to start");
         }
 
     }
@@ -54,7 +56,7 @@ public class InjectionTools {
 //			localProxy.start();
 //			executor.submit(localProxy);
         } else {
-            Logger.debug(getClass(), "Local Proxy is not allowed to start");
+            log.info( "Local Proxy is not allowed to start");
         }
     }
 
@@ -64,36 +66,35 @@ public class InjectionTools {
 
     private void startJschSSHService(SSHConfig config) {
         if (SSHProxyType.STOP.equals(config.getSshProxyType())) {
-			return;
-		}
+            return;
+        }
 
         jschSSHClient = new JschSSHClient(config);
 //		jschSSHClient.addSuccessListener(jschSSHClient.getMonitorSpeed()::start);
 //		jschSSHClient.start();
         executor.submit(jschSSHClient.getMonitorSpeed()::start);
         var maxRetry = new AtomicInteger(config.getMaxRetries());
-        Supplier<Boolean> keepRetry =  (maxRetry.get() <= 0)
+        Supplier<Boolean> keepRetry = (maxRetry.get() <= 0)
                 ? () -> Boolean.TRUE
                 : () -> maxRetry.get() > 0;
         executor.submit(() -> {
-            Logger.debug(getClass(), "ssh max retry is %s".formatted(maxRetry.get()));
+            log.info( "ssh max retry is {}".formatted(maxRetry.get()));
             while (keepRetry.get()) {
                 try {
                     jschSSHClient.connectHost();
                 } catch (Exception e) {
-                    Logger.debug(getClass(),"connection failed");
+                    log.info( "connection failed");
                 }
                 if (maxRetry.addAndGet(-1) == 0) {
-                    Logger.debug(getClass(), "stop application (try count: %s)".formatted(maxRetry.get()));
+                    log.info("stop application (try count: {})".formatted(maxRetry.get()));
                     try {
                         Thread.sleep(2000);
-                    }
-                    catch (InterruptedException e) {
+                    } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
                     System.exit(1);
                 }
-                Logger.debug(getClass(), "try to connect... (try count: %s)".formatted(maxRetry.get()));
+                log.info("try to connect... (try count: {})".formatted(maxRetry.get()));
             }
         });
 //		jschSSHClient.addSuccessListener(()-> executor.submit(jschSSHClient.getMonitorSpeed()::start));

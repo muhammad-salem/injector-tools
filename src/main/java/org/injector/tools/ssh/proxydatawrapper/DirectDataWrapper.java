@@ -27,8 +27,8 @@ public class DirectDataWrapper extends ProxyDataWrapper {
     /**
      * Same as calling {@link #HTTPProxyData(String, int, String, String) HTTPProxyData(proxyHost, proxyPort, <code>null</code>, <code>null</code>)}
      *
-     * @param proxyHost proxywrapper host name.
-     * @param proxyPort proxywrapper port.
+     * @param proxyHost    proxywrapper host name.
+     * @param proxyPort    proxywrapper port.
      * @param monitorSpeed network speed monitor
      */
     public DirectDataWrapper(String proxyHost, int proxyPort, TerminalNetworkMonitor monitorSpeed) {
@@ -36,7 +36,7 @@ public class DirectDataWrapper extends ProxyDataWrapper {
     }
 
     @Override
-    public Socket openSoccketConnection(String hostname, int port, int connectTimeout) throws IOException {
+    public Socket openSocketConnection(String hostname, int port, int connectTimeout) throws IOException {
         return new Socket(hostname, port);
     }
 

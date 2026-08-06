@@ -1,13 +1,11 @@
 package org.injector.tools.proxy.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.config.HostProxyConfig;
-import org.injector.tools.log.Logger;
+import org.injector.tools.ssl.SSLUtils;
 
-import javax.net.ssl.SNIHostName;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.*;
 import java.io.IOException;
-
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -15,11 +13,15 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+@Slf4j
 public class SniHostNameProxyHandler extends ProxyHandler {
 
-    private SSLSocket sslSocket;
+    protected SSLSocket sslSocket;
 
-    public SniHostNameProxyHandler(SocketChannel clientSocket, HostProxyConfig proxyConfig, ChannelSelector channelSelector) {
+    public SniHostNameProxyHandler(
+            SocketChannel clientSocket,
+            HostProxyConfig proxyConfig,
+            ChannelSelector channelSelector) {
         super(clientSocket, proxyConfig, channelSelector);
     }
 
@@ -43,12 +45,12 @@ public class SniHostNameProxyHandler extends ProxyHandler {
     @Override
     protected void connectToProxyServer() {
         try {
-            Logger.debug(getClass(), "creates a proxy socket");
+            log.info("creates a proxy socket");
             var address = InetAddress.getByName(payload.getHost());
-            Logger.debug(getClass(),"Resolve Host name: [%s] with IP [%s]", payload.getHost(), address.getHostAddress());
+            log.info("Resolve Host name: [{}] with IP [{}]", payload.getHost(), address.getHostAddress());
             this.remoteConnect(new InetSocketAddress(address.getHostAddress(), payload.getPortInt()));
         } catch (IOException e) {
-            Logger.debug(getClass(), "error", "Can't connect to " + payload.getHost() + ":" + payload.getPortInt() + "\n".concat(e.getMessage()));
+            log.error("Can't connect to {}:{}{}", payload.getHost(), payload.getPortInt(), "\n".concat(e.getMessage()));
         }
     }
 
@@ -56,13 +58,15 @@ public class SniHostNameProxyHandler extends ProxyHandler {
     protected void remoteConnect(InetSocketAddress remoteAddress) throws IOException {
         super.remoteConnect(remoteAddress);
         var socket = this.remote.socket();
-        var factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+//        var factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        var factory = SSLUtils.getSSLSocketFactory();
+
         this.sslSocket = (SSLSocket) factory.createSocket(socket, payload.getHost(), payload.getPortInt(), false);
         var serverName = new SNIHostName(this.proxyConfig.getSniHostName());
         var params = this.sslSocket.getSSLParameters();
         params.setServerNames(List.of(serverName));
         this.sslSocket.setSSLParameters(params);
-        Logger.debug(getClass(),"Use SNI Host Name: %s", (Object) this.proxyConfig.getSniHostName());
+        log.info("Use SNI Host Name: {}", (Object) this.proxyConfig.getSniHostName());
     }
 
     @Override
@@ -74,7 +78,7 @@ public class SniHostNameProxyHandler extends ProxyHandler {
 //            this.sslSocket.getOutputStream().write("SSH".getBytes(StandardCharsets.UTF_8));
 //            this.sslSocket.getOutputStream().flush();
         } catch (Exception e) {
-            Logger.debug(getClass(), e.getClass().getSimpleName() + " message", e.getMessage());
+            log.info( e.getClass().getSimpleName() + " message", e.getMessage());
         }
     }
 
@@ -84,15 +88,15 @@ public class SniHostNameProxyHandler extends ProxyHandler {
 //            this.remote.finishConnect();
 ////            sslSocket.startHandshake();
 //        } catch (IOException e) {
-//            Logger.debug(getClass(), e.getClass().getSimpleName() + " message", e.getMessage());
+//            log.info( e.getClass().getSimpleName() + " message", e.getMessage());
 //        }
 
 //        var raw = payload.getRawPayload();
 //        try {
 //            this.sslSocket.getOutputStream().write(ByteBuffer.wrap(raw.getBytes()).array());
-//            Logger.debug(getClass(), "write payload to host to host", payload.getRawPayload());
+//            log.info( "write payload to host to host", payload.getRawPayload());
 //        } catch (IOException e) {
-//            Logger.debug(getClass(), e.getClass().getSimpleName() + " message", e.getMessage());
+//            log.info( e.getClass().getSimpleName() + " message", e.getMessage());
 //        }
     }
 

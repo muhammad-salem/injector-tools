@@ -1,15 +1,17 @@
 package org.injector.tools.lunch;
 
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.config.Config;
 import org.injector.tools.config.utils.ManageConfig;
-import org.injector.tools.log.Logger;
 import org.injector.tools.utils.R;
 import org.terminal.Ansi;
 
+@Slf4j
 public class Lunch {
 
     public static void main(String[] args) {
-
+        System.setProperty("logging.level.root", "TRACE");
+        System.setProperty("enable-final-field-mutation", "ALL-UNNAMED");
         checkArgs(args);
         initApp();
         var service = new InjectionTools(ManageConfig.getAppConfig());
@@ -61,7 +63,7 @@ public class Lunch {
 
         // System.out.println(ManageConfig.getAppConfig().toJson());
         R.Save_Changes_Progress();
-        Logger.debug(Lunch.class, "start service");
+        log.info("start service");
     }
 
     public static void printHelp() {

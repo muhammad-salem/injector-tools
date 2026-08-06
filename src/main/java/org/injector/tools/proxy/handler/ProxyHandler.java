@@ -2,20 +2,24 @@ package org.injector.tools.proxy.handler;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.injector.tools.config.HostProxyConfig;
 import org.injector.tools.event.EventRunnableHandler;
-import org.injector.tools.log.Logger;
 import org.injector.tools.payload.Payload;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+
+@Slf4j
 @Setter
 @Getter
 public abstract class ProxyHandler implements EventRunnableHandler {
@@ -29,6 +33,7 @@ public abstract class ProxyHandler implements EventRunnableHandler {
     private ChannelSelector channelSelector;
 
     public ProxyHandler() {}
+
     public ProxyHandler(SocketChannel client, HostProxyConfig proxyConfig, ChannelSelector channelSelector) {
         this();
         this.client = client;
@@ -102,7 +107,7 @@ public abstract class ProxyHandler implements EventRunnableHandler {
             client.register(getSelector(), SelectionKey.OP_READ, remote);
             remote.register(getSelector(), SelectionKey.OP_READ, client);
         } catch (Exception e) {
-            Logger.debug(getClass(), "registerChannelToSelector", e.getMessage());
+            log.error("registerChannelToSelector", e);
         }
     }
 
@@ -111,7 +116,7 @@ public abstract class ProxyHandler implements EventRunnableHandler {
             client.configureBlocking(false);
             client.register(getSelector(), SelectionKey.OP_READ, remote);
         } catch (Exception e) {
-            Logger.debug(getClass(), e.getClass().getSimpleName(), e.getMessage());
+            log.error("Exception", e);
         }
     }
 
@@ -120,7 +125,7 @@ public abstract class ProxyHandler implements EventRunnableHandler {
             remote.configureBlocking(false);
             remote.register(getSelector(), SelectionKey.OP_READ, client);
         } catch (Exception e) {
-            Logger.debug(getClass(), e.getClass().getSimpleName(), e.getMessage());
+            log.error("Exception", e);
         }
     }
 
@@ -128,8 +133,7 @@ public abstract class ProxyHandler implements EventRunnableHandler {
         try {
             connectToProxyServer(proxyConfig.getProxyHost(), proxyConfig.getProxyPort());
         } catch (IOException e) {
-            Logger.debug(e.getClass(), "error", "Can't connect to " + proxyConfig.getProxyHost() + ":"
-                    + proxyConfig.getProxyPort() + "\n".concat(e.getMessage()));
+            log.error("Can't connect to {}:{}{}", proxyConfig.getProxyHost(), proxyConfig.getProxyPort(), "\n".concat(e.getMessage()));
         }
     }
 
@@ -147,12 +151,11 @@ public abstract class ProxyHandler implements EventRunnableHandler {
         remote = SocketChannel.open();
         remote.connect(remoteAddress);
         remote.finishConnect();
-        Logger.debug(getClass(), "connect to host", remoteAddress.toString());
+        log.info("connect to host: {}", remoteAddress.toString());
     }
 
-
     protected void readClientRequestLine() {
-        ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
+        ByteBuffer buffer = ByteBuffer.allocate(20 * 1024);
         int bytes_read = 0;
         try {
             bytes_read = client.read(buffer);
@@ -162,10 +165,10 @@ public abstract class ProxyHandler implements EventRunnableHandler {
             if (payload == null)
                 payload = new Payload(proxyConfig.getPayload());
             payload.setRequest(requestLine);
-            Logger.debug(getClass(), "Request Line <==> Payload Mode : ", payload.getRawPayload());
-            Logger.debug(getClass(), "Client Request Line", requestLine);
+            log.info("Client Request Line: {}", requestLine);
+            log.info("Request Payload Mode ==> {}", payload.getRawPayload());
         } catch (IOException e) {
-            Logger.debug(e.getClass(), "Can't read request line.\n".concat(e.getMessage()));
+            log.error("Can't read request line.", e);
         }
     }
 
@@ -176,19 +179,21 @@ public abstract class ProxyHandler implements EventRunnableHandler {
 
             if (index == null) {
                 remote.write(ByteBuffer.wrap(raw.getBytes()));
-                Logger.debug(getClass(), "write payload raw to Proxy", raw);
+                log.info("write payload raw to Proxy: {}", raw);
             } else {
                 ByteBuffer buffer;
                 for (int i = 0; i < index.size(); i += 2) {
                     buffer = ByteBuffer.wrap(raw.substring(index.get(i), index.get(i + 1)).getBytes());
                     buffer.flip();
                     remote.write(buffer);
-                    Logger.debug(getClass(), "write payload raw#" + i / 2,
-                            raw.substring(index.get(i), index.get(i + 1)));
+                    log.info("write payload raw#{}: {}",
+                            i / 2,
+                            raw.substring(index.get(i), index.get(i + 1))
+                    );
                 }
             }
         } catch (IOException e) {
-            Logger.debug(e.getClass(), "Message", e.getMessage());
+            log.error("Error", e);
         }
 
     }
@@ -197,15 +202,16 @@ public abstract class ProxyHandler implements EventRunnableHandler {
     public void sleepTime(int timeout) {
         try {
             TimeUnit.MILLISECONDS.sleep(timeout);
-            Logger.debug("\t slept for :" + timeout);
+            log.info("slept for : {}", timeout);
         } catch (InterruptedException e) {
-            Logger.debug(e.getClass(), "Message", e.getMessage());
+            log.error("Message: {}", e.getMessage());
+            Thread.currentThread().interrupt();
         }
     }
 
     public void sendNormalRequest() throws IOException {
-        Logger.debug(getClass(), "try to send normal request");
-        Logger.debug(getClass(), requestLine);
+        log.info( "try to send normal request");
+        log.info( requestLine);
         remote.write(ByteBuffer.wrap(requestLine.getBytes()));
     }
 
@@ -213,11 +219,11 @@ public abstract class ProxyHandler implements EventRunnableHandler {
         try {
             remote.close();
             client.close();
-            Logger.debug(getClass(), "remote is " + (remote.isConnected() ? "alive" : "closed"));
-            Logger.debug(getClass(), "client is " + (client.isBlocking() ? "alive" : "closed"));
+            log.info( "remote is {}", (remote.isConnected() ? "alive" : "closed"));
+            log.info( "client is {}", (client.isBlocking() ? "alive" : "closed"));
         } catch (IOException e) {
-            Logger.debug(getClass(), "error - close i/o sockets");
-            Logger.debug(e.getClass(), "Message", e.getMessage());
+            log.info( "error - close i/o sockets");
+            log.error("IOException", e);
         }
     }
 
@@ -230,22 +236,35 @@ public abstract class ProxyHandler implements EventRunnableHandler {
     }
 
     public void debugSocketsChannel(Exception e) {
-        Logger.debug(getClass(), "remote is " + (remote.isConnected() ? "alive" : "closed"));
-        Logger.debug(getClass(), "client is " + (client.isBlocking() ? "alive" : "closed"));
-        Logger.debug(e.getClass(), "Message", e.getMessage());
+        log.info( "remote is " + (remote.isConnected() ? "alive" : "closed"));
+        log.info( "client is " + (client.isBlocking() ? "alive" : "closed"));
+        log.error("Message", e.getMessage());
     }
 
-    public String readClientRequest(SocketChannel client) {
-        ByteBuffer buffer = readClientRequestBytes(client);
-        return new String(buffer.array(), 0, buffer.limit());
+    public String readClientRequest(ReadableByteChannel client) {
+        ByteBuffer buffer = ByteBuffer.allocate(20 * 1024);
+        try {
+            while (client.read(buffer) != -1) {
+                // ignore -- keep read
+            }
+        } catch (IOException e) {
+            log.info( "error", "Can't read request line.\n".concat(e.getMessage()));
+        }
+        buffer.flip();
+        byte[] bytes = new byte[buffer.remaining()];
+
+        // Copy data from buffer into the array
+        buffer.get(bytes);
+        return new String(bytes, StandardCharsets.UTF_8);
+//        return StandardCharsets.UTF_8.decode(buffer).toString();
     }
 
     public ByteBuffer readClientRequestBytes(SocketChannel client) {
-        ByteBuffer buffer = ByteBuffer.allocate(2 * 1024);
+        ByteBuffer buffer = ByteBuffer.allocate(20 * 1024);
         try {
             client.read(buffer);
         } catch (IOException e) {
-            Logger.debug(getClass(), "error", "Can't read request line.\n".concat(e.getMessage()));
+            log.info( "error", "Can't read request line.\n".concat(e.getMessage()));
         }
         buffer.flip();
         return ByteBuffer.wrap(buffer.array(), 0, buffer.limit());
@@ -257,7 +276,7 @@ public abstract class ProxyHandler implements EventRunnableHandler {
             client.close();
             remote.close();
         } catch (IOException e) {
-            Logger.debug(e.getClass(), "Error closing client and remote channel", e.getMessage());
+            log.error("Error closing client and remote channel", e.getMessage());
         }
 
         payload = null;
