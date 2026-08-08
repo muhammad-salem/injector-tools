@@ -23,7 +23,7 @@ public class HttpProxyHandler extends ProxyHandler {
 
     @Override
     void handelProxyResponse() {
-        log.info( "---> Proxy request sent, awaiting response....... .. .");
+        log.info("---> Proxy request sent, awaiting response....... .. .");
 //		byte[] temp = new byte[8 * 1024];
         ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
         int bytes_read = 0;
@@ -36,14 +36,14 @@ public class HttpProxyHandler extends ProxyHandler {
 //			}
             bytes_read = remote.read(buffer);
             if (bytes_read == -1) {
-                log.info( "---> end of proxy wrapper response");
+                log.info("---> end of proxy wrapper response");
                 return;
             }
         } catch (IOException ignored) {
         }
 
         String response = new String(buffer.array(), 0, bytes_read, StandardCharsets.ISO_8859_1);
-        log.info( "---> read response data", response);
+        log.info("---> read response data", response);
 
 //		ResponseLine l = new ResponsLine();
 //		l.setResponse(str);
@@ -57,7 +57,7 @@ public class HttpProxyHandler extends ProxyHandler {
 
                 client.write(buffer);
 //				LogSlf4j(str);
-                log.info( "---> response send 200 OK to client", response);
+                log.info("---> response send 200 OK to client", response);
             } catch (IOException ignored) {
             }
         }
@@ -66,7 +66,7 @@ public class HttpProxyHandler extends ProxyHandler {
             try {
                 client.write(buffer);
 //				LogSlf4j(str);
-                log.info( "---> response send", response);
+                log.info("---> response send", response);
             } catch (IOException ignored) {
             }
         }
@@ -77,13 +77,13 @@ public class HttpProxyHandler extends ProxyHandler {
             try {
                 buffer.position(start);
                 client.write(buffer);
-                log.info( "---> response send", response);
+                log.info("---> response send", response);
             } catch (IOException ignored) {
             }
         } else if (response.contains("onnection: close\r\n")) {
             try {
                 client.write(buffer);
-                log.info( "response send -- close client socket", response);
+                log.info("response send -- close client socket", response);
                 client.close();
             } catch (Exception ignored) {
             }

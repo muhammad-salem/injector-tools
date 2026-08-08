@@ -15,10 +15,10 @@ public class DirectProxyHandler extends ProxyHandler {
 
     protected void connectToProxyServer() {
         try {
-            log.info( "creates a proxy socket");
+            log.info("creates a proxy socket");
             connectToProxyServer(payload.getHost(), payload.getPortInt());
         } catch (IOException e) {
-            log.info( "error", "Can't connect to " + payload.getHost() + ":" + payload.getPortInt() + "\n".concat(e.getMessage()));
+            log.info("error", "Can't connect to " + payload.getHost() + ":" + payload.getPortInt() + "\n".concat(e.getMessage()));
         }
     }
 

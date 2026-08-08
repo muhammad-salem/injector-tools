@@ -27,12 +27,12 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
         try {
             if (index == null) {
                 remote.write(ByteBuffer.wrap(requestLinePayload.getBytes()));
-                log.info( "write payload raw to Proxy", requestLinePayload);
+                log.info("write payload raw to Proxy", requestLinePayload);
             } else {
                 boolean readmore = true;
                 for (int i = 0; i < index.size(); i += 2) {
                     remote.write(ByteBuffer.wrap(requestLinePayload.substring(index.get(i), index.get(i + 1)).getBytes()));
-                    log.info( "write payload raw#" + i / 2, requestLinePayload.substring(index.get(i), index.get(i + 1)));
+                    log.info("write payload raw#" + i / 2, requestLinePayload.substring(index.get(i), index.get(i + 1)));
 
                     if (readmore) {
                         // try to handle the clean input stream of the proxy
@@ -47,20 +47,20 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
 
                         if (has200Ok) {
 
-                            log.info( "fire Success Listener");
+                            log.info("fire Success Listener");
                             fireSuccessListener();
 
 //							clientOutput.write("HTTP/1.1 200 Connected\r\n\r\n".getBytes());
 //							proxyOutput.write(0);
 
-                            log.info( "stop writing the rest of payload ");
+                            log.info("stop writing the rest of payload ");
                             return;
                         }
                     }
                     if ((i + 2) >= index.size()) {
                         readmore = false;
                     }
-                    log.info( "(i+2) >= index.size()", "is :" + ((i + 2) >= index.size()));
+                    log.info("(i+2) >= index.size()", "is :" + ((i + 2) >= index.size()));
                 }
             }
         } catch (IOException ignored) {
@@ -69,12 +69,12 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
     }
 
     private void cleanProxyInputStream() {
-        log.info( "clean proxy input stream ");
+        log.info("clean proxy input stream ");
         has200Ok = handelProxyStateResponse();
     }
 
     boolean handelProxyStateResponse() {
-        log.info( "proxy request had been send, ( waiting for response)");
+        log.info("proxy request had been send, ( waiting for response)");
         byte[] temp = new byte[8 * 1024];
         ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
         int bytes_read = 0;
@@ -82,14 +82,14 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
             bytes_read = remote.read(buffer);
             buffer.flip();
             if (bytes_read == -1) {
-                log.info( "---> end of proxywrapper response there is no more data because the end of the stream has been reached");
+                log.info("---> end of proxywrapper response there is no more data because the end of the stream has been reached");
                 return false;
             }
         } catch (IOException ignored) {
         }
 
         String response = new String(temp, 0, bytes_read, StandardCharsets.ISO_8859_1);
-        log.info( "start analysis for proxy response ", response);
+        log.info("start analysis for proxy response ", response);
 
 //		ResponsLine l = new ResponsLine();
 //		l.setResponse(str);
@@ -112,7 +112,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
 //				return;
 //			}else {
 
-            log.info( "start = %d, length = %d, end = %d, bytes_read = %d;\n", start, length, start + length, bytes_read);
+            log.info("start = %d, length = %d, end = %d, bytes_read = %d;\n", start, length, start + length, bytes_read);
 //				System.out.printf("start = %d, length = %d, end = %d, bytes_read = %d;\n", start, length, start+length, bytes_read);
 
             //the normal state
@@ -120,7 +120,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
             buffer.position(start);
             try {
                 client.write(buffer);
-                log.info( getPayload().getPlaceHolder(PlaceHolder.host), response.substring(start));
+                log.info(getPayload().getPlaceHolder(PlaceHolder.host), response.substring(start));
             } catch (IOException e) {
                 log.error("error write response to client");
             }
@@ -132,7 +132,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
         else if (response.endsWith(" 200 OK\r\n\r\n")) {
             try {
                 client.write(buffer);
-                log.info( "write response to client", response);
+                log.info("write response to client", response);
             } catch (IOException ignored) {
             }
             return true;
@@ -142,7 +142,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
             try {
                 buffer.position(start);
                 client.write(buffer);
-                log.info( "write response to client", response);
+                log.info("write response to client", response);
             } catch (IOException ignored) {
             }
             return true;
@@ -160,7 +160,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
         else if (response.contains("301 Found") || response.contains("302 Found") || response.contains("307 Temporary Redirect")) {
 //		else if(l.getCode()/ 100 == 3){
             try {
-                log.info( "response state code 3xx", "try send normal request");
+                log.info("response state code 3xx", "try send normal request");
                 sendNormalRequest();
                 return handelProxyStateResponse();
             } catch (Exception ignored) {
@@ -169,7 +169,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
         } else if (response.contains("onnection: close\r\n")) {
             try {
                 client.write(buffer);
-                log.info( "write response to client -&- close client socket", response);
+                log.info("write response to client -&- close client socket", response);
                 client.close();
             } catch (Exception ignored) {
             }
@@ -193,7 +193,7 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
 
 
 //	private void cleanProxyInputStream() {
-//		log.info( "clean proxy input stream ");
+//		log.info("clean proxy input stream ");
 //		byte[] temp = new byte[8 * 1024];
 //		int bytes_read = 0;
 //		try {
@@ -220,12 +220,12 @@ public class AdvancedSplitHandler extends TunnelProxyHandler {
 //		} catch (IOException ignored) {}
 //	}
     protected void readResponseFromProxy() {
-        log.info( "readResponseFromProxy()", "do nothing");
+        log.info("readResponseFromProxy()", "do nothing");
     }
 
     @Override
     void handelProxyResponse() {
-        log.info( "handelProxyResponse()", "do nothing");
+        log.info("handelProxyResponse()", "do nothing");
     }
 
 }

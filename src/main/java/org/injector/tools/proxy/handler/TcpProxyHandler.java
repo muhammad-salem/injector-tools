@@ -58,7 +58,7 @@ public abstract class TcpProxyHandler extends ProxyHandler {
         var tlsProxyHost = this.proxyConfig.getProxyHost();
         var tlsProxyPort = this.proxyConfig.getProxyPort();
         try {
-            log.info( "creates a proxy socket");
+            log.info("creates a proxy socket");
             var address = InetAddress.getByName(tlsProxyHost);
             log.info("Resolve TLS Proxy Host name: [{}] with IP [{}]/{}", tlsProxyHost, address.getHostAddress(), tlsProxyPort);
             this.remoteConnect(new InetSocketAddress(address.getHostAddress(), tlsProxyPort));
@@ -89,9 +89,9 @@ public abstract class TcpProxyHandler extends ProxyHandler {
         // do nothing
         try {
             this.client.write(ByteBuffer.wrap("HTTP/1.1 200 connected\r\n\r\n".getBytes(StandardCharsets.UTF_8)));
-            log.info( "send 200 connected to client");
+            log.info("send 200 connected to client");
         } catch (Exception e) {
-            log.error( "error message caused by " + e.getClass().getSimpleName());
+            log.error("error message caused by " + e.getClass().getSimpleName());
             throw new RuntimeException(e);
         }
     }

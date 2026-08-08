@@ -49,13 +49,13 @@ public abstract class ProxySocket implements Proxy, ProxyData {
     public void connect(SocketFactory socket_factory, String host, int port, int timeout) {
         try {
 //			if (socket_factory == null) {
-            log.info( "create proxy socket");
+            log.info("create proxy socket");
             var directSocket = this.openSocketConnection(host, port, timeout);
             this.socket = new MonitorSocketWrapper(directSocket, monitorSpeed);
             this.in = socket.getInputStream();
             this.out = socket.getOutputStream();
 //			} else {
-//				log.info( "create proxy socket using 'socket_factory'");
+//				log.info("create proxy socket using 'socket_factory'");
 //				var directSocket = socket_factory.createSocket(host, port);
 //				this.socket = new MonitorSocketWrapper(directSocket, monitorSpeed);
 //				this.in = socket_factory.getInputStream(socket);

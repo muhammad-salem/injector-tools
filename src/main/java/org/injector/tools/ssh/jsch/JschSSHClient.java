@@ -42,7 +42,7 @@ public class JschSSHClient implements EventHandler {
 
     public void connectHost() {
         if (SSHProxyType.STOP.equals(config.getSshProxyType())) {
-            log.info( "SSH Client not allow to run");
+            log.info("SSH Client not allow to run");
             return;
         }
         try {
@@ -85,13 +85,13 @@ public class JschSSHClient implements EventHandler {
             if (open_sock5_port > -1) {
                 Socks5PortForwarding thread = new Socks5PortForwarding(session, open_sock5_port);
                 thread.start();
-                log.info( "start proxy thread : [ socks5://127.0.0.1:" + open_sock5_port + "/ ]");
+                log.info("start proxy thread : [ socks5://127.0.0.1:" + open_sock5_port + "/ ]");
             }
 
             if (open_http_port > -1) {
                 HttpPortForwarding httpPortForwarding = new HttpPortForwarding(session, open_http_port);
                 httpPortForwarding.start();
-                log.info( "start proxy thread : [ http://127.0.0.1:" + open_http_port + "/ ]");
+                log.info("start proxy thread : [ http://127.0.0.1:" + open_http_port + "/ ]");
             }
 
             while (session.isConnected()) {
@@ -99,14 +99,14 @@ public class JschSSHClient implements EventHandler {
                 Thread.sleep(2000);
             }
         } catch (JSchException | NullPointerException | IOException e) {
-            log.info( e.getClass().getTypeName(), e.getMessage());
+            log.info(e.getClass().getTypeName(), e.getMessage());
             throw new RuntimeException(e);
         } catch (Exception e) {
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
-            log.info( e.getClass().getSimpleName(), e.toString());
-            log.info( "Exception2", e.getCause().getMessage());
+            log.info(e.getClass().getSimpleName(), e.toString());
+            log.info("Exception2", e.getCause().getMessage());
             throw new RuntimeException(e);
         }
 

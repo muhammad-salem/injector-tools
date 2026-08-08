@@ -32,7 +32,7 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
                     super.handelProxyResponse();
 
                 } else {
-                    log.info( "write raw payload part#{}, {}", i, reqs.get(i));
+                    log.info("write raw payload part#{}, {}", i, reqs.get(i));
                     remote.write(ByteBuffer.wrap(reqs.get(i).getBytes()));
                 }
 
@@ -47,10 +47,10 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
 //
 //				if(has200Ok) {
 //
-////					log.info( "fire Success Listener");
+////					log.info("fire Success Listener");
 //
-//					log.info( "stop writing the rest of payload ");
-//					log.info( "send 200 Connected to Client ");
+//					log.info("stop writing the rest of payload ");
+//					log.info("send 200 Connected to Client ");
 //					clientOutput.write("HTTP/1.1 200 Connected\r\n\r\n".getBytes());
 ////					proxyOutput.write(0);
 ////					proxyOutput.write("SSH-2.0-".getBytes());
@@ -71,14 +71,14 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
     }
 
     public void cleanProxyInputStream() {
-        log.info( "clean proxy input stream ");
+        log.info("clean proxy input stream ");
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         int bytes_read = 0;
         try {
             while ((bytes_read = remote.read(buffer)) != -1) {
                 buffer.clear();
                 if (bytes_read == 0) {
-                    log.info( "input stream of proxy had been cleaned");
+                    log.info("input stream of proxy had been cleaned");
                     break;
                 } else {
                     String res = new String(buffer.array(), 0, bytes_read);
@@ -99,7 +99,7 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
     }
 
 //	protected void transferDataFromClientToProxy() {
-//		log.info( "Start transferDataFromClientToProxy");
+//		log.info("Start transferDataFromClientToProxy");
 //		new Thread(new Runnable() {
 //
 //			private void transferData() {
@@ -108,13 +108,13 @@ public class SplitCleanerHandler extends TunnelProxyHandler {
 //				try {
 //					while ((bytes_read = clientInput.read(temp)) != -1) {
 //						String data = new String(temp, 0, bytes_read);
-//						log.info( "debug client request", data);
+//						log.info("debug client request", data);
 ////						if(data.startsWith("SSH-2.0-")) {continue;}
 //						proxyOutput.write(temp, 0, bytes_read);
 //						proxyOutput.flush();
 //					}
 //				} catch (IOException e) {
-//					log.info( "read from client", e.getMessage());
+//					log.info("read from client", e.getMessage());
 //                    debugSockets(e);
 //                    fireErrorListener();
 //				}

@@ -20,7 +20,7 @@ public class HostChecker implements HostCheck {
 
     @Override
     public void check() {
-        log.info( "check proxy server ...  ..   .");
+        log.info("check proxy server ...  ..   .");
         try {
             Socket proxy = new Socket();
 //			Socket proxys = new Socket(proxyConfig.getProxyHost(), proxyConfig.getProxyPort());
@@ -35,7 +35,7 @@ public class HostChecker implements HostCheck {
         } catch (IOException e) {
 
             log.info("Can't connect to ({}:{})", getHost(), getPort());
-            log.info( e.getMessage());
+            log.info(e.getMessage());
             setResult(false);
         } catch (Exception e) {
             setResult(false);

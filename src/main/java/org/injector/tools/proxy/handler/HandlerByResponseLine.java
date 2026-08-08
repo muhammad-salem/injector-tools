@@ -17,7 +17,7 @@ public class HandlerByResponseLine extends ProxyHandler {
 
     @Override
     void handelProxyResponse() {
-        log.info( "---> Proxy request sent, awaiting response....... .. .");
+        log.info("---> Proxy request sent, awaiting response....... .. .");
 //		byte[] temp = new byte[8 * 1024];
         ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
         int bytes_read = 0;
@@ -37,7 +37,7 @@ public class HandlerByResponseLine extends ProxyHandler {
         }
         buffer.flip();
         String respons = new String(buffer.array(), 0, bytes_read, StandardCharsets.ISO_8859_1);
-        log.info( "---> read response data: {}", respons);
+        log.info("---> read response data: {}", respons);
 
 //		ResponsLine l = new ResponsLine();
 //		l.setResponse(str);
@@ -49,7 +49,7 @@ public class HandlerByResponseLine extends ProxyHandler {
             try {
                 buffer.position(start);
                 client.write(buffer);
-                log.info( "---> response send 200 OK to client", respons);
+                log.info("---> response send 200 OK to client", respons);
             } catch (IOException ignored) {
             }
         }
@@ -58,7 +58,7 @@ public class HandlerByResponseLine extends ProxyHandler {
             try {
 
                 client.write(buffer);
-                log.info( "---> response send", respons);
+                log.info("---> response send", respons);
             } catch (IOException ignored) {
             }
         } else if (respons.contains("\r\n\r\nHTTP")) {
@@ -67,13 +67,13 @@ public class HandlerByResponseLine extends ProxyHandler {
             try {
                 buffer.position(start);
                 client.write(buffer);
-                log.info( "---> response send", respons);
+                log.info("---> response send", respons);
             } catch (IOException ignored) {
             }
         } else if (respons.contains("onnection: close\r\n")) {
             try {
                 client.write(buffer);
-                log.info( "response send -- close client socket", respons);
+                log.info("response send -- close client socket", respons);
                 client.close();
             } catch (Exception ignored) {
             }

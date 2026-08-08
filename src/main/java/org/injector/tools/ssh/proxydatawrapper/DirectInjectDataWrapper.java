@@ -92,20 +92,20 @@ public class DirectInjectDataWrapper extends ProxyDataWrapper {
         writePayloadToProxy(proxy.getOutputStream(), requestLinePayload);
 
         // stat read response
-//		log.info( "waiting read response ..... ");
+//		log.info("waiting read response ..... ");
 //		byte[] b = new byte[1*1024];			
 //		int i = proxy.getInputStream().read(b);
 //		if(i <= 0) return null;
-//		log.info( new String(b, 0, i));
+//		log.info(new String(b, 0, i));
 //		
-//		log.info( "additional response ..... ");
+//		log.info("additional response ..... ");
 //		i = proxy.getInputStream().read(b);
 //		if(i <= 0) {
-//			log.info( "Error read data -- Direct Inject Method");
+//			log.info("Error read data -- Direct Inject Method");
 //			return null;
 //		}
-//		log.info( new String(b, 0, i));
-//		log.info( "end");
+//		log.info(new String(b, 0, i));
+//		log.info("end");
 
         return proxy;
     }

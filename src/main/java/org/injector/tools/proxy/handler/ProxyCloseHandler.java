@@ -16,9 +16,9 @@ public class ProxyCloseHandler extends DirectCloseHandler {
     protected void connectToProxyServer() {
         try {
             connectToProxyServer(proxyConfig.getProxyHost(), proxyConfig.getProxyPort());
-            log.info( "creates a proxy socket");
+            log.info("creates a proxy socket");
         } catch (IOException e) {
-            log.info( "error", "Can't connect to " + proxyConfig.getProxyHost() + ":" + proxyConfig.getProxyPort() + "\n".concat(e.getMessage()));
+            log.info("error", "Can't connect to " + proxyConfig.getProxyHost() + ":" + proxyConfig.getProxyPort() + "\n".concat(e.getMessage()));
         }
 
     }

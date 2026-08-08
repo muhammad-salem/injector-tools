@@ -12,7 +12,7 @@ import org.injector.tools.proxy.handler.DirectProxyHandler;
 import org.injector.tools.proxy.handler.Http2Socks5Handler;
 import org.injector.tools.proxy.handler.ProxyCloseHandler;
 import org.injector.tools.proxy.handler.ProxyHandler;
-import org.injector.tools.proxy.handler.SecureNioClientProxyHandler;
+import org.injector.tools.proxy.handler.SecureProxyHandler;
 import org.injector.tools.proxy.handler.SniHostNameProxyHandler;
 import org.injector.tools.proxy.handler.TunnelProxyHandler;
 
@@ -93,7 +93,7 @@ public class LocalProxy implements EventRunnableHandler {
                 log.info("Local Server Port is automatically allocated to {}", localProxyConfig.getLocalProxyPort());
 
             } catch (IOException e1) {
-                log.info( "Can't initApp Local Server");
+                log.info("Can't initApp Local Server");
                 log.error("Error Message", e);
                 return;
             }
@@ -105,11 +105,11 @@ public class LocalProxy implements EventRunnableHandler {
     public void registerLocalServerToSelector() {
         try {
             localServer.configureBlocking(false);
-            log.info( "Configure to Non-Blocking");
+            log.info("Configure to Non-Blocking");
             localServer.register(channelSelector.getSelector(), localServer.validOps(), this);
-            log.info( "Local Server had been registered To Selector Channel");
+            log.info("Local Server had been registered To Selector Channel");
         } catch (IOException e) {
-            log.info( "fail to configure Block local server");
+            log.info("fail to configure Block local server");
             log.error("Error Message: {}", e.getMessage());
         }
     }
@@ -128,7 +128,7 @@ public class LocalProxy implements EventRunnableHandler {
     public void handle(SocketChannel client) {
         ProxyHandler handler = switch (hostProxyConfig.getProxyType()) {
             case HTTP, HTTPS -> {
-                log.info( "use TunnelProxyHandler");
+                log.info("use TunnelProxyHandler");
                 yield new TunnelProxyHandler(client, hostProxyConfig, channelSelector);
 
 //				Logger.debug(getClass() , "use AdvancedSplitHandler");
@@ -138,40 +138,28 @@ public class LocalProxy implements EventRunnableHandler {
 //				handler = new SplitCleanerHandler(client,proxyConfig);
             }
             case SOCKS -> {
-                log.info( "use Http2Socks5Handler");
+                log.info("use Http2Socks5Handler");
                 yield new Http2Socks5Handler(client, hostProxyConfig, channelSelector);
             }
-			/*case STOP:
-				Logger.debug(getClass() , "no Handler is defined in configuration file but 'STOP' is, ignore and close handling client request");
-				try {
-                    client.close();
-                }catch (IOException e){
-                    Logger.debug(getClass() , "error while closing client socket");
-                }
-				return;*/
             case SNI_HOST_NAME -> {
-                log.info( "use SniHostNameProxyHandler");
+                log.info("use SniHostNameProxyHandler");
                 yield new SniHostNameProxyHandler(client, hostProxyConfig, channelSelector);
             }
             case HTTPS_SNI_HOST_NAME-> {
-                log.info( "use HTTPS_SNI_HOST_NAME: SSLProxyHandler");
-//                yield new SecureChannelProxyHandler(client, hostProxyConfig, channelSelector);
-//                yield new SecureProxyHandler(client, hostProxyConfig, channelSelector); // working
-//                yield new SSLProxyHandler(client, hostProxyConfig, channelSelector);
-//                yield new SecureChannelProxyHandler(client, hostProxyConfig, channelSelector);
-                yield new SecureNioClientProxyHandler(client, hostProxyConfig, channelSelector);
+                log.info("use HTTPS_SNI_HOST_NAME: SecureProxyHandler");
+                yield new SecureProxyHandler(client, hostProxyConfig, channelSelector);
             }
             /*case TRANSPARENT:*/
             case DIRECT_CLOSE -> {
-                log.info( "use DirectCloseHandler");
+                log.info("use DirectCloseHandler");
                 yield new DirectCloseHandler(client, hostProxyConfig, channelSelector);
             }
             case PROXY_CLOSE -> {
-                log.info( "use ProxyCloseHandler");
+                log.info("use ProxyCloseHandler");
                 yield new ProxyCloseHandler(client, hostProxyConfig, channelSelector);
             }
             default -> {
-                log.info( "use DirectProxyHandler");
+                log.info("use DirectProxyHandler");
                 yield new DirectProxyHandler(client, hostProxyConfig, channelSelector);
             }
         };

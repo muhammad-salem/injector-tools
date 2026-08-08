@@ -74,29 +74,25 @@ public class SniHostNameProxyHandler extends ProxyHandler {
         // do nothing
         try {
             this.client.write(ByteBuffer.wrap("HTTP/1.0 200 connected\r\n\r\n".getBytes(StandardCharsets.ISO_8859_1)));
-//            this.remote.write(ByteBuffer.wrap(payload.getRawPayload().getBytes(StandardCharsets.UTF_8)));
-//            this.sslSocket.getOutputStream().write("SSH".getBytes(StandardCharsets.UTF_8));
-//            this.sslSocket.getOutputStream().flush();
         } catch (Exception e) {
-            log.info( e.getClass().getSimpleName() + " message", e.getMessage());
+            log.error("handelProxyResponse error ", e);
         }
     }
 
     @Override
     protected void writePayloadToRemoteHost() {
-//        try {
-//            this.remote.finishConnect();
-////            sslSocket.startHandshake();
-//        } catch (IOException e) {
-//            log.info( e.getClass().getSimpleName() + " message", e.getMessage());
-//        }
+        try {
+            sslSocket.startHandshake();
+        } catch (IOException e) {
+            log.error("error finishing Handshake", e);
+        }
 
 //        var raw = payload.getRawPayload();
 //        try {
 //            this.sslSocket.getOutputStream().write(ByteBuffer.wrap(raw.getBytes()).array());
-//            log.info( "write payload to host to host", payload.getRawPayload());
+//            log.info("write payload to host: {}", payload.getRawPayload());
 //        } catch (IOException e) {
-//            log.info( e.getClass().getSimpleName() + " message", e.getMessage());
+//            log.error("error writePayloadToRemoteHost Handshake", e);
 //        }
     }
 

@@ -31,7 +31,7 @@ public class InjectionTools {
 
     public void startLocalProxyService() {
         if (config.getLocalProxyConfig().isAllowToRun()) {
-            log.info( "Local Proxy is allowed to start");
+            log.info("Local Proxy is allowed to start");
             localProxy = new LocalProxy(config.getLocalProxyConfig());
 
 //			localProxy.initSelectorService();
@@ -41,7 +41,7 @@ public class InjectionTools {
 //			localProxy.start();
 //			executor.submit(localProxy);
         } else {
-            log.info( "Local Proxy is not allowed to start");
+            log.info("Local Proxy is not allowed to start");
         }
 
     }
@@ -56,7 +56,7 @@ public class InjectionTools {
 //			localProxy.start();
 //			executor.submit(localProxy);
         } else {
-            log.info( "Local Proxy is not allowed to start");
+            log.info("Local Proxy is not allowed to start");
         }
     }
 
@@ -78,12 +78,12 @@ public class InjectionTools {
                 ? () -> Boolean.TRUE
                 : () -> maxRetry.get() > 0;
         executor.submit(() -> {
-            log.info( "ssh max retry is {}".formatted(maxRetry.get()));
+            log.info("ssh max retry is {}".formatted(maxRetry.get()));
             while (keepRetry.get()) {
                 try {
                     jschSSHClient.connectHost();
                 } catch (Exception e) {
-                    log.info( "connection failed");
+                    log.info("connection failed");
                 }
                 if (maxRetry.addAndGet(-1) == 0) {
                     log.info("stop application (try count: {})".formatted(maxRetry.get()));

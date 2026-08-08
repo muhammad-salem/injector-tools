@@ -159,7 +159,7 @@ public class ChannelSelector implements Closeable {
                 buffer.clear();
             }
         } catch (IOException e) {
-            log.error( "error read/write operation, " + e.getMessage());
+            log.error("error read/write operation, " + e.getMessage());
         }
     }
 

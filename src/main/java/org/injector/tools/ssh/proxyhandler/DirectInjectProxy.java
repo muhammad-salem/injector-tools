@@ -44,20 +44,20 @@ public class DirectInjectProxy extends ProxySocket {
         writePayloadToProxy(proxy.getOutputStream(), requestLinePayload);
 
         // stat read response
-//				log.info( "wating read response ..... ");
+//				log.info("wating read response ..... ");
 //				byte[] b = new byte[1*1024];			
 //				int i = proxy.getInputStream().read(b);
 //				if(i <= 0) return null;
-//				log.info( new String(b, 0, i));
+//				log.info(new String(b, 0, i));
 //				
-//				log.info( "additonal response ..... ");
+//				log.info("additonal response ..... ");
 //				i = proxy.getInputStream().read(b);
 //				if(i <= 0) {
-//					log.info( "Error read data -- Direct Inject Method");
+//					log.info("Error read data -- Direct Inject Method");
 //					return null;
 //				}
-//				log.info( new String(b, 0, i));
-//				log.info( "end");
+//				log.info(new String(b, 0, i));
+//				log.info("end");
 
         return proxy;
     }

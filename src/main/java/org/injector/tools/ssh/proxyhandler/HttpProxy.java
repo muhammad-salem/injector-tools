@@ -85,7 +85,7 @@ public class HttpProxy extends ProxySocket {
         }
 
         sb.append("\r\n");
-        log.info( sb.toString());
+        log.info(sb.toString());
 
 
         OutputStream out = sock.getOutputStream();

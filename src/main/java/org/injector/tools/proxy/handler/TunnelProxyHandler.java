@@ -12,28 +12,20 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class TunnelProxyHandler extends ProxyHandler {
 
-//	public TunnelProxyHandler(Socket clientSocket) {
-//		super(clientSocket);
-//	}
-
     public TunnelProxyHandler(SocketChannel clientSocket, HostProxyConfig proxyConfig, ChannelSelector channelSelector) {
         super(clientSocket, proxyConfig, channelSelector);
     }
 
-//	public TunnelProxyHandler(Socket client, String requestLine) {
-//		super(client, requestLine);
-//	}
-
     @Override
     void handelProxyResponse() {
-        log.info( "proxy request had been send, ( waiting for response)");
+        log.info("proxy request had been send, ( waiting for response)");
         //byte[] temp = new byte[8 * 1024];
         ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
         int bytes_read = 0;
         try {
             bytes_read = remote.read(buffer);
             if (bytes_read == -1) {
-                log.info( "---> end of proxy wrapper response there is no more data because the end of the stream has been reached");
+                log.info("---> end of proxy wrapper response there is no more data because the end of the stream has been reached");
                 return;
             } else if (bytes_read == 0) {
                 bytes_read = remote.read(buffer);
@@ -42,7 +34,7 @@ public class TunnelProxyHandler extends ProxyHandler {
         }
         buffer.flip();
         String response = new String(buffer.array(), 0, bytes_read, StandardCharsets.ISO_8859_1);
-        log.info( "read proxy response ", response);
+        log.info("read proxy response: {}", response);
 
 //		ResponsLine l = new ResponsLine();
 //		l.setResponse(str);
@@ -65,8 +57,7 @@ public class TunnelProxyHandler extends ProxyHandler {
 //				return;
 //			}else {
 
-            log.info( "start = %d, length = %d, end = %d, bytes_read = %d;\n", start, length, start + length, bytes_read);
-//				System.out.printf("start = %d, length = %d, end = %d, bytes_read = %d;\n", start, length, start+length, bytes_read);
+            log.info("start = {}, length = {}, end = {}, bytes_read = {}", start, length, start + length, bytes_read);
 
             //the normal state
             // write HTTP/1.x 200 connected\r\n\r\n
@@ -74,10 +65,10 @@ public class TunnelProxyHandler extends ProxyHandler {
             try {
                 buffer.position(start);
                 client.write(buffer);
-                log.info( "write response to client", response);
+                log.info("write response to client: {}", response);
             } catch (IOException ignored) {
             }
-            log.info( getPayload().getPlaceHolder(PlaceHolder.host), response.substring(start));
+            log.info(getPayload().getPlaceHolder(PlaceHolder.host), response.substring(start));
             //			}
 
         }
@@ -85,7 +76,7 @@ public class TunnelProxyHandler extends ProxyHandler {
         else if (response.endsWith(" 200 OK\r\n\r\n")) {
             try {
                 client.write(buffer);
-                log.info( "write response to client", response);
+                log.info("write response to client: {}", response);
             } catch (IOException ignored) {
             }
         } else if (response.contains("\r\n\r\nHTTP")) {
@@ -94,7 +85,7 @@ public class TunnelProxyHandler extends ProxyHandler {
             try {
                 buffer.position(start);
                 client.write(buffer);
-                log.info( "write response to client", response);
+                log.info("write response to client: {}", response);
             } catch (IOException ignored) {
             }
         }
@@ -111,7 +102,7 @@ public class TunnelProxyHandler extends ProxyHandler {
         else if (response.contains("301 Found") || response.contains("302 Found") || response.contains("307 Temporary Redirect")) {
 //		else if(l.getCode()/ 100 == 3){
             try {
-                log.info( "response state code 3xx", "try send normal request");
+                log.info("response state code 3xx: try send normal request");
                 sendNormalRequest();
                 handelProxyResponse();
             } catch (Exception ignored) {
@@ -120,7 +111,7 @@ public class TunnelProxyHandler extends ProxyHandler {
         } else if (response.contains("onnection: close\r\n")) {
             try {
                 client.write(buffer);
-                log.info( "write response to client -&- close client socket", response);
+                log.info("write response to client -&- close client socket: {}", response);
                 client.close();
             } catch (Exception ignored) {
             }

@@ -36,16 +36,16 @@ public class Http2Socks5Handler extends TunnelProxyHandler {
             InetSocketAddress address = new InetSocketAddress(payload.getHost(), payload.getPortInt());
 
 
-            log.info( "Connect to Socks Proxy.... ");
+            log.info("Connect to Socks Proxy.... ");
 
             remoteConnect(address);
 //			
 //			proxySocket = new Socket(proxy);
 //			proxySocket.connect(address);
 
-            log.info( "Connected to Socks Proxy", proxyConfig.getProxyHost());
+            log.info("Connected to Socks Proxy", proxyConfig.getProxyHost());
         } catch (Exception e) {
-            log.info( "error Can't connect to " + proxyConfig, e.getMessage());
+            log.info("error Can't connect to " + proxyConfig, e.getMessage());
         }
 
     }

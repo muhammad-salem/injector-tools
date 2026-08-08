@@ -40,7 +40,7 @@ public class DirectCloseHandler extends DirectProxyHandler {
 
     @Override
     protected void registerTransferDataFromProxyToClient() {
-        log.info( "Start transfer Data From Proxy To Client");
+        log.info("Start transfer Data From Proxy To Client");
 
         ByteBuffer buffer = ByteBuffer.allocate(8 * 1024);
         try {
@@ -64,7 +64,7 @@ public class DirectCloseHandler extends DirectProxyHandler {
             debugSocketsChannel(e);
             fireErrorListener();
         } catch (InterruptedException e) {
-            log.info( e.getClass().getSimpleName(), e.getMessage());
+            log.info(e.getClass().getSimpleName(), e.getMessage());
         }
     }
 
@@ -83,7 +83,7 @@ public class DirectCloseHandler extends DirectProxyHandler {
 
             closeConnection();
         } catch (InterruptedException e) {
-            log.info( e.getClass().getSimpleName(), e.getMessage());
+            log.info(e.getClass().getSimpleName(), e.getMessage());
         }
 
     }
