@@ -92,8 +92,8 @@ public class SecureProxyHandler extends TcpProxyHandler {
             client.configureBlocking(false);
             remote.configureBlocking(false);
 
-            client.register(getSelector(), SelectionKey.OP_READ, ReadWriteOperation.create(client, nioSslClient));
-            remote.register(getSelector(), SelectionKey.OP_READ, ReadWriteOperation.create(nioSslClient, client));
+            client.register(getWorkerSelector(), SelectionKey.OP_READ, ReadWriteOperation.create(client, nioSslClient));
+            remote.register(getWorkerSelector(), SelectionKey.OP_READ, ReadWriteOperation.create(nioSslClient, client));
 
             log.info("success registerChannelToSelector");
         } catch (Exception e) {

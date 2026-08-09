@@ -8,6 +8,7 @@ import org.injector.tools.proxy.LocalProxy;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -15,6 +16,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Iterator;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,57 +26,30 @@ import java.util.concurrent.Executors;
 @Getter
 public class ChannelSelector implements Closeable {
 
-    private ExecutorService service;
-    private Selector selector;
-    private Thread thread;
+    private final LocalProxy localProxy;
+    private final Selector selector = Selector.open();
+    private final Selector workerSelector = Selector.open();
+    private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+    private final Queue<SocketChannel> registerQueue = new ConcurrentLinkedQueue<>();
 
-    public ChannelSelector() throws IOException {
-        this.service = Executors.newVirtualThreadPerTaskExecutor();
-        this.selector = Selector.open();
+    public ChannelSelector(LocalProxy localProxy) throws IOException {
+        this.localProxy = localProxy;
     }
-
-    public ChannelSelector(ExecutorService service) throws IOException {
-        this.service = service;
-        this.selector = Selector.open();
-    }
-
-    public ChannelSelector(ExecutorService service, Selector selector) {
-        this.selector = selector;
-        this.service = service;
-    }
-
 
     public void startSelector() {
         try {
-            thread = new Thread(this::startSelectorProcess, "SelectorProcess");
-            thread.setDaemon(true);
-            thread.start();
-//            service.execute(this::startSelectorProcess);
+            this.executor.submit(this::startConnectSelector);
+            this.executor.submit(this::startReadWriteSelector);
         } catch (Exception e) {
             log.error("Error start daemon selector thread", e);
         }
     }
 
-    public void joinThread() throws InterruptedException {
-        if (thread == null) return;
-        this.thread.join();
-    }
-
-    public void resetSelector() throws IOException {
-        if (selector != null) closeSelector();
-        selector = Selector.open();
-    }
-
-
-    public void closeSelector() throws IOException {
-        if (selector != null) selector.close();
-    }
-
-    private void startSelectorProcess() {
+    private void startConnectSelector() {
         while (true) {
             try {
                 // block thread
-                selector.select(100);
+                selector.select(50);
                 Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
                 while (iterator.hasNext()) {
                     SelectionKey key = iterator.next();
@@ -84,12 +60,35 @@ public class ChannelSelector implements Closeable {
                     }
                     if (key.isAcceptable()) {
                         acceptKey(key);
-                    } else if (key.isReadable()) {
+                    } else if (key.isConnectable()) {
+                        connectKey(key);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Error Message", e);
+            }
+        }
+    }
+
+    private void startReadWriteSelector() {
+        while (true) {
+            try {
+                // 1. Process pending registrations before blocking on select()
+                processRegistrations();
+                // 2. Block until I/O events are ready
+                workerSelector.select(50);
+                Iterator<SelectionKey> iterator = workerSelector.selectedKeys().iterator();
+                while (iterator.hasNext()) {
+                    SelectionKey key = iterator.next();
+                    iterator.remove();
+                    log.info("select key, isValid: {}", key.isValid());
+                    if (!key.isValid()) {
+                        continue;
+                    }
+                    if (key.isReadable()) {
                         readKey(key);
                     } else if (key.isWritable()) {
                         writeKey(key);
-                    } else if (key.isConnectable()) {
-                        connectKey(key);
                     }
                 }
             } catch (Exception e) {
@@ -112,10 +111,7 @@ public class ChannelSelector implements Closeable {
         try (ServerSocketChannel server = (ServerSocketChannel) key.channel()) {
             SocketChannel client = server.accept();
             client.configureBlocking(false);
-            LocalProxy localProxy = (LocalProxy) key.attachment();
-//            client.register(selector, SelectionKey.OP_READ, localProxy);
-            localProxy.handle(client);
-//            service.submit(() -> localProxy.handle(client));
+            registerChannel(client);
             log.info("accept connection {}", client.getRemoteAddress().toString());
         } catch (IOException e) {
             log.error("local proxy server error", e);
@@ -143,7 +139,7 @@ public class ChannelSelector implements Closeable {
     }
 
     protected void readLocalProxyClient(SelectionKey key) {
-        service.execute(() -> {
+        executor.execute(() -> {
             ( (LocalProxy)key.attachment() ).handle((SocketChannel) key.channel());
         });
     }
@@ -165,7 +161,7 @@ public class ChannelSelector implements Closeable {
                 buffer.clear();
             }
         } catch (IOException e) {
-            log.error("error read/write operation, " + e.getMessage());
+            log.error("error read/write operation", e);
         }
     }
 
@@ -181,10 +177,24 @@ public class ChannelSelector implements Closeable {
         readChannel(input, output);
     }
 
+    public void registerChannel(SocketChannel channel) {
+        registerQueue.add(channel);
+        workerSelector.wakeup(); // Wake up select() to process the queue immediately
+    }
+
+    private void processRegistrations() throws ClosedChannelException {
+        SocketChannel channel;
+        while ((channel = registerQueue.poll()) != null) {
+            // Register the channel to THIS worker's selector for reading
+            this.localProxy.handle(channel);
+        }
+    }
+
     @Override
     public void close() throws IOException {
-        closeSelector();
-        service.shutdown();
+        selector.close();
+        workerSelector.close();
+        executor.shutdown();
     }
 
 }

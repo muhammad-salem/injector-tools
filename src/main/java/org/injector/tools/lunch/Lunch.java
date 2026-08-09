@@ -20,14 +20,8 @@ public class Lunch {
 
         service.startLocalProxyService();
         service.startJschSSHService();
-        service.joinLocalProxyThread();
-        service.joinJschSSHThread();
 
-        // service.jschSSHClient.addSuccessListener(service::StartVPNService);
-
-        // service.StartSSHService();
-        //service.StartPolipoService();
-        // service.StartRedSocksService();
+        Thread.currentThread().join();
     }
 
     public static void checkArgs(String[] args) {

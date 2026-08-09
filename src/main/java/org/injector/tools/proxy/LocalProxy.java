@@ -67,13 +67,9 @@ public class LocalProxy implements EventRunnableHandler {
 //        channelSelector.startSelectorProcess();
     }
 
-    public void joinThread() throws InterruptedException {
-        this.channelSelector.joinThread();
-    }
-
     public void initSelectorService() {
         try {
-            channelSelector = new ChannelSelector();
+            channelSelector = new ChannelSelector(this);
         } catch (Exception e) {
             log.error("Error Message {}", e.getMessage());
         }
@@ -109,7 +105,7 @@ public class LocalProxy implements EventRunnableHandler {
         try {
             localServer.configureBlocking(false);
             log.info("Configure to Non-Blocking");
-            localServer.register(channelSelector.getSelector(), localServer.validOps(), this);
+            localServer.register(channelSelector.getSelector(), localServer.validOps());
             log.info("Local Server had been registered To Selector Channel");
         } catch (IOException e) {
             log.info("fail to configure Block local server");

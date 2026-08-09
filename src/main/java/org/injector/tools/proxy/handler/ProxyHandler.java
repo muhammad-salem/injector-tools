@@ -43,12 +43,12 @@ public abstract class ProxyHandler implements EventRunnableHandler, Closeable {
         this.payload = new Payload(proxyConfig.getPayload());
     }
 
-    public Selector getSelector() {
-        return channelSelector.getSelector();
+    public Selector getWorkerSelector() {
+        return channelSelector.getWorkerSelector();
     }
 
     public ExecutorService getService() {
-        return channelSelector.getService();
+        return channelSelector.getExecutor();
     }
 
     public void startHandler() {
@@ -105,8 +105,8 @@ public abstract class ProxyHandler implements EventRunnableHandler, Closeable {
     protected void registerChannelToSelector() {
         try {
             setChannelsBlockMode(false);
-            client.register(getSelector(), SelectionKey.OP_READ, remote);
-            remote.register(getSelector(), SelectionKey.OP_READ, client);
+            client.register(getWorkerSelector(), SelectionKey.OP_READ, remote);
+            remote.register(getWorkerSelector(), SelectionKey.OP_READ, client);
         } catch (Exception e) {
             log.error("registerChannelToSelector", e);
         }
@@ -115,7 +115,7 @@ public abstract class ProxyHandler implements EventRunnableHandler, Closeable {
     protected void registerTransferDataFromClientToProxy() {
         try {
             client.configureBlocking(false);
-            client.register(getSelector(), SelectionKey.OP_READ, remote);
+            client.register(getWorkerSelector(), SelectionKey.OP_READ, remote);
         } catch (Exception e) {
             log.error("Exception", e);
         }
@@ -124,7 +124,7 @@ public abstract class ProxyHandler implements EventRunnableHandler, Closeable {
     protected void registerTransferDataFromProxyToClient() {
         try {
             remote.configureBlocking(false);
-            remote.register(getSelector(), SelectionKey.OP_READ, client);
+            remote.register(getWorkerSelector(), SelectionKey.OP_READ, client);
         } catch (Exception e) {
             log.error("Exception", e);
         }
