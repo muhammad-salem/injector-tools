@@ -9,8 +9,10 @@ import org.injector.tools.proxy.LocalProxy;
 import org.injector.tools.ssh.jsch.JschSSHClient;
 import org.injector.tools.ssh.trilead.SSHForwardClient;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
@@ -19,6 +21,7 @@ public class InjectionTools {
 
     private final Config config;
     private final ExecutorService executor;
+    private Future<?> mainFuture;
 
     private SSHForwardClient ssh;
     private LocalProxy localProxy;
@@ -60,6 +63,15 @@ public class InjectionTools {
         }
     }
 
+    public void joinLocalProxyThread() throws InterruptedException {
+        this.localProxy.joinThread();
+    }
+
+    public void joinJschSSHThread() throws InterruptedException, ExecutionException {
+        if (this.mainFuture == null) return;
+        this.mainFuture.get();
+    }
+
     public void startJschSSHService() {
         startJschSSHService(config.getSshConfig());
     }
@@ -77,8 +89,8 @@ public class InjectionTools {
         Supplier<Boolean> keepRetry = (maxRetry.get() <= 0)
                 ? () -> Boolean.TRUE
                 : () -> maxRetry.get() > 0;
-        executor.submit(() -> {
-            log.info("ssh max retry is {}".formatted(maxRetry.get()));
+        mainFuture = executor.submit(() -> {
+            log.info("ssh max retry is {}", maxRetry.get());
             while (keepRetry.get()) {
                 try {
                     jschSSHClient.connectHost();
@@ -86,7 +98,7 @@ public class InjectionTools {
                     log.info("connection failed");
                 }
                 if (maxRetry.addAndGet(-1) == 0) {
-                    log.info("stop application (try count: {})".formatted(maxRetry.get()));
+                    log.info("stop application (try count: {})", maxRetry.get());
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
@@ -94,7 +106,7 @@ public class InjectionTools {
                     }
                     System.exit(1);
                 }
-                log.info("try to connect... (try count: {})".formatted(maxRetry.get()));
+                log.info("try to connect... (try count: {})", maxRetry.get());
             }
         });
 //		jschSSHClient.addSuccessListener(()-> executor.submit(jschSSHClient.getMonitorSpeed()::start));

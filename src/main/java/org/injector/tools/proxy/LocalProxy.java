@@ -13,7 +13,6 @@ import org.injector.tools.proxy.handler.Http2Socks5Handler;
 import org.injector.tools.proxy.handler.ProxyCloseHandler;
 import org.injector.tools.proxy.handler.ProxyHandler;
 import org.injector.tools.proxy.handler.SecureProxyHandler;
-import org.injector.tools.proxy.handler.SniHostNameProxyHandler;
 import org.injector.tools.proxy.handler.TunnelProxyHandler;
 
 import java.io.IOException;
@@ -64,8 +63,12 @@ public class LocalProxy implements EventRunnableHandler {
 //		channelSelector.getService().execute(this::run);
 //		run();
         registerLocalServerToSelector();
-//        channelSelector.startSelector();
-        channelSelector.startSelectorProcess();
+        channelSelector.startSelector();
+//        channelSelector.startSelectorProcess();
+    }
+
+    public void joinThread() throws InterruptedException {
+        this.channelSelector.joinThread();
     }
 
     public void initSelectorService() {
@@ -142,10 +145,6 @@ public class LocalProxy implements EventRunnableHandler {
                 yield new Http2Socks5Handler(client, hostProxyConfig, channelSelector);
             }
             case SNI_HOST_NAME -> {
-                log.info("use SniHostNameProxyHandler");
-                yield new SniHostNameProxyHandler(client, hostProxyConfig, channelSelector);
-            }
-            case HTTPS_SNI_HOST_NAME-> {
                 log.info("use HTTPS_SNI_HOST_NAME: SecureProxyHandler");
                 yield new SecureProxyHandler(client, hostProxyConfig, channelSelector);
             }

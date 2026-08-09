@@ -25,6 +25,7 @@ public class ChannelSelector implements Closeable {
 
     private ExecutorService service;
     private Selector selector;
+    private Thread thread;
 
     public ChannelSelector() throws IOException {
         this.service = Executors.newVirtualThreadPerTaskExecutor();
@@ -44,13 +45,18 @@ public class ChannelSelector implements Closeable {
 
     public void startSelector() {
         try {
-            Thread thread = new Thread(this::startSelectorProcess, "SelectorProcess");
+            thread = new Thread(this::startSelectorProcess, "SelectorProcess");
             thread.setDaemon(true);
             thread.start();
 //            service.execute(this::startSelectorProcess);
         } catch (Exception e) {
             log.error("Error start daemon selector thread", e);
         }
+    }
+
+    public void joinThread() throws InterruptedException {
+        if (thread == null) return;
+        this.thread.join();
     }
 
     public void resetSelector() throws IOException {
@@ -63,7 +69,7 @@ public class ChannelSelector implements Closeable {
         if (selector != null) selector.close();
     }
 
-    public void startSelectorProcess() {
+    private void startSelectorProcess() {
         while (true) {
             try {
                 // block thread

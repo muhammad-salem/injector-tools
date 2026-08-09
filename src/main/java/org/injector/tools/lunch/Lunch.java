@@ -6,10 +6,12 @@ import org.injector.tools.config.utils.ManageConfig;
 import org.injector.tools.utils.R;
 import org.terminal.Ansi;
 
+import java.util.concurrent.ExecutionException;
+
 @Slf4j
 public class Lunch {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
         System.setProperty("logging.level.root", "TRACE");
         System.setProperty("enable-final-field-mutation", "ALL-UNNAMED");
         checkArgs(args);
@@ -18,6 +20,8 @@ public class Lunch {
 
         service.startLocalProxyService();
         service.startJschSSHService();
+        service.joinLocalProxyThread();
+        service.joinJschSSHThread();
 
         // service.jschSSHClient.addSuccessListener(service::StartVPNService);
 
