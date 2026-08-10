@@ -141,7 +141,7 @@ public class LocalProxy implements EventRunnableHandler {
                 yield new Http2Socks5Handler(client, hostProxyConfig, channelSelector);
             }
             case SNI_HOST_NAME -> {
-                log.info("use HTTPS_SNI_HOST_NAME: SecureProxyHandler");
+                log.info("use SNI_HOST_NAME: SecureProxyHandler");
                 yield new SecureProxyHandler(client, hostProxyConfig, channelSelector);
             }
             /*case TRANSPARENT:*/

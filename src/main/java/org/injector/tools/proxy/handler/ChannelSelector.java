@@ -8,7 +8,6 @@ import org.injector.tools.proxy.LocalProxy;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -182,7 +181,7 @@ public class ChannelSelector implements Closeable {
         workerSelector.wakeup(); // Wake up select() to process the queue immediately
     }
 
-    private void processRegistrations() throws ClosedChannelException {
+    private void processRegistrations() {
         SocketChannel channel;
         while ((channel = registerQueue.poll()) != null) {
             // Register the channel to THIS worker's selector for reading
